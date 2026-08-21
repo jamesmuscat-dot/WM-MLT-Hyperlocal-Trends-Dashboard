@@ -1086,6 +1086,7 @@ def render_trend_card(rank, trend, strength, description, image_path=None):
 # LOAD DATA (multi-country)
 # -----------------------
 DATA_DIR = Path("data")
+SKIP_FOLDER_NAMES = {"assets", "devcontainer", "node_modules", "__pycache__"}
 PRODUCER_FILES = ["producers.csv", "malta_producers.csv"]
 CREATOR_FILES = ["creators.csv", "local_market_creators.csv"]
 TREND_FILES = ["trends.csv", "local_market_trends.csv"]
@@ -1128,21 +1129,49 @@ def _concat(frames):
 
 
 def _country_folders():
-    if not DATA_DIR.exists():
-        return []
-    return sorted(
-        p for p in DATA_DIR.iterdir()
-        if p.is_dir() and not p.name.startswith("_") and not p.name.startswith(".")
-    )
+    """Find country packs in data/ (local layout) and at the repo root (GitHub layout)."""
+    found = {}
+    for root in (DATA_DIR, Path(".")):
+        if not root.exists() or not root.is_dir():
+            continue
+        for path in root.iterdir():
+            if not path.is_dir():
+                continue
+            name = path.name
+            if name.startswith((".", "_")) or name.lower() in SKIP_FOLDER_NAMES:
+                continue
+            if not _first_existing(path, PRODUCER_FILES):
+                continue
+            # Prefer data/{CODE} over a same-named folder at the repo root.
+            if name not in found or root == DATA_DIR:
+                found[name] = path
+    return [found[code] for code in sorted(found)]
 
 
 def load_country_registry() -> pd.DataFrame:
-    path = DATA_DIR / "countries.csv"
-    if path.exists():
-        registry = pd.read_csv(path)
-        registry["code"] = registry["code"].astype(str).str.strip()
-        return registry
+    for path in (DATA_DIR / "countries.csv", Path("countries.csv")):
+        if path.exists():
+            registry = pd.read_csv(path)
+            registry["code"] = registry["code"].astype(str).str.strip()
+            return registry
     return pd.DataFrame(columns=["code", "name", "latitude", "longitude", "zoom"])
+
+
+def _load_folder_pack(folder: Path, code: str):
+    pack = {"producers": None, "creators": None, "trends": None, "neighbourhoods": None}
+    prod = _first_existing(folder, PRODUCER_FILES)
+    if prod:
+        pack["producers"] = _ensure_country(_read_csv(prod), code)
+    crea = _first_existing(folder, CREATOR_FILES)
+    if crea:
+        pack["creators"] = _ensure_country(_read_csv(crea), code)
+    tren = _first_existing(folder, TREND_FILES)
+    if tren:
+        pack["trends"] = _ensure_country(_read_csv(tren), code)
+    demo = _first_existing(folder, NEIGHBOURHOOD_FILES)
+    if demo:
+        pack["neighbourhoods"] = _ensure_country(_read_csv(demo), code)
+    return pack
 
 
 def load_all_market_data():
@@ -1150,45 +1179,44 @@ def load_all_market_data():
     producers, creators, trends, neighbourhoods = [], [], [], []
 
     folders = _country_folders()
-    if not folders:
-        # Legacy layout: CSVs in the project root, treated as Malta.
+    loaded_codes = set()
+    for folder in folders:
+        code = folder.name
+        pack = _load_folder_pack(folder, code)
+        if pack["producers"] is not None:
+            producers.append(pack["producers"])
+        if pack["creators"] is not None:
+            creators.append(pack["creators"])
+        if pack["trends"] is not None:
+            trends.append(pack["trends"])
+        if pack["neighbourhoods"] is not None:
+            neighbourhoods.append(pack["neighbourhoods"])
+        loaded_codes.add(code)
+        if registry.empty or code not in set(registry["code"].astype(str)):
+            extra = pd.DataFrame(
+                [{"code": code, "name": code, "latitude": "", "longitude": "", "zoom": ""}]
+            )
+            registry = pd.concat([registry, extra], ignore_index=True)
+
+    # GitHub / older layout: Malta CSVs sit in the project root, not in MLT/.
+    if "MLT" not in loaded_codes:
         root = Path(".")
-        prod = _first_existing(root, PRODUCER_FILES)
-        if prod:
-            producers.append(_ensure_country(_read_csv(prod), "MLT"))
-        crea = _first_existing(root, CREATOR_FILES)
-        if crea:
-            creators.append(_ensure_country(_read_csv(crea), "MLT"))
-        tren = _first_existing(root, TREND_FILES)
-        if tren:
-            trends.append(_ensure_country(_read_csv(tren), "MLT"))
-        demo = _first_existing(root, NEIGHBOURHOOD_FILES)
-        if demo:
-            neighbourhoods.append(_ensure_country(_read_csv(demo), "MLT"))
-        if registry.empty:
-            registry = pd.DataFrame(
+        pack = _load_folder_pack(root, "MLT")
+        if pack["producers"] is not None:
+            producers.append(pack["producers"])
+        if pack["creators"] is not None:
+            creators.append(pack["creators"])
+        if pack["trends"] is not None:
+            trends.append(pack["trends"])
+        if pack["neighbourhoods"] is not None:
+            neighbourhoods.append(pack["neighbourhoods"])
+        if pack["producers"] is not None and (
+            registry.empty or "MLT" not in set(registry["code"].astype(str))
+        ):
+            extra = pd.DataFrame(
                 [{"code": "MLT", "name": "Malta", "latitude": 35.94, "longitude": 14.40, "zoom": 9}]
             )
-    else:
-        for folder in folders:
-            code = folder.name
-            prod = _first_existing(folder, PRODUCER_FILES)
-            if prod:
-                producers.append(_ensure_country(_read_csv(prod), code))
-            crea = _first_existing(folder, CREATOR_FILES)
-            if crea:
-                creators.append(_ensure_country(_read_csv(crea), code))
-            tren = _first_existing(folder, TREND_FILES)
-            if tren:
-                trends.append(_ensure_country(_read_csv(tren), code))
-            demo = _first_existing(folder, NEIGHBOURHOOD_FILES)
-            if demo:
-                neighbourhoods.append(_ensure_country(_read_csv(demo), code))
-            if registry.empty or code not in set(registry["code"].astype(str)):
-                extra = pd.DataFrame(
-                    [{"code": code, "name": code, "latitude": "", "longitude": "", "zoom": ""}]
-                )
-                registry = pd.concat([registry, extra], ignore_index=True)
+            registry = pd.concat([registry, extra], ignore_index=True)
 
     return (
         registry,
