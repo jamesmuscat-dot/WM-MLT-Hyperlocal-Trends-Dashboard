@@ -56,8 +56,9 @@ MAP_HEIGHT = 520
 CHART_HEIGHT = 320
 TOP_ROW_GAP = 14
 SECTION_GAP = 12
-MARKET_NAME = "Malta"
-MAP_CENTER = {"lat": 35.94, "lon": 14.40}
+MARKET_NAME = "Wolt Market"
+MAP_CENTER = {"lat": 50.0, "lon": 15.0}
+MAP_ZOOM = 4
 CATEGORY_TILE_DIR = Path("assets/category_titles")
 PROFILE_PIC_DIR = Path("assets/profile_pics")
 TREND_IMAGE_DIR = Path("assets/trend_images")
@@ -624,8 +625,8 @@ def build_trend_matching_prompt(trends_df: pd.DataFrame) -> str:
     prompt text automatically updates if that file changes.
     """
     lines = [
-        "You are helping a Wolt Market Malta category manager decide which "
-        "candidate products to prioritise for dark-store listings.",
+        "You are helping a Wolt Market category manager decide which "
+        f"candidate products to prioritise for dark-store listings in {MARKET_NAME}.",
         "",
         f"Here are the current emerging {MARKET_NAME} food & drink trends "
         "identified from local creator and social signals:",
@@ -1082,43 +1083,211 @@ def render_trend_card(rank, trend, strength, description, image_path=None):
 
 
 # -----------------------
-# LOAD DATA
+# LOAD DATA (multi-country)
 # -----------------------
-producer_csv_path = Path("malta_producers.csv")
-creators_csv_path = Path("local_market_creators.csv")
-trends_csv_path = Path("local_market_trends.csv")
-demographics_csv_path = Path("Malta_neighbourhood_demographics.csv")
+DATA_DIR = Path("data")
+PRODUCER_FILES = ["producers.csv", "malta_producers.csv"]
+CREATOR_FILES = ["creators.csv", "local_market_creators.csv"]
+TREND_FILES = ["trends.csv", "local_market_trends.csv"]
+NEIGHBOURHOOD_FILES = [
+    "neighbourhoods.csv",
+    "neighbourhood_demographics.csv",
+    "Malta_neighbourhood_demographics.csv",
+]
 
-if not producer_csv_path.exists():
-    st.error("malta_producers.csv was not found in the project folder.")
+
+def _first_existing(folder: Path, names):
+    for name in names:
+        path = folder / name
+        if path.exists():
+            return path
+    return None
+
+
+def _read_csv(path: Path) -> pd.DataFrame:
+    return pd.read_csv(path, keep_default_na=False).replace({"": "N/A"}).fillna("N/A")
+
+
+def _ensure_country(df: pd.DataFrame, code: str) -> pd.DataFrame:
+    if df is None or df.empty:
+        return df
+    out = df.copy()
+    if "Country" not in out.columns:
+        out.insert(0, "Country", code)
+    else:
+        blank = out["Country"].astype(str).str.strip().isin({"", "N/A", "nan", "None"})
+        out.loc[blank, "Country"] = code
+    return out
+
+
+def _concat(frames):
+    frames = [f for f in frames if f is not None and not f.empty]
+    if not frames:
+        return pd.DataFrame()
+    return pd.concat(frames, ignore_index=True)
+
+
+def _country_folders():
+    if not DATA_DIR.exists():
+        return []
+    return sorted(
+        p for p in DATA_DIR.iterdir()
+        if p.is_dir() and not p.name.startswith("_") and not p.name.startswith(".")
+    )
+
+
+def load_country_registry() -> pd.DataFrame:
+    path = DATA_DIR / "countries.csv"
+    if path.exists():
+        registry = pd.read_csv(path)
+        registry["code"] = registry["code"].astype(str).str.strip()
+        return registry
+    return pd.DataFrame(columns=["code", "name", "latitude", "longitude", "zoom"])
+
+
+def load_all_market_data():
+    registry = load_country_registry()
+    producers, creators, trends, neighbourhoods = [], [], [], []
+
+    folders = _country_folders()
+    if not folders:
+        # Legacy layout: CSVs in the project root, treated as Malta.
+        root = Path(".")
+        prod = _first_existing(root, PRODUCER_FILES)
+        if prod:
+            producers.append(_ensure_country(_read_csv(prod), "MLT"))
+        crea = _first_existing(root, CREATOR_FILES)
+        if crea:
+            creators.append(_ensure_country(_read_csv(crea), "MLT"))
+        tren = _first_existing(root, TREND_FILES)
+        if tren:
+            trends.append(_ensure_country(_read_csv(tren), "MLT"))
+        demo = _first_existing(root, NEIGHBOURHOOD_FILES)
+        if demo:
+            neighbourhoods.append(_ensure_country(_read_csv(demo), "MLT"))
+        if registry.empty:
+            registry = pd.DataFrame(
+                [{"code": "MLT", "name": "Malta", "latitude": 35.94, "longitude": 14.40, "zoom": 9}]
+            )
+    else:
+        for folder in folders:
+            code = folder.name
+            prod = _first_existing(folder, PRODUCER_FILES)
+            if prod:
+                producers.append(_ensure_country(_read_csv(prod), code))
+            crea = _first_existing(folder, CREATOR_FILES)
+            if crea:
+                creators.append(_ensure_country(_read_csv(crea), code))
+            tren = _first_existing(folder, TREND_FILES)
+            if tren:
+                trends.append(_ensure_country(_read_csv(tren), code))
+            demo = _first_existing(folder, NEIGHBOURHOOD_FILES)
+            if demo:
+                neighbourhoods.append(_ensure_country(_read_csv(demo), code))
+            if registry.empty or code not in set(registry["code"].astype(str)):
+                extra = pd.DataFrame(
+                    [{"code": code, "name": code, "latitude": "", "longitude": "", "zoom": ""}]
+                )
+                registry = pd.concat([registry, extra], ignore_index=True)
+
+    return (
+        registry,
+        _concat(producers),
+        _concat(creators),
+        _concat(trends),
+        _concat(neighbourhoods),
+    )
+
+
+def country_display_name(code: str, registry: pd.DataFrame) -> str:
+    if registry.empty or "code" not in registry.columns:
+        return str(code)
+    match = registry[registry["code"].astype(str) == str(code)]
+    if match.empty:
+        return str(code)
+    name = match.iloc[0].get("name", code)
+    return str(name) if str(name).strip() not in {"", "nan"} else str(code)
+
+
+def map_view_for(df: pd.DataFrame, registry_row=None):
+    if registry_row is not None:
+        lat = pd.to_numeric(pd.Series([registry_row.get("latitude")]), errors="coerce").iloc[0]
+        lon = pd.to_numeric(pd.Series([registry_row.get("longitude")]), errors="coerce").iloc[0]
+        zoom = pd.to_numeric(pd.Series([registry_row.get("zoom")]), errors="coerce").iloc[0]
+        if pd.notna(lat) and pd.notna(lon):
+            return {"lat": float(lat), "lon": float(lon)}, int(zoom) if pd.notna(zoom) else 8
+
+    if df is None or df.empty:
+        return {"lat": 50.0, "lon": 15.0}, 4
+
+    lat = pd.to_numeric(df.get("Latitude_num", df.get("Latitude")), errors="coerce")
+    lon = pd.to_numeric(df.get("Longitude_num", df.get("Longitude")), errors="coerce")
+    valid = lat.notna() & lon.notna()
+    if not valid.any():
+        return {"lat": 50.0, "lon": 15.0}, 4
+    lat_span = float(lat[valid].max() - lat[valid].min())
+    zoom = 4 if lat_span > 8 else 6 if lat_span > 2 else 9
+    return {"lat": float(lat[valid].mean()), "lon": float(lon[valid].mean())}, zoom
+
+
+registry_df, all_producers_df, all_creators_df, all_trends_df, all_demographics_df = load_all_market_data()
+
+if all_producers_df.empty:
+    st.error(
+        "No producer data found. Add data/MLT/producers.csv, or drop a new country folder "
+        "under data/ (see data/HOW_TO_ADD_A_COUNTRY.txt)."
+    )
     st.stop()
 
-df = pd.read_csv(producer_csv_path).fillna("N/A")
-df["Latitude_num"] = pd.to_numeric(df["Latitude"], errors="coerce")
-df["Longitude_num"] = pd.to_numeric(df["Longitude"], errors="coerce")
+all_producers_df["Latitude_num"] = pd.to_numeric(all_producers_df.get("Latitude"), errors="coerce")
+all_producers_df["Longitude_num"] = pd.to_numeric(all_producers_df.get("Longitude"), errors="coerce")
 
-if creators_csv_path.exists():
-    creators_df = pd.read_csv(creators_csv_path).fillna("N/A")
+country_codes = sorted(all_producers_df["Country"].dropna().astype(str).unique().tolist())
+country_labels = {code: country_display_name(code, registry_df) for code in country_codes}
+country_options = ["All countries"] + [country_labels[c] for c in country_codes]
+label_to_code = {v: k for k, v in country_labels.items()}
+malta_label = country_labels.get("MLT")
+if malta_label in country_options:
+    default_country_index = country_options.index(malta_label)
+elif len(country_options) > 1:
+    default_country_index = 1
 else:
-    creators_df = pd.DataFrame()
-
-if trends_csv_path.exists():
-    trends_df = pd.read_csv(trends_csv_path).fillna("N/A")
-else:
-    trends_df = pd.DataFrame()
-
-if demographics_csv_path.exists():
-    demographics_df = pd.read_csv(demographics_csv_path).fillna("N/A")
-else:
-    demographics_df = pd.DataFrame()
-
-if not creators_df.empty and "Name / Handle" in creators_df.columns:
-    creators_df["Profile Pic"] = creators_df["Name / Handle"].apply(resolve_creator_pic)
+    default_country_index = 0
 
 # -----------------------
 # SIDEBAR FILTERS
 # -----------------------
 st.sidebar.title("Filters")
+selected_country_label = st.sidebar.selectbox("Country", country_options, index=default_country_index)
+selected_country_code = None if selected_country_label == "All countries" else label_to_code.get(selected_country_label)
+
+df = all_producers_df.copy()
+creators_df = all_creators_df.copy()
+trends_df = all_trends_df.copy()
+demographics_df = all_demographics_df.copy()
+
+if selected_country_code:
+    df = df[df["Country"].astype(str) == selected_country_code]
+    if not creators_df.empty and "Country" in creators_df.columns:
+        creators_df = creators_df[creators_df["Country"].astype(str) == selected_country_code]
+    if not trends_df.empty and "Country" in trends_df.columns:
+        trends_df = trends_df[trends_df["Country"].astype(str) == selected_country_code]
+    if not demographics_df.empty and "Country" in demographics_df.columns:
+        demographics_df = demographics_df[demographics_df["Country"].astype(str) == selected_country_code]
+    MARKET_NAME = selected_country_label
+    registry_row = None
+    if not registry_df.empty:
+        hit = registry_df[registry_df["code"].astype(str) == selected_country_code]
+        if not hit.empty:
+            registry_row = hit.iloc[0]
+    MAP_CENTER, MAP_ZOOM = map_view_for(df, registry_row)
+else:
+    MARKET_NAME = "Wolt Market"
+    MAP_CENTER, MAP_ZOOM = map_view_for(df)
+
+if not creators_df.empty and "Name / Handle" in creators_df.columns:
+    creators_df["Profile Pic"] = creators_df["Name / Handle"].apply(resolve_creator_pic)
+
 neighbourhoods = ["All"] + sorted(df["Neighbourhood"].dropna().astype(str).unique().tolist())
 selected_neighbourhood = st.sidebar.selectbox("Neighbourhood", neighbourhoods)
 
@@ -1159,7 +1328,7 @@ tab_range, tab_trends, tab_demo = st.tabs(["🏪 Hyperlocal Range", "📈 Local 
 # =========================================================
 with tab_range:
     st.title("Hyperlocal Range")
-    st.caption("Interactive sourcing dashboard for local producers across Malta.")
+    st.caption(f"Interactive sourcing dashboard for local producers across {MARKET_NAME}.")
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     with kpi1:
@@ -1271,7 +1440,7 @@ with tab_range:
                 "bubble_size": False,
             },
             text="label",
-            zoom=9,
+            zoom=MAP_ZOOM,
             center=MAP_CENTER,
             height=MAP_HEIGHT,
         )
@@ -1503,7 +1672,7 @@ with tab_trends:
     selected_market = MARKET_NAME
 
     if creators_df.empty:
-        st.info("No creator data found. Please load local_market_creators.csv.")
+        st.info("No creator data found for this country. Add creators.csv to the country folder under data/.")
     else:
         creator_count = len(creators_df)
         creators_work = creators_df.copy()
@@ -1518,58 +1687,23 @@ with tab_trends:
         platform_split_df = build_platform_split(creators_work)
         content_focus_df = build_content_focus(creators_work)
 
-        # ---- Prep trends data up front (needed for the strength metric) ----
         if trends_df.empty:
-            trends_df = pd.DataFrame(
-                [
-                    {
-                        "Rank": 1,
-                        "Trend": "Plant-Based Vegan Alternatives & Reimagined Maltese Dishes",
-                        "Strength": "Strong",
-                        "Description": "VeganFest Malta drew 10,000+ attendees; plant-based milk market growing 14.25% annually; restaurants increasingly offering vegan versions of traditional Maltese dishes. Grocery opportunity: plant-based proteins, dairy alternatives, meat substitutes in premium positioning.",
-                        "Image": "",
-                    },
-                    {
-                        "Rank": 2,
-                        "Trend": "Functional Foods & Gut Health Ingredients",
-                        "Strength": "Strong",
-                        "Description": "Probiotic and prebiotic ingredients gaining prominence; fermented products, kefir, and functional beverages emerging as health-conscious signals across influencer content. Grocery opportunity: functional food formats, prebiotic snacks, and premium health-positioned products in wellness sections.",
-                        "Image": "",
-                    },
-                    {
-                        "Rank": 3,
-                        "Trend": "Artisanal Sourdough & Organic Bread Revolution",
-                        "Strength": "Strong",
-                        "Description": "Malta's sourdough revolution headline; traditional wood-fired bakeries and natural starters trending; younger consumers prioritizing quality ingredients and local sourcing. Grocery opportunity: premium sourdough formats, organic bread, and artisan bakery sections in retail.",
-                        "Image": "",
-                    },
-                    {
-                        "Rank": 4,
-                        "Trend": "Premium Tinned Fish & Seacuterie Boards",
-                        "Strength": "Medium-strong",
-                        "Description": "Viral seacuterie trend (premium tinned fish boards) emerging in 2026; Marsaxlokk market tradition aligns with premiumization; Instagram-ready packaging and artisanal presentation gaining traction. Grocery opportunity: premium tinned fish, gourmet packaging, and seacuterie format kits.",
-                        "Image": "",
-                    },
-                    {
-                        "Rank": 5,
-                        "Trend": "Artisanal Specialty Coffee & Experimental Processing",
-                        "Strength": "Medium-strong",
-                        "Description": "Local roasters (Lot61, Coffee Circus) expanding; younger demographics adopting pour-over and cold brew; experimental fermentation processing trending. Grocery opportunity: specialty coffee beans, single-origin formats, and home-brewing equipment in premium coffee section.",
-                        "Image": "",
-                    },
-                ]
+            st.info(
+                f"No trend file for {MARKET_NAME} yet. Add trends.csv to the country folder "
+                "under data/ to populate this section."
             )
 
-        if "Rank" not in trends_df.columns:
-            trends_df["Rank"] = range(1, len(trends_df) + 1)
-        if "Trend" not in trends_df.columns and "Title" in trends_df.columns:
-            trends_df["Trend"] = trends_df["Title"]
-        if "Description" not in trends_df.columns and "Summary" in trends_df.columns:
-            trends_df["Description"] = trends_df["Summary"]
-        if "Strength" not in trends_df.columns:
-            trends_df["Strength"] = "Medium"
-        if "Image" not in trends_df.columns:
-            trends_df["Image"] = ""
+        if not trends_df.empty:
+            if "Rank" not in trends_df.columns:
+                trends_df["Rank"] = range(1, len(trends_df) + 1)
+            if "Trend" not in trends_df.columns and "Title" in trends_df.columns:
+                trends_df["Trend"] = trends_df["Title"]
+            if "Description" not in trends_df.columns and "Summary" in trends_df.columns:
+                trends_df["Description"] = trends_df["Summary"]
+            if "Strength" not in trends_df.columns:
+                trends_df["Strength"] = "Medium"
+            if "Image" not in trends_df.columns:
+                trends_df["Image"] = ""
 
         top_strength = "Strong"
         top_trend_label = "—"
@@ -1577,7 +1711,7 @@ with tab_trends:
             top_strength = strength_score_label(trends_df.iloc[0]["Strength"])
         if not trends_df.empty:
             top_trend_label = display_value(trends_df.iloc[0].get("Trend", ""))
-        emerging_count = len(trends_df) if not trends_df.empty else 5
+        emerging_count = len(trends_df)
 
         # ---- 1) Top Trend Strength + Emerging Trends (top row, full width) ----
         strength_col1, strength_col2 = st.columns(2)
@@ -1749,8 +1883,8 @@ with tab_demo:
 
     if demographics_df.empty:
         st.info(
-            "No demographic data found. Add Malta_neighbourhood_demographics.csv to the "
-            "project folder to unlock this tab."
+            "No demographic data found for this country. Add neighbourhoods.csv to the "
+            "matching folder under data/ to unlock this tab."
         )
     else:
         demo_work = demographics_df.copy()
@@ -1812,7 +1946,7 @@ with tab_demo:
                     "Longitude_num": False,
                     "Spending Bucket": True,
                 },
-                zoom=9,
+                zoom=MAP_ZOOM,
                 center=MAP_CENTER,
                 height=MAP_HEIGHT,
             )
