@@ -56,6 +56,8 @@ MAP_HEIGHT = 520
 CHART_HEIGHT = 320
 TOP_ROW_GAP = 14
 SECTION_GAP = 12
+MARKET_NAME = "Malta"
+MAP_CENTER = {"lat": 35.94, "lon": 14.40}
 CATEGORY_TILE_DIR = Path("assets/category_titles")
 PROFILE_PIC_DIR = Path("assets/profile_pics")
 TREND_IMAGE_DIR = Path("assets/trend_images")
@@ -70,13 +72,18 @@ ASSISTANT_ICON_FILES = {
 }
 CATEGORY_TILES = {
     "Bakeries": str(CATEGORY_TILE_DIR / "bakeries.jpg"),
+    "Bakery": str(CATEGORY_TILE_DIR / "bakeries.jpg"),
     "Coffee Roasteries": str(CATEGORY_TILE_DIR / "coffee_roasteries.jpg"),
+    "Coffee Roastery": str(CATEGORY_TILE_DIR / "coffee_roasteries.jpg"),
     "Breweries": str(CATEGORY_TILE_DIR / "breweries.jpg"),
+    "Brewery": str(CATEGORY_TILE_DIR / "breweries.jpg"),
     "Distilleries": str(CATEGORY_TILE_DIR / "distilleries.jpg"),
     "Delicatessen": str(CATEGORY_TILE_DIR / "delicatessen.jpg"),
     "Butcher Shops": str(CATEGORY_TILE_DIR / "butcher_shops.jpg"),
+    "Butcher Shop": str(CATEGORY_TILE_DIR / "butcher_shops.jpg"),
     "Seafood Producers": str(CATEGORY_TILE_DIR / "seafood_producers.jpg"),
     "Local Soft Drinks": str(CATEGORY_TILE_DIR / "local_soft_drinks.jpg"),
+    "Soft Drinks": str(CATEGORY_TILE_DIR / "local_soft_drinks.jpg"),
     "Local Snacks": str(CATEGORY_TILE_DIR / "local_snacks.jpg"),
     "Fruits & Vegetables": str(CATEGORY_TILE_DIR / "fruits_and_vegetables.jpg"),
 }
@@ -617,10 +624,11 @@ def build_trend_matching_prompt(trends_df: pd.DataFrame) -> str:
     prompt text automatically updates if that file changes.
     """
     lines = [
-        "You are helping a food & drink buying team decide which candidate "
-        "products to prioritise for sourcing.",
+        "You are helping a Wolt Market Malta category manager decide which "
+        "candidate products to prioritise for dark-store listings.",
         "",
-        "Here are the current emerging trends identified from creator and social signals:",
+        f"Here are the current emerging {MARKET_NAME} food & drink trends "
+        "identified from local creator and social signals:",
         "",
     ]
     for _, row in trends_df.iterrows():
@@ -1157,7 +1165,7 @@ with tab_range:
     with kpi1:
         st.markdown(clean_html(top_metric_card("Total Producers", len(filtered_df), "Across all neighbourhoods", icon=ICON_USERS, icon_bg="#EDEBFF", icon_color="#6F5CFF", card_bg="#F5F3FF")), unsafe_allow_html=True)
     with kpi2:
-        st.markdown(clean_html(top_metric_card("Neighbourhoods", filtered_df["Neighbourhood"].nunique(), "Across London", icon=ICON_MAP_PIN, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
+        st.markdown(clean_html(top_metric_card("Neighbourhoods", filtered_df["Neighbourhood"].nunique(), f"Across {MARKET_NAME}", icon=ICON_MAP_PIN, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
     with kpi3:
         st.markdown(clean_html(top_metric_card("Categories", filtered_df["Category"].nunique(), "Artisanal categories", icon=ICON_GRID, icon_bg="#E6F7EC", icon_color="#48B26B", card_bg="#F0FBF3")), unsafe_allow_html=True)
     with kpi4:
@@ -1235,7 +1243,7 @@ with tab_range:
             st.info("No neighbourhood data.")
 
     st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
-    st.subheader("London Map")
+    st.subheader(f"{MARKET_NAME} Map")
 
     map_counts = (
         filtered_map_df
@@ -1263,8 +1271,8 @@ with tab_range:
                 "bubble_size": False,
             },
             text="label",
-            zoom=10,
-            center={"lat": 35.9375, "lon": 14.3754},
+            zoom=9,
+            center=MAP_CENTER,
             height=MAP_HEIGHT,
         )
         fig_map.update_traces(
@@ -1397,13 +1405,17 @@ with tab_range:
             display_df["Neighbourhood"].astype(str).isin(selected_neighbourhoods)
         ]
 
-    if "Google Rating" in display_df.columns:
+    # Only apply rating/review cuts when the user raises them. A blank Google
+    # field is not a 0-star shop — most of the island range has no rating yet,
+    # so a >= 0 comparison was hiding 118 of 121 rows and leaving the three
+    # Valletta bakeries that happen to have both a rating and a review count.
+    if min_rating > 0 and "Google Rating" in display_df.columns:
         rating_series = pd.to_numeric(display_df["Google Rating"], errors="coerce")
-        display_df = display_df[rating_series >= min_rating]
+        display_df = display_df[rating_series.fillna(0) >= min_rating]
 
-    if "Google Reviews" in display_df.columns:
+    if min_reviews > 0 and "Google Reviews" in display_df.columns:
         reviews_series = pd.to_numeric(display_df["Google Reviews"], errors="coerce")
-        display_df = display_df[reviews_series >= min_reviews]
+        display_df = display_df[reviews_series.fillna(0) >= min_reviews]
 
     if score_col is not None and f"{selected_scenario}" in display_df.columns:
         display_df = display_df.sort_values(
@@ -1412,8 +1424,13 @@ with tab_range:
             na_position="last",
         )
 
+    st.caption(
+        f"Showing {len(display_df)} of {len(scored_df)} producers "
+        f"across {display_df['Neighbourhood'].nunique() if 'Neighbourhood' in display_df.columns else 0} neighbourhoods. "
+        "Google rating and review filters stay off at 0, because most producers are not rated yet."
+    )
     st.dataframe(
-        display_df,
+        display_df.reset_index(drop=True),
         use_container_width=True,
         height=620,
     )
@@ -1481,9 +1498,9 @@ with tab_range:
 # =========================================================
 with tab_trends:
     st.title("Trend Intelligence")
-    st.caption("Creator signals and emerging food & drink trends across our local markets")
+    st.caption(f"Creator signals and emerging food & drink trends across {MARKET_NAME}")
 
-    selected_market = "London"
+    selected_market = MARKET_NAME
 
     if creators_df.empty:
         st.info("No creator data found. Please load local_market_creators.csv.")
@@ -1507,38 +1524,38 @@ with tab_trends:
                 [
                     {
                         "Rank": 1,
-                        "Trend": "Matcha everything",
+                        "Trend": "Plant-Based Vegan Alternatives & Reimagined Maltese Dishes",
                         "Strength": "Strong",
-                        "Description": "Rising matcha demand in London across cafés and retail. Translating into latte kits, powders, syrups, and dessert applications.",
-                        "Image": "matcha.jpg",
+                        "Description": "VeganFest Malta drew 10,000+ attendees; plant-based milk market growing 14.25% annually; restaurants increasingly offering vegan versions of traditional Maltese dishes. Grocery opportunity: plant-based proteins, dairy alternatives, meat substitutes in premium positioning.",
+                        "Image": "",
                     },
                     {
                         "Rank": 2,
-                        "Trend": "Pistachio / Dubai chocolate / kunafa",
+                        "Trend": "Functional Foods & Gut Health Ingredients",
                         "Strength": "Strong",
-                        "Description": "Londoners’ appetite for pistachio and kunefe treats continues to grow. Opportunity in spreads, fillings, bakery SKUs, and premium desserts.",
-                        "Image": "pistachio.jpg",
+                        "Description": "Probiotic and prebiotic ingredients gaining prominence; fermented products, kefir, and functional beverages emerging as health-conscious signals across influencer content. Grocery opportunity: functional food formats, prebiotic snacks, and premium health-positioned products in wellness sections.",
+                        "Image": "",
                     },
                     {
                         "Rank": 3,
-                        "Trend": "Ube / purple drinks",
-                        "Strength": "Medium-strong",
-                        "Description": "Ube is gaining traction as the next big flavour. Strong visual and social pull for drinks, desserts, and bakery innovation.",
-                        "Image": "ube.jpg",
+                        "Trend": "Artisanal Sourdough & Organic Bread Revolution",
+                        "Strength": "Strong",
+                        "Description": "Malta's sourdough revolution headline; traditional wood-fired bakeries and natural starters trending; younger consumers prioritizing quality ingredients and local sourcing. Grocery opportunity: premium sourdough formats, organic bread, and artisan bakery sections in retail.",
+                        "Image": "",
                     },
                     {
                         "Rank": 4,
-                        "Trend": "High-protein / cottage cheese / functional desserts",
-                        "Strength": "Medium",
-                        "Description": "Driven by high-protein demand and social media. Opportunity in protein dairy, snack pots, dessert hacks, and better-for-you formats.",
-                        "Image": "protein_desserts.jpg",
+                        "Trend": "Premium Tinned Fish & Seacuterie Boards",
+                        "Strength": "Medium-strong",
+                        "Description": "Viral seacuterie trend (premium tinned fish boards) emerging in 2026; Marsaxlokk market tradition aligns with premiumization; Instagram-ready packaging and artisanal presentation gaining traction. Grocery opportunity: premium tinned fish, gourmet packaging, and seacuterie format kits.",
+                        "Image": "",
                     },
                     {
                         "Rank": 5,
-                        "Trend": "Hot honey / swicy condiments",
+                        "Trend": "Artisanal Specialty Coffee & Experimental Processing",
                         "Strength": "Medium-strong",
-                        "Description": "Hot honey is in the mainstream. Broad opportunity in drizzles, glazes, sachets, and sweet-spicy toppings for multiple eating occasions.",
-                        "Image": "hot_honey.jpg",
+                        "Description": "Local roasters (Lot61, Coffee Circus) expanding; younger demographics adopting pour-over and cold brew; experimental fermentation processing trending. Grocery opportunity: specialty coffee beans, single-origin formats, and home-brewing equipment in premium coffee section.",
+                        "Image": "",
                     },
                 ]
             )
@@ -1555,21 +1572,24 @@ with tab_trends:
             trends_df["Image"] = ""
 
         top_strength = "Strong"
+        top_trend_label = "—"
         if not trends_df.empty and "Strength" in trends_df.columns:
             top_strength = strength_score_label(trends_df.iloc[0]["Strength"])
+        if not trends_df.empty:
+            top_trend_label = display_value(trends_df.iloc[0].get("Trend", ""))
         emerging_count = len(trends_df) if not trends_df.empty else 5
 
         # ---- 1) Top Trend Strength + Emerging Trends (top row, full width) ----
         strength_col1, strength_col2 = st.columns(2)
         with strength_col1:
-            st.markdown(clean_html(top_metric_card("Top Trend Strength", top_strength, "Matcha everything", icon=ICON_TRENDING_UP, icon_bg="#E6F7EC", icon_color="#2E9E4F", value_color="#2E9E4F", card_bg="#F0FBF3")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Top Trend Strength", top_strength, top_trend_label, icon=ICON_TRENDING_UP, icon_bg="#E6F7EC", icon_color="#2E9E4F", value_color="#2E9E4F", card_bg="#F0FBF3")), unsafe_allow_html=True)
         with strength_col2:
-            st.markdown(clean_html(top_metric_card("Emerging Trends", emerging_count, "Key themes identified", icon=ICON_LIGHTBULB, icon_bg="#FFF7E0", icon_color="#F5A623", card_bg="#FFFBF0")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Emerging Trends", emerging_count, f"Key {MARKET_NAME} themes identified", icon=ICON_LIGHTBULB, icon_bg="#FFF7E0", icon_color="#F5A623", card_bg="#FFFBF0")), unsafe_allow_html=True)
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
         # ---- 2) Top 5 Trends (full width, one card per row) ----
-        st.markdown("### Top 5 Trends from this pass")
+        st.markdown(f"### Top 5 {MARKET_NAME} Trends")
         trends_to_show = trends_df.head(5).copy()
         for _, row in trends_to_show.iterrows():
             rank_raw = pd.to_numeric(row.get("Rank", 0), errors="coerce")
@@ -1597,7 +1617,7 @@ with tab_trends:
         # ---- 3) Total Creators + Total Followers (full width) ----
         creator_col1, creator_col2 = st.columns(2)
         with creator_col1:
-            st.markdown(clean_html(top_metric_card("Total Creators", creator_count, "Across 2 platforms", icon=ICON_USERS, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Total Creators", creator_count, f"Tracked {MARKET_NAME} food creators", icon=ICON_USERS, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
         with creator_col2:
             st.markdown(clean_html(top_metric_card("Total Followers", f"{total_followers:,}", "Combined audience", icon=ICON_USER_GROUP, icon_bg="#EDEBFF", icon_color="#6F5CFF", card_bg="#F5F3FF")), unsafe_allow_html=True)
 
@@ -1792,8 +1812,8 @@ with tab_demo:
                     "Longitude_num": False,
                     "Spending Bucket": True,
                 },
-                zoom=10,
-                center={"lat": 35.9375, "lon": 14.3754},
+                zoom=9,
+                center=MAP_CENTER,
                 height=MAP_HEIGHT,
             )
             fig_demo_map.update_traces(marker=dict(size=16))
