@@ -1128,6 +1128,17 @@ def _concat(frames):
     return pd.concat(frames, ignore_index=True)
 
 
+def _scatter_tile_map(df, *, map_style="carto-positron", **kwargs):
+    """Plotly 5.24+ uses scatter_map; older builds still have scatter_mapbox."""
+    if hasattr(px, "scatter_map"):
+        fig = px.scatter_map(df, **kwargs)
+        fig.update_layout(map_style=map_style)
+    else:
+        fig = px.scatter_mapbox(df, **kwargs)
+        fig.update_layout(mapbox_style=map_style)
+    return fig
+
+
 def _country_folders():
     """Find country packs in data/ (local layout) and at the repo root (GitHub layout)."""
     found = {}
@@ -1451,7 +1462,7 @@ with tab_range:
     if not map_counts.empty:
         map_counts["bubble_size"] = map_counts["Producer_Count"] * 6
         map_counts["label"] = map_counts["Producer_Count"].astype(str)
-        fig_map = px.scatter_mapbox(
+        fig_map = _scatter_tile_map(
             map_counts,
             lat="Latitude_num",
             lon="Longitude_num",
@@ -1478,7 +1489,6 @@ with tab_range:
             opacity=0.45,
         )
         fig_map.update_layout(
-            mapbox_style="carto-positron",
             margin=dict(r=0, t=0, l=0, b=0),
             coloraxis_colorbar=dict(title="Producer Count"),
         )
@@ -1960,7 +1970,7 @@ with tab_demo:
         if demo_map.empty:
             st.info("No matching coordinates found for these neighbourhoods yet.")
         else:
-            fig_demo_map = px.scatter_mapbox(
+            fig_demo_map = _scatter_tile_map(
                 demo_map,
                 lat="Latitude_num",
                 lon="Longitude_num",
@@ -1980,7 +1990,6 @@ with tab_demo:
             )
             fig_demo_map.update_traces(marker=dict(size=16))
             fig_demo_map.update_layout(
-                mapbox_style="carto-positron",
                 margin=dict(r=0, t=0, l=0, b=0),
                 legend=dict(orientation="h", yanchor="bottom", y=-0.12, xanchor="center", x=0.5),
             )
