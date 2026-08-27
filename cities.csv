@@ -1,0 +1,152 @@
+Country,City,Latitude,Longitude,Zoom,Store status
+AZE,Baku,40.41,49.87,11,Live store
+AZE,Ganja,40.6828,46.3606,12,Expansion
+AZE,Lankaran,38.7536,48.8511,12,Expansion
+AZE,Mingachevir,40.7703,47.0489,12,Expansion
+AZE,Nakhchivan,39.2089,45.4122,12,Expansion
+AZE,Sheki,41.1919,47.1706,12,Expansion
+AZE,Sumqayit,40.5897,49.6686,12,Expansion
+CYP,Ammochostos,35.0375,33.9833,12,Live store
+CYP,Larnaca,34.9167,33.6292,12,Live store
+CYP,Limassol,34.7071,33.0226,12,Live store
+CYP,Nicosia,35.1856,33.3823,12,Live store
+CYP,Paphos,34.772,32.4297,12,Live store
+CYP,Ayia Napa,34.9826,34.0018,12,Expansion
+CZE,Brno,49.82,15.47,7,Live store
+CZE,Pilsen,49.82,15.47,7,Live store
+CZE,Prague,49.82,15.47,7,Live store
+CZE,Olomouc,49.5938,17.2509,12,Expansion
+CZE,Ostrava,49.8209,18.2625,12,Expansion
+DEU,Berlin,51.16,10.45,6,Live store
+DEU,Cologne,51.16,10.45,6,Live store
+DEU,Düsseldorf,51.16,10.45,6,Live store
+DEU,Frankfurt,51.16,10.45,6,Live store
+DEU,Hamburg,51.16,10.45,6,Live store
+DEU,Hanover,51.16,10.45,6,Live store
+DEU,Munich,51.16,10.45,6,Live store
+DEU,Nuremberg,51.16,10.45,6,Live store
+DEU,Dortmund,51.5136,7.4653,12,Expansion
+DEU,Leipzig,51.3397,12.3731,12,Expansion
+DEU,Stuttgart,48.7758,9.1829,12,Expansion
+DNK,Aalborg,56.0,10.2,7,Live store
+DNK,Aarhus,56.0,10.2,7,Live store
+DNK,Copenhagen,56.0,10.2,7,Live store
+DNK,Lyngby-Gentofte,56.0,10.2,7,Live store
+DNK,Odense,56.0,10.2,7,Live store
+DNK,Esbjerg,55.4765,8.4594,12,Expansion
+EST,Tallinn,58.6,25.0,8,Live store
+EST,Tartu,58.6,25.0,8,Live store
+EST,Narva,59.3772,28.1903,12,Expansion
+EST,Pärnu,58.3859,24.4971,12,Expansion
+FIN,Espoo,62.0,25.5,5,Live store
+FIN,Helsinki,62.0,25.5,5,Live store
+FIN,Joensuu,62.0,25.5,5,Live store
+FIN,Jyväskylä,62.0,25.5,5,Live store
+FIN,Lahti,62.0,25.5,5,Live store
+FIN,Oulu,62.0,25.5,5,Live store
+FIN,Pori,62.0,25.5,5,Live store
+FIN,Seinäjoki,62.0,25.5,5,Live store
+FIN,Tampere,62.0,25.5,5,Live store
+FIN,Turku,62.0,25.5,5,Live store
+FIN,Vaasa,62.0,25.5,5,Live store
+FIN,Vantaa,62.0,25.5,5,Live store
+FIN,Rovaniemi,66.5039,25.7294,12,Expansion
+GEO,Batumi,41.98,43.5,7,Live store
+GEO,Tbilisi,41.98,43.5,7,Live store
+GEO,Kutaisi,42.2679,42.6946,12,Expansion
+GRC,Athens,38.5,23.7,6,Live store
+GRC,Chania,38.5,23.7,6,Live store
+GRC,Heraklion,38.5,23.7,6,Live store
+GRC,Patra,38.5,23.7,6,Live store
+GRC,Thessaloniki,38.5,23.7,6,Live store
+GRC,Rhodes,36.4349,28.2173,12,Expansion
+GRC,Volos,39.3666,22.9507,12,Expansion
+HRV,Rijeka,45.1,15.2,7,Live store
+HRV,Split,45.1,15.2,7,Live store
+HRV,Zagreb,45.1,15.2,7,Live store
+HRV,Osijek,45.555,18.6955,12,Expansion
+HRV,Zadar,44.1194,15.2314,12,Expansion
+HUN,Budapest,47.16,19.5,7,Live store
+HUN,Debrecen,47.16,19.5,7,Live store
+HUN,Győr,47.16,19.5,7,Live store
+HUN,Pécs,47.16,19.5,7,Live store
+HUN,Szeged,47.16,19.5,7,Live store
+HUN,Miskolc,48.1034,20.7784,12,Expansion
+ISR,Afula & Emek Yizrael area,31.8,35.0,8,Live store
+ISR,Ashdod and Lachish Area,31.8,35.0,8,Live store
+ISR,Ashkelon,31.8,35.0,8,Live store
+ISR,Beer Sheva,31.8,35.0,8,Live store
+ISR,HaSharon,31.8,35.0,8,Live store
+ISR,Haifa,31.8,35.0,8,Live store
+ISR,Jerusalem,31.8,35.0,8,Live store
+ISR,Modi'in,31.8,35.0,8,Live store
+ISR,Ness Ziona - Rehovot,31.8,35.0,8,Live store
+ISR,Pardes Hanna,31.8,35.0,8,Live store
+ISR,Petah Tikva,31.8,35.0,8,Live store
+ISR,Rishon Lezion & Hashfela area,31.8,35.0,8,Live store
+ISR,Tel Aviv,31.8,35.0,8,Live store
+JPN,Asahikawa,36.5,136.0,5,Live store
+JPN,Hakodate,36.5,136.0,5,Live store
+JPN,Hiroshima,36.5,136.0,5,Live store
+JPN,Kure,36.5,136.0,5,Live store
+JPN,Sapporo,36.5,136.0,5,Live store
+KAZ,Almaty,48.0,68.0,5,Live store
+KAZ,Astana,48.0,68.0,5,Live store
+LTU,Kaunas,55.17,23.88,8,Live store
+LTU,Klaipėda,55.17,23.88,8,Live store
+LTU,Vilnius,55.17,23.88,8,Live store
+LTU,Šiauliai,55.9349,23.3137,12,Expansion
+LVA,Riga,56.95,24.11,11,Live store
+MLT,Burmarrad,35.988,14.414,12,Live store
+MLT,Marsa,35.8794,14.4953,12,Live store
+MLT,San Gwann,35.9094,14.4764,12,Live store
+MLT,Birkirkara,35.8972,14.4611,12,In range
+MLT,Hamrun,35.8861,14.4897,12,In range
+MLT,Marsalforn (Gozo),36.0719,14.2606,12,In range
+MLT,Marsaskala,35.8622,14.5678,12,In range
+MLT,Marsaxlokk,35.8417,14.543299999999999,12,In range
+MLT,Mellieha,35.9564,14.362199999999998,12,In range
+MLT,Mosta,35.9092,14.4258,12,In range
+MLT,Msida,35.8997,14.482800000000001,12,In range
+MLT,Paola,35.8728,14.507499999999999,12,In range
+MLT,Qormi,35.88440000000001,14.359399999999999,12,In range
+MLT,Rabat,35.8817,14.3986,12,In range
+MLT,Sliema,35.91219999999999,14.501900000000001,12,In range
+MLT,St Julian's,35.9197,14.489599999999998,12,In range
+MLT,St Paul's Bay,35.948100000000004,14.400800000000002,12,In range
+MLT,Valletta,35.89890000000001,14.5146,12,In range
+MLT,Victoria (Gozo),36.0444,14.2397,12,In range
+MLT,Attard,35.8897,14.4425,12,Expansion
+MLT,Fgura,35.8725,14.5133,12,Expansion
+MLT,Gzira,35.9058,14.4881,12,Expansion
+MLT,Luqa,35.8589,14.4889,12,Expansion
+MLT,Mdina,35.8858,14.4031,12,Expansion
+MLT,Naxxar,35.9136,14.4436,12,Expansion
+MLT,Swieqi,35.9208,14.4681,12,Expansion
+MLT,Zejtun,35.8556,14.5331,12,Expansion
+NOR,Bergen,61.0,8.5,5,Live store
+NOR,Oslo,61.0,8.5,5,Live store
+NOR,Stavanger,61.0,8.5,5,Live store
+NOR,Trondheim,61.0,8.5,5,Live store
+NOR,Tromsø,69.6496,18.956,12,Expansion
+ROU,Bucharest,45.94,24.97,6,Live store
+ROU,Timisoara,45.94,24.97,6,Live store
+ROU,Cluj-Napoca,46.7712,23.6236,12,Expansion
+ROU,Iași,47.1585,27.6014,12,Expansion
+SRB,Belgrade,44.2,20.8,7,Live store
+SRB,Niš,44.2,20.8,7,Live store
+SRB,Novi Sad,44.2,20.8,7,Live store
+SRB,Kragujevac,44.0128,20.9114,12,Expansion
+SVK,Bratislava,48.67,19.7,8,Live store
+SVK,Kosice,48.67,19.7,8,Live store
+SVK,Trencin,48.67,19.7,8,Live store
+SVK,Trnava,48.67,19.7,8,Live store
+SVK,Žilina,49.2231,18.7394,12,Expansion
+SVN,Ljubljana,46.15,14.8,8,Live store
+SVN,Maribor,46.15,14.8,8,Live store
+SVN,Koper,45.5481,13.7302,12,Expansion
+SWE,Malmö,59.33,15.0,5,Live store
+SWE,Stockholm,59.33,15.0,5,Live store
+SWE,Örebro,59.33,15.0,5,Live store
+SWE,Gothenburg,57.7089,11.9746,12,Expansion
+SWE,Uppsala,59.8586,17.6389,12,Expansion
