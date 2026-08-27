@@ -232,6 +232,14 @@ def display_value(value):
     return text
 
 
+def _choice_values(series) -> list:
+    if series is None:
+        return []
+    vals = series.dropna().astype(str).str.strip()
+    vals = vals[~vals.str.lower().isin({"", "n/a", "nan", "none"})]
+    return sorted(vals.unique().tolist())
+
+
 def esc(value):
     return html.escape(display_value(value))
 
@@ -1052,6 +1060,42 @@ def render_neighbourhood_demographic_card(row) -> str:
     """
 
 
+def render_city_planning_card(city: str, status: str, country_name: str) -> str:
+    if str(status).strip() == "Expansion":
+        headline = f"No Wolt Market store in {city} yet"
+        body = (
+            f"This is a planning view for a possible first store in {city}. "
+            f"There is no live dark store here, so Hyperlocal Range will not show ranged producers until a category manager adds them. "
+            f"Use the city snapshot below plus {country_name} trends and in-app search (Local Market Trends tab) to judge demand before opening."
+        )
+        chip = "Expansion city"
+        chip_style = "background:#FFF1E6;color:#C2410C;"
+    elif str(status).strip() == "In range":
+        headline = f"{city} is ranged from existing stores"
+        body = (
+            f"There is no Wolt Market store inside {city}, but local producers here are already on the ranging list for nearby catchments."
+        )
+        chip = "In range — no store in this city"
+        chip_style = "background:#E5F0FF;color:#2F6BFF;"
+    else:
+        headline = f"{city} has a live Wolt Market store"
+        body = f"Producers and catchments below are the current dark-store ranging set for {city}."
+        chip = "Live store"
+        chip_style = "background:#E6F4EA;color:#2E7D32;"
+    return f"""
+    <div style="
+        background:#F8FAFF; border:1px solid #E5EAF5; border-radius:16px;
+        padding:16px 20px; margin-bottom:8px;
+    ">
+        <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
+            <div style="font-size:16px; font-weight:800; color:#2f3240;">{html.escape(headline)}</div>
+            <div style="display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700; {chip_style}">{html.escape(chip)}</div>
+        </div>
+        <div style="font-size:14px; color:#4b5563; line-height:1.55;">{html.escape(body)}</div>
+    </div>
+    """
+
+
 DEMOGRAPHIC_TAG_RULES = [
     ("Halal", ["Dietary Considerations"], ["halal"]),
     ("Vegan / Plant-based", ["Dietary Considerations"], ["vegan", "plant-based"]),
@@ -1422,6 +1466,18 @@ def load_country_registry() -> pd.DataFrame:
     return pd.DataFrame(columns=["code", "name", "latitude", "longitude", "zoom"])
 
 
+def load_cities_registry() -> pd.DataFrame:
+    for path in (DATA_DIR / "cities.csv", Path("cities.csv")):
+        if path.exists():
+            cities = pd.read_csv(path, keep_default_na=False)
+            if "Country" in cities.columns:
+                cities["Country"] = cities["Country"].astype(str).str.strip()
+            if "City" in cities.columns:
+                cities["City"] = cities["City"].astype(str).str.strip()
+            return cities
+    return pd.DataFrame(columns=["Country", "City", "Latitude", "Longitude", "Zoom", "Store status"])
+
+
 def _load_folder_pack(folder: Path, code: str):
     pack = {
         "producers": None,
@@ -1469,7 +1525,12 @@ def _data_fingerprint() -> str:
                 continue
             info = path.stat()
             parts.append(f"{path.resolve()}:{info.st_mtime_ns}:{info.st_size}")
-    for extra in (DATA_DIR / "countries.csv", Path("countries.csv")):
+    for extra in (
+        DATA_DIR / "countries.csv",
+        Path("countries.csv"),
+        DATA_DIR / "cities.csv",
+        Path("cities.csv"),
+    ):
         if extra.exists():
             info = extra.stat()
             parts.append(f"{extra.resolve()}:{info.st_mtime_ns}:{info.st_size}")
@@ -1594,6 +1655,7 @@ def map_view_for(df: pd.DataFrame, registry_row=None):
     all_demographics_df,
     all_search_df,
 ) = load_all_market_data(_data_fingerprint())
+cities_df = load_cities_registry()
 
 if all_producers_df.empty:
     st.error(
@@ -1654,11 +1716,96 @@ else:
 if not creators_df.empty and "Name / Handle" in creators_df.columns:
     creators_df["Profile Pic"] = creators_df["Name / Handle"].apply(resolve_creator_pic)
 
-neighbourhoods = ["All"] + sorted(df["Neighbourhood"].dropna().astype(str).unique().tolist())
-selected_neighbourhood = st.sidebar.selectbox("Neighbourhood", neighbourhoods)
+selected_city = "All"
+selected_city_status = ""
+selected_city_row = None
 
-categories = ["All"] + sorted(df["Category"].dropna().astype(str).unique().tolist())
-selected_category = st.sidebar.selectbox("Category", categories)
+def _city_options_for(country_code: str):
+    names = []
+    meta = {}
+    if cities_df is not None and not cities_df.empty and country_code:
+        scoped = cities_df[cities_df["Country"].astype(str) == str(country_code)]
+        for _, row in scoped.iterrows():
+            name = str(row.get("City", "")).strip()
+            if name and name.lower() not in {"n/a", "nan", "none"}:
+                names.append(name)
+                meta[name] = row
+    if "City" in df.columns:
+        for name in _choice_values(df["City"]):
+            if name not in meta:
+                names.append(name)
+    order = {"Live store": 0, "In range": 1, "Expansion": 2}
+
+    def sort_key(name):
+        row = meta.get(name)
+        status = str(row.get("Store status", "")) if row is not None else "In range"
+        return (order.get(status, 9), name.lower())
+
+    unique = []
+    seen = set()
+    for name in names:
+        if name not in seen:
+            unique.append(name)
+            seen.add(name)
+    unique.sort(key=sort_key)
+    return unique, meta
+
+if selected_country_code:
+    city_names, city_meta = _city_options_for(selected_country_code)
+    if city_names:
+        def _city_label(name):
+            if name == "All":
+                return "All"
+            row = city_meta.get(name)
+            status = str(row.get("Store status", "")).strip() if row is not None else ""
+            if status == "Expansion":
+                return f"{name}  ·  no store yet"
+            if status == "In range":
+                return f"{name}  ·  ranged, no store"
+            if status == "Live store":
+                return f"{name}  ·  live store"
+            return name
+
+        selected_city = st.sidebar.selectbox(
+            "City",
+            ["All"] + city_names,
+            format_func=_city_label,
+            key=f"city_{selected_country_code}",
+        )
+        if selected_city != "All":
+            selected_city_row = city_meta.get(selected_city)
+            if selected_city_row is not None:
+                selected_city_status = str(selected_city_row.get("Store status", "")).strip()
+            if selected_city_status == "Expansion":
+                st.sidebar.caption("Planning view — no live Wolt Market store in this city yet.")
+            elif selected_city_status == "In range":
+                st.sidebar.caption("Producers here are ranged from nearby stores; no WM store in this city.")
+
+city_scope_df = df.copy()
+if "City" in df.columns and selected_city != "All":
+    city_scope_df = city_scope_df[city_scope_df["City"].astype(str).str.strip() == selected_city]
+
+nbhd_names = _choice_values(city_scope_df["Neighbourhood"])
+if selected_city != "All" and not demographics_df.empty and "City" in demographics_df.columns:
+    demo_city = demographics_df[demographics_df["City"].astype(str).str.strip() == selected_city]
+    for name in _choice_values(demo_city["Neighbourhood"]):
+        if name not in nbhd_names:
+            nbhd_names.append(name)
+    nbhd_names = sorted(nbhd_names)
+
+neighbourhoods = ["All"] + nbhd_names
+selected_neighbourhood = st.sidebar.selectbox(
+    "Neighbourhood",
+    neighbourhoods,
+    key=f"nbhd_{selected_country_code or 'all'}_{selected_city}",
+)
+
+categories = ["All"] + _choice_values(city_scope_df["Category"])
+selected_category = st.sidebar.selectbox(
+    "Category",
+    categories,
+    key=f"cat_{selected_country_code or 'all'}_{selected_city}",
+)
 
 search_term = st.sidebar.text_input("Search Producer")
 show_only_mapped = st.sidebar.checkbox("Show only rows with coordinates", value=False)
@@ -1667,6 +1814,9 @@ show_only_mapped = st.sidebar.checkbox("Show only rows with coordinates", value=
 # FILTER DATA
 # -----------------------
 filtered_df = df.copy()
+
+if "City" in df.columns and selected_city != "All":
+    filtered_df = filtered_df[filtered_df["City"].astype(str).str.strip() == selected_city]
 
 if selected_neighbourhood != "All":
     filtered_df = filtered_df[filtered_df["Neighbourhood"] == selected_neighbourhood]
@@ -1696,11 +1846,24 @@ with tab_range:
     st.title("Hyperlocal Range")
     st.caption(f"Interactive sourcing dashboard for local producers across {MARKET_NAME}.")
 
+    if selected_city != "All" and selected_city_status in {"Expansion", "In range"}:
+        st.markdown(
+            clean_html(render_city_planning_card(selected_city, selected_city_status, MARKET_NAME)),
+            unsafe_allow_html=True,
+        )
+        st.markdown(f"<div style='height:{TOP_ROW_GAP}px;'></div>", unsafe_allow_html=True)
+
+    producer_scope = "Across all neighbourhoods"
+    if selected_neighbourhood != "All":
+        producer_scope = f"In {selected_neighbourhood}"
+    elif selected_city != "All":
+        producer_scope = f"In {selected_city}"
+
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     with kpi1:
-        st.markdown(clean_html(top_metric_card("Total Producers", len(filtered_df), "Across all neighbourhoods", icon=ICON_USERS, icon_bg="#EDEBFF", icon_color="#6F5CFF", card_bg="#F5F3FF")), unsafe_allow_html=True)
+        st.markdown(clean_html(top_metric_card("Total Producers", len(filtered_df), producer_scope, icon=ICON_USERS, icon_bg="#EDEBFF", icon_color="#6F5CFF", card_bg="#F5F3FF")), unsafe_allow_html=True)
     with kpi2:
-        st.markdown(clean_html(top_metric_card("Neighbourhoods", filtered_df["Neighbourhood"].nunique(), f"Across {MARKET_NAME}", icon=ICON_MAP_PIN, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
+        st.markdown(clean_html(top_metric_card("Neighbourhoods", filtered_df["Neighbourhood"].nunique(), f"Across {MARKET_NAME}" if selected_city == "All" else f"In {selected_city}", icon=ICON_MAP_PIN, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
     with kpi3:
         st.markdown(clean_html(top_metric_card("Categories", filtered_df["Category"].nunique(), "Artisanal categories", icon=ICON_GRID, icon_bg="#E6F7EC", icon_color="#48B26B", card_bg="#F0FBF3")), unsafe_allow_html=True)
     with kpi4:
@@ -1708,11 +1871,36 @@ with tab_range:
 
     st.markdown(f"<div style='height:{TOP_ROW_GAP}px;'></div>", unsafe_allow_html=True)
 
+    if filtered_df.empty and selected_city_status == "Expansion":
+        st.info(
+            f"No local producers listed for {selected_city} yet — that is expected before a first store. "
+            "Use the city snapshot below, Neighbourhood Insights, and country-level Local Market Trends to plan ranging."
+        )
+
     if selected_neighbourhood != "All" and not demographics_df.empty:
         demo_match = demographics_df[demographics_df["Neighbourhood"] == selected_neighbourhood]
         if not demo_match.empty:
             st.markdown(
                 clean_html(render_neighbourhood_demographic_card(demo_match.iloc[0])),
+                unsafe_allow_html=True,
+            )
+            st.markdown(f"<div style='height:{TOP_ROW_GAP}px;'></div>", unsafe_allow_html=True)
+    elif (
+        selected_city != "All"
+        and selected_neighbourhood == "All"
+        and selected_city_status == "Expansion"
+        and not demographics_df.empty
+        and "City" in demographics_df.columns
+    ):
+        city_demo = demographics_df[
+            (demographics_df["City"].astype(str).str.strip() == selected_city)
+            & (demographics_df["Neighbourhood"].astype(str).str.strip() == selected_city)
+        ]
+        if city_demo.empty:
+            city_demo = demographics_df[demographics_df["City"].astype(str).str.strip() == selected_city]
+        if not city_demo.empty:
+            st.markdown(
+                clean_html(render_neighbourhood_demographic_card(city_demo.iloc[0])),
                 unsafe_allow_html=True,
             )
             st.markdown(f"<div style='height:{TOP_ROW_GAP}px;'></div>", unsafe_allow_html=True)
@@ -1786,8 +1974,34 @@ with tab_range:
         .agg(Producer_Count=("Producer", "count"))
     )
 
+    map_center, map_zoom = MAP_CENTER, MAP_ZOOM
+    if (selected_city != "All" or selected_neighbourhood != "All") and not filtered_map_df.empty:
+        map_center, map_zoom = map_view_for(filtered_map_df)
+    elif selected_city_row is not None:
+        clat = pd.to_numeric(pd.Series([selected_city_row.get("Latitude")]), errors="coerce").iloc[0]
+        clon = pd.to_numeric(pd.Series([selected_city_row.get("Longitude")]), errors="coerce").iloc[0]
+        cz = pd.to_numeric(pd.Series([selected_city_row.get("Zoom")]), errors="coerce").iloc[0]
+        if pd.notna(clat) and pd.notna(clon):
+            map_center = {"lat": float(clat), "lon": float(clon)}
+            map_zoom = int(cz) if pd.notna(cz) else 12
+
+    if map_counts.empty and selected_city_row is not None:
+        clat = pd.to_numeric(pd.Series([selected_city_row.get("Latitude")]), errors="coerce").iloc[0]
+        clon = pd.to_numeric(pd.Series([selected_city_row.get("Longitude")]), errors="coerce").iloc[0]
+        if pd.notna(clat) and pd.notna(clon):
+            map_counts = pd.DataFrame(
+                [
+                    {
+                        "Neighbourhood": selected_city,
+                        "Latitude_num": float(clat),
+                        "Longitude_num": float(clon),
+                        "Producer_Count": 0,
+                    }
+                ]
+            )
+
     if not map_counts.empty:
-        map_counts["bubble_size"] = map_counts["Producer_Count"] * 6
+        map_counts["bubble_size"] = map_counts["Producer_Count"].clip(lower=1) * 6
         map_counts["label"] = map_counts["Producer_Count"].astype(str)
         fig_map = _scatter_tile_map(
             map_counts,
@@ -1806,8 +2020,8 @@ with tab_range:
                 "bubble_size": False,
             },
             text="label",
-            zoom=MAP_ZOOM,
-            center=MAP_CENTER,
+            zoom=map_zoom,
+            center=map_center,
             height=MAP_HEIGHT,
         )
         fig_map.update_traces(
@@ -2036,6 +2250,11 @@ with tab_trends:
         f"Creator signals across {MARKET_NAME}, checked against what customers "
         "actually type in the Wolt Market app (last 90 days)."
     )
+    if selected_city != "All" and selected_city_status == "Expansion":
+        st.caption(
+            f"No live store in {selected_city} yet — these are {MARKET_NAME}-wide trends and search signals "
+            "to use when ranging a first dark store there."
+        )
 
     selected_market = MARKET_NAME
 
@@ -2274,6 +2493,11 @@ with tab_trends:
 with tab_demo:
     st.title("Neighbourhood Insights")
     st.caption("Who lives where — turning local demographics into range and stocking decisions.")
+    if selected_city != "All" and selected_city_status == "Expansion":
+        st.caption(
+            f"Planning a first store in {selected_city}: this tab is the demographic snapshot. "
+            f"Local Market Trends still uses {MARKET_NAME}-wide creator and search signals."
+        )
 
     if demographics_df.empty:
         st.info(
@@ -2282,6 +2506,8 @@ with tab_demo:
         )
     else:
         demo_work = demographics_df.copy()
+        if selected_city != "All" and "City" in demo_work.columns:
+            demo_work = demo_work[demo_work["City"].astype(str).str.strip() == selected_city]
         demo_work["Spending Bucket"] = demo_work["Spending Profile"].apply(spending_bucket)
         demo_work["Tags"] = demo_work.apply(get_neighbourhood_tags, axis=1)
 
@@ -2304,13 +2530,20 @@ with tab_demo:
 
         # ---- 2) Detail card for a selected neighbourhood ----
         st.subheader("Neighbourhood Deep Dive")
-        selected_demo_neighbourhood = st.selectbox(
-            "Select a neighbourhood",
-            sorted(demo_work["Neighbourhood"].tolist()),
-            key="demo_detail_select",
-        )
-        detail_row = demo_work[demo_work["Neighbourhood"] == selected_demo_neighbourhood].iloc[0]
-        st.markdown(clean_html(render_neighbourhood_full_card(detail_row)), unsafe_allow_html=True)
+        if demo_work.empty:
+            label = selected_city if selected_city != "All" else MARKET_NAME
+            st.info(
+                f"No neighbourhood profiles for {label} yet. "
+                "Add a row in neighbourhoods.csv with City set to this city."
+            )
+        else:
+            selected_demo_neighbourhood = st.selectbox(
+                "Select a neighbourhood",
+                sorted(demo_work["Neighbourhood"].tolist()),
+                key=f"demo_detail_select_{selected_country_code}_{selected_city}",
+            )
+            detail_row = demo_work[demo_work["Neighbourhood"] == selected_demo_neighbourhood].iloc[0]
+            st.markdown(clean_html(render_neighbourhood_full_card(detail_row)), unsafe_allow_html=True)
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
@@ -2322,6 +2555,29 @@ with tab_demo:
             .mean()
         )
         demo_map = demo_work.merge(coords, on="Neighbourhood", how="inner")
+        if selected_city_row is not None:
+            clat = pd.to_numeric(pd.Series([selected_city_row.get("Latitude")]), errors="coerce").iloc[0]
+            clon = pd.to_numeric(pd.Series([selected_city_row.get("Longitude")]), errors="coerce").iloc[0]
+            if pd.notna(clat) and pd.notna(clon):
+                missing = demo_work.loc[
+                    ~demo_work["Neighbourhood"].isin(demo_map["Neighbourhood"]),
+                    ["Neighbourhood", "Dominant Segments", "Notable Communities", "Spending Bucket"],
+                ].copy()
+                if not missing.empty:
+                    missing["Latitude_num"] = float(clat)
+                    missing["Longitude_num"] = float(clon)
+                    demo_map = pd.concat([demo_map, missing], ignore_index=True)
+
+        demo_map_center, demo_map_zoom = MAP_CENTER, MAP_ZOOM
+        if selected_city_row is not None:
+            clat = pd.to_numeric(pd.Series([selected_city_row.get("Latitude")]), errors="coerce").iloc[0]
+            clon = pd.to_numeric(pd.Series([selected_city_row.get("Longitude")]), errors="coerce").iloc[0]
+            cz = pd.to_numeric(pd.Series([selected_city_row.get("Zoom")]), errors="coerce").iloc[0]
+            if pd.notna(clat) and pd.notna(clon):
+                demo_map_center = {"lat": float(clat), "lon": float(clon)}
+                demo_map_zoom = int(cz) if pd.notna(cz) else MAP_ZOOM
+        elif not demo_map.empty:
+            demo_map_center, demo_map_zoom = map_view_for(demo_map)
 
         if demo_map.empty:
             st.info("No matching coordinates found for these neighbourhoods yet.")
@@ -2340,8 +2596,8 @@ with tab_demo:
                     "Longitude_num": False,
                     "Spending Bucket": True,
                 },
-                zoom=MAP_ZOOM,
-                center=MAP_CENTER,
+                zoom=demo_map_zoom,
+                center=demo_map_center,
                 height=MAP_HEIGHT,
             )
             fig_demo_map.update_traces(marker=dict(size=16))
@@ -2388,36 +2644,42 @@ with tab_demo:
 
         with mix_col:
             st.subheader("Areas by Spending Tier")
-            bucket_counts = demo_work["Spending Bucket"].value_counts().reset_index()
-            bucket_counts.columns = ["Spending Bucket", "Count"]
-            fig_bucket = px.pie(
-                bucket_counts,
-                names="Spending Bucket",
-                values="Count",
-                hole=0.55,
-                color="Spending Bucket",
-                color_discrete_map=SPENDING_BUCKET_COLORS,
-            )
-            fig_bucket.update_traces(textinfo="none", marker=dict(line=dict(color="white", width=2)))
-            fig_bucket.update_layout(
-                height=320,
-                margin=dict(r=0, t=20, l=0, b=0),
-                showlegend=False,
-            )
-            st.plotly_chart(fig_bucket, use_container_width=True)
-            st.markdown(clean_html(render_spend_bracket_legend()), unsafe_allow_html=True)
+            if demo_work.empty:
+                st.info("No spending mix to show for this city yet.")
+            else:
+                bucket_counts = demo_work["Spending Bucket"].value_counts().reset_index()
+                bucket_counts.columns = ["Spending Bucket", "Count"]
+                fig_bucket = px.pie(
+                    bucket_counts,
+                    names="Spending Bucket",
+                    values="Count",
+                    hole=0.55,
+                    color="Spending Bucket",
+                    color_discrete_map=SPENDING_BUCKET_COLORS,
+                )
+                fig_bucket.update_traces(textinfo="none", marker=dict(line=dict(color="white", width=2)))
+                fig_bucket.update_layout(
+                    height=320,
+                    margin=dict(r=0, t=20, l=0, b=0),
+                    showlegend=False,
+                )
+                st.plotly_chart(fig_bucket, use_container_width=True)
+                st.markdown(clean_html(render_spend_bracket_legend()), unsafe_allow_html=True)
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
         # ---- 5) Full comparison table ----
         st.subheader("All Neighbourhoods — Comparison Table")
         st.caption("Sort or search any column below — useful for cross-checking multiple areas at once before a range decision.")
-        table_cols = [
-            "Neighbourhood", "Dominant Segments", "Notable Communities", "Spending Profile",
-            "Dietary Considerations", "Product Recommendations", "Confidence",
-        ]
-        st.dataframe(
-            demo_work[table_cols],
-            use_container_width=True,
-            height=420,
-        )
+        if demo_work.empty:
+            st.info("No neighbourhood rows to compare for this city yet.")
+        else:
+            table_cols = [
+                "Neighbourhood", "Dominant Segments", "Notable Communities", "Spending Profile",
+                "Dietary Considerations", "Product Recommendations", "Confidence",
+            ]
+            st.dataframe(
+                demo_work[table_cols],
+                use_container_width=True,
+                height=420,
+            )
