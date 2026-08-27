@@ -89,6 +89,33 @@ CATEGORY_TILES = {
     "Fruits & Vegetables": str(CATEGORY_TILE_DIR / "fruits_and_vegetables.jpg"),
 }
 DEFAULT_TILE = str(CATEGORY_TILE_DIR / "default.jpg")
+TREND_IMAGE_KEYWORDS = [
+    (["vegan", "plant-based", "plant based", "tofu", "oat milk", "alpro"], "vegan_plant_based.png"),
+    (["kefir", "probiotic", "kombucha", "kimchi", "prebiotic"], "gut_health.png"),
+    (["sourdough", "organic bread", "artisan bread"], "sourdough.png"),
+    (["seacuterie", "tinned fish", "canned fish", "sardine", "anchovy", "ventresca"], "tinned_fish.png"),
+    (["halloumi"], "halloumi.png"),
+    (["laiki"], "laiki_produce.png"),
+    (["pivo", "craft beer"], "craft_beer.png"),
+    (["loukoumi", "lokum", "geroskipou"], "loukoumi.png"),
+    (["qatiq", "qatıq", "pendir"], "village_dairy.png"),
+    (["qutab", "dolma", "plov", "tandir"], "national_dishes.png"),
+    (["savalan", "brandy", "chabiant"], "wine_brandy.png"),
+    (["caviar", "sturgeon", "smoked fish"], "caviar.png"),
+    (["coffee", "cold brew", "espresso", "lot61"], "specialty_coffee.png"),
+    (["wine"], "wine_brandy.png"),
+]
+TREND_CATEGORY_FALLBACKS = [
+    (["coffee"], "Coffee Roastery"),
+    (["sourdough", "bread", "bakery"], "Bakery"),
+    (["pivo", "craft beer", "brewery"], "Brewery"),
+    (["wine", "brandy"], "Distilleries"),
+    (["sardine", "anchovy", "caviar", "sturgeon", "seafood", "fish"], "Seafood Producers"),
+    (["laiki", "produce", "vegetable", "fruit"], "Fruits & Vegetables"),
+    (["loukoumi", "snack"], "Local Snacks"),
+    (["halloumi", "dairy", "pendir", "qatiq", "kefir", "yogurt"], "Delicatessen"),
+    (["vegan", "plant-based", "tofu"], "Fruits & Vegetables"),
+]
 CATEGORY_PIE_COLORS = [
     "#6F5CFF",
     "#4B3AD5",
@@ -403,19 +430,63 @@ def resolve_creator_pic(name_handle: str):
     return None
 
 
-def resolve_trend_image(image_value):
-    if not image_value:
-        return None
-    text = str(image_value).strip()
-    if text in {"", "N/A", "nan", "None"}:
-        return None
-    p1 = Path(text)
-    if p1.exists():
-        return str(p1)
-    p2 = TREND_IMAGE_DIR / text
-    if p2.exists():
-        return str(p2)
-    return None
+def resolve_trend_image(image_value, trend_row=None):
+    """Resolve a circular thumbnail for a trend card.
+
+    Order: Image column (path or URL) → assets/trend_images filename →
+    keyword match on trend name / Search Keywords → category tile → default.
+    """
+    def _existing(path):
+        p = Path(path) if path else None
+        return str(p) if p is not None and p.exists() else None
+
+    text = str(image_value or "").strip()
+    if text not in {"", "N/A", "nan", "None"}:
+        if text.startswith("http://") or text.startswith("https://"):
+            return text
+        for candidate in (
+            Path(text),
+            TREND_IMAGE_DIR / text,
+            TREND_IMAGE_DIR / Path(text).name,
+        ):
+            found = _existing(candidate)
+            if found:
+                return found
+        stem = Path(text).stem
+        for ext in (".jpg", ".jpeg", ".png", ".webp"):
+            found = _existing(TREND_IMAGE_DIR / f"{stem}{ext}")
+            if found:
+                return found
+
+    haystack = ""
+    if trend_row is not None:
+        haystack = " ".join(
+            [
+                str(trend_row.get("Trend", "")),
+                str(trend_row.get("Search Keywords", "")),
+            ]
+        ).lower()
+
+    for needles, filename in TREND_IMAGE_KEYWORDS:
+        if any(needle in haystack for needle in needles):
+            found = _existing(TREND_IMAGE_DIR / filename)
+            if found:
+                return found
+            stem = Path(filename).stem
+            for ext in (".jpg", ".jpeg", ".png", ".webp"):
+                found = _existing(TREND_IMAGE_DIR / f"{stem}{ext}")
+                if found:
+                    return found
+            break
+
+    for needles, category in TREND_CATEGORY_FALLBACKS:
+        if any(needle in haystack for needle in needles):
+            found = _existing(CATEGORY_TILES.get(category, DEFAULT_TILE))
+            if found:
+                return found
+            break
+
+    return _existing(DEFAULT_TILE)
 
 
 def primary_platform(platform: str) -> str:
@@ -1175,10 +1246,14 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
             flex-shrink:0;
         "></div>
     """
-    image_uri = image_path_to_data_uri(image_path) if image_path else None
-    if image_uri:
+    image_src = None
+    if image_path and str(image_path).startswith(("http://", "https://")):
+        image_src = str(image_path)
+    else:
+        image_src = image_path_to_data_uri(image_path) if image_path else None
+    if image_src:
         image_html = f"""
-            <img src="{image_uri}" style="
+            <img src="{html.escape(image_src, quote=True)}" style="
                 width:96px;
                 height:96px;
                 border-radius:999px;
@@ -2047,7 +2122,7 @@ with tab_trends:
             trend = display_value(row.get("Trend", ""))
             strength = strength_score_label(row.get("Strength", ""))
             description = display_value(row.get("Description", ""))
-            image_path = resolve_trend_image(row.get("Image", ""))
+            image_path = resolve_trend_image(row.get("Image", ""), trend_row=row)
             validation = trend_validations[i] if i < len(trend_validations) else {}
 
             st.markdown(
