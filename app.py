@@ -2,7 +2,9 @@ import base64
 import html
 import math
 import re
+import unicodedata
 from datetime import date
+from difflib import SequenceMatcher
 from pathlib import Path
 import numpy as np
 import pandas as pd
@@ -1377,6 +1379,153 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
     """
 
 
+_LEGAL_SUFFIX_RE = re.compile(
+    r"\b(ltd|limited|llc|inc|plc|co|company|gmbh|srl|sarl|oy|ab|bv|nv|sa|ag|kft|doo)\b",
+    re.I,
+)
+_NON_ALNUM_RE = re.compile(r"[^a-z0-9\s]+")
+RETAIL_CHAIN_NEEDLES = (
+    "wolt market",
+    "the convenience shop",
+    "savemart",
+    "welbee",
+    "tower supermarket",
+    "smart supermarket",
+    "interspar",
+    "eurospar",
+    "arkadia",
+    "is-suq tal-belt",
+    "is suq tal belt",
+    "lidl",
+    "aldi",
+    "tesco",
+    "carrefour",
+    "maxima",
+    "rimi",
+    "prisma",
+    "k-market",
+    "s-market",
+    "mercadona",
+    "pingo doce",
+    "auchan",
+    "rewe",
+    "edeka",
+)
+RETAIL_CHAIN_REGEXES = (
+    re.compile(r"\bspar\b", re.I),
+    re.compile(r"\bsupermarket\b", re.I),
+    re.compile(r"\bmini markets?\b", re.I),
+    re.compile(r"\bconvenience shops?\b", re.I),
+    re.compile(r"\bgrocers\b", re.I),
+    re.compile(r"\bproduce (shops|counters)\b", re.I),
+)
+
+
+def normalize_supplier_name(text: str) -> str:
+    text = unicodedata.normalize("NFKD", str(text or ""))
+    text = "".join(ch for ch in text if not unicodedata.combining(ch))
+    text = text.lower().replace("&", " and ")
+    text = _LEGAL_SUFFIX_RE.sub(" ", text)
+    text = _NON_ALNUM_RE.sub(" ", text)
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def is_retail_chain_name(name: str) -> bool:
+    raw = str(name or "")
+    folded = normalize_supplier_name(raw)
+    lowered = raw.lower()
+    if any(needle in folded or needle in lowered for needle in RETAIL_CHAIN_NEEDLES):
+        return True
+    return any(rx.search(raw) or rx.search(folded) for rx in RETAIL_CHAIN_REGEXES)
+
+
+def _vendor_alias_index(vendors_df: pd.DataFrame) -> dict:
+    index = {}
+    if vendors_df is None or vendors_df.empty or "Vendor" not in vendors_df.columns:
+        return index
+    work = vendors_df.copy()
+    if "Country" not in work.columns:
+        work["Country"] = ""
+    for _, row in work.iterrows():
+        vendor = str(row.get("Vendor", "")).strip()
+        if vendor in {"", "N/A", "nan", "None"}:
+            continue
+        country = str(row.get("Country", "")).strip()
+        skus = pd.to_numeric(pd.Series([row.get("SKUs")]), errors="coerce").iloc[0]
+        skus = int(skus) if pd.notna(skus) else 0
+        key = normalize_supplier_name(vendor)
+        if len(key) < 5:
+            continue
+        index.setdefault(country, []).append((key, vendor, skus))
+    return index
+
+
+def match_producer_to_vendor(producer_name: str, aliases) -> tuple[str, float]:
+    if not aliases:
+        return "", 0.0
+    name = normalize_supplier_name(producer_name)
+    if not name:
+        return "", 0.0
+    best_vendor = ""
+    best_score = 0.0
+    best_skus = -1
+    for alias, vendor, skus in aliases:
+        if name == alias:
+            score = 1.0
+        elif alias in name or name in alias:
+            shorter = alias if len(alias) <= len(name) else name
+            if len(shorter) < 10:
+                score = SequenceMatcher(None, name, alias).ratio()
+            else:
+                score = 0.96 if alias in name else 0.93
+        else:
+            score = SequenceMatcher(None, name, alias).ratio()
+            tokens = [token for token in name.split() if len(token) >= 5]
+            if len(tokens) >= 2 and all(token in alias for token in tokens):
+                score = max(score, 0.9)
+        if score > best_score or (abs(score - best_score) < 1e-9 and skus > best_skus):
+            best_score = score
+            best_vendor = vendor
+            best_skus = skus
+    if best_score >= 0.86:
+        return best_vendor, best_score
+    return "", 0.0
+
+
+def annotate_producer_listing(producers: pd.DataFrame, vendors: pd.DataFrame) -> pd.DataFrame:
+    if producers is None or producers.empty:
+        return producers
+    out = producers.copy()
+    vendor_index = _vendor_alias_index(vendors)
+    statuses = []
+    matched = []
+    kinds = []
+    for _, row in out.iterrows():
+        name = str(row.get("Producer", "")).strip()
+        country = str(row.get("Country", "")).strip()
+        aliases = vendor_index.get(country, [])
+        if not aliases and "" in vendor_index:
+            aliases = vendor_index.get("", [])
+        vendor, score = match_producer_to_vendor(name, aliases)
+        if is_retail_chain_name(name):
+            kinds.append("retail_chain")
+            statuses.append("Grocery chain")
+            matched.append(vendor if vendor else "N/A")
+        elif vendor:
+            kinds.append("existing_supplier")
+            statuses.append("Already listed")
+            matched.append(vendor)
+        else:
+            kinds.append("new_lead")
+            statuses.append("New lead")
+            matched.append("N/A")
+        _ = score
+    out["Listing kind"] = kinds
+    out["Supplier status"] = statuses
+    out["Matched WM vendor"] = matched
+    return out
+
+
 # -----------------------
 # LOAD DATA (multi-country)
 # -----------------------
@@ -1386,6 +1535,7 @@ PRODUCER_FILES = ["producers.csv", "malta_producers.csv"]
 CREATOR_FILES = ["creators.csv", "local_market_creators.csv"]
 TREND_FILES = ["trends.csv", "local_market_trends.csv"]
 SEARCH_FILES = ["search.csv"]
+VENDOR_FILES = ["vendors.csv"]
 NEIGHBOURHOOD_FILES = [
     "neighbourhoods.csv",
     "neighbourhood_demographics.csv",
@@ -1485,6 +1635,7 @@ def _load_folder_pack(folder: Path, code: str):
         "trends": None,
         "neighbourhoods": None,
         "search": None,
+        "vendors": None,
     }
     prod = _first_existing(folder, PRODUCER_FILES)
     if prod:
@@ -1501,6 +1652,9 @@ def _load_folder_pack(folder: Path, code: str):
     sear = _first_existing(folder, SEARCH_FILES)
     if sear:
         pack["search"] = _ensure_country(_read_csv(sear), code)
+    vend = _first_existing(folder, VENDOR_FILES)
+    if vend:
+        pack["vendors"] = _ensure_country(_read_csv(vend), code)
     return pack
 
 
@@ -1519,6 +1673,7 @@ def _data_fingerprint() -> str:
             TREND_FILES,
             NEIGHBOURHOOD_FILES,
             SEARCH_FILES,
+            VENDOR_FILES,
         ):
             path = _first_existing(folder, names)
             if path is None:
@@ -1557,7 +1712,7 @@ def _attach_search_validation(trends: pd.DataFrame, search: pd.DataFrame) -> pd.
 def load_all_market_data(fingerprint: str = ""):
     _ = fingerprint  # cache key: country CSV paths, sizes, and mtimes
     registry = load_country_registry()
-    producers, creators, trends, neighbourhoods, searches = [], [], [], [], []
+    producers, creators, trends, neighbourhoods, searches, vendors = [], [], [], [], [], []
 
     folders = _country_folders()
     loaded_codes = set()
@@ -1574,6 +1729,8 @@ def load_all_market_data(fingerprint: str = ""):
             neighbourhoods.append(pack["neighbourhoods"])
         if pack["search"] is not None:
             searches.append(pack["search"])
+        if pack["vendors"] is not None:
+            vendors.append(pack["vendors"])
         loaded_codes.add(code)
         if registry.empty or code not in set(registry["code"].astype(str)):
             extra = pd.DataFrame(
@@ -1595,6 +1752,8 @@ def load_all_market_data(fingerprint: str = ""):
             neighbourhoods.append(pack["neighbourhoods"])
         if pack["search"] is not None:
             searches.append(pack["search"])
+        if pack["vendors"] is not None:
+            vendors.append(pack["vendors"])
         if pack["producers"] is not None and (
             registry.empty or "MLT" not in set(registry["code"].astype(str))
         ):
@@ -1605,14 +1764,17 @@ def load_all_market_data(fingerprint: str = ""):
 
     trends_out = _concat(trends)
     search_out = _concat(searches)
+    vendors_out = _concat(vendors)
     trends_out = _attach_search_validation(trends_out, search_out)
+    producers_out = annotate_producer_listing(_concat(producers), vendors_out)
     return (
         registry,
-        _concat(producers),
+        producers_out,
         _concat(creators),
         trends_out,
         _concat(neighbourhoods),
         search_out,
+        vendors_out,
     )
 
 
@@ -1654,6 +1816,7 @@ def map_view_for(df: pd.DataFrame, registry_row=None):
     all_trends_df,
     all_demographics_df,
     all_search_df,
+    all_vendors_df,
 ) = load_all_market_data(_data_fingerprint())
 cities_df = load_cities_registry()
 
@@ -1781,9 +1944,34 @@ if selected_country_code:
             elif selected_city_status == "In range":
                 st.sidebar.caption("Producers here are ranged from nearby stores; no WM store in this city.")
 
+hide_retail_chains = st.sidebar.checkbox(
+    "Hide grocery chains & Wolt stores",
+    value=True,
+    help="Hides Wolt Market venues, SPAR/EUROSPAR, SaveMart, convenience chains and generic grocery rows so the list is actual producers.",
+)
+supplier_mode = st.sidebar.selectbox(
+    "WM supplier list",
+    ["All", "New leads only", "Already listed"],
+    help="Match against vendors.csv (Malta WM offering). Existing suppliers stay visible unless you choose New leads only.",
+)
+if all_vendors_df is None or all_vendors_df.empty:
+    st.sidebar.caption("No vendors.csv for this market yet — supplier matching is off.")
+elif selected_country_code:
+    country_vendors = all_vendors_df[all_vendors_df["Country"].astype(str) == selected_country_code]
+    if country_vendors.empty:
+        st.sidebar.caption("No vendor extract for this country yet.")
+    else:
+        st.sidebar.caption(f"{len(country_vendors)} WM vendors loaded for matching.")
+
 city_scope_df = df.copy()
 if "City" in df.columns and selected_city != "All":
     city_scope_df = city_scope_df[city_scope_df["City"].astype(str).str.strip() == selected_city]
+if hide_retail_chains and "Listing kind" in city_scope_df.columns:
+    city_scope_df = city_scope_df[city_scope_df["Listing kind"] != "retail_chain"]
+if supplier_mode == "New leads only" and "Listing kind" in city_scope_df.columns:
+    city_scope_df = city_scope_df[city_scope_df["Listing kind"] == "new_lead"]
+elif supplier_mode == "Already listed" and "Listing kind" in city_scope_df.columns:
+    city_scope_df = city_scope_df[city_scope_df["Listing kind"] == "existing_supplier"]
 
 nbhd_names = _choice_values(city_scope_df["Neighbourhood"])
 if selected_city != "All" and not demographics_df.empty and "City" in demographics_df.columns:
@@ -1829,6 +2017,14 @@ if search_term:
         filtered_df["Producer"].astype(str).str.contains(search_term, case=False, na=False)
     ]
 
+if hide_retail_chains and "Listing kind" in filtered_df.columns:
+    filtered_df = filtered_df[filtered_df["Listing kind"] != "retail_chain"]
+
+if supplier_mode == "New leads only" and "Listing kind" in filtered_df.columns:
+    filtered_df = filtered_df[filtered_df["Listing kind"] == "new_lead"]
+elif supplier_mode == "Already listed" and "Listing kind" in filtered_df.columns:
+    filtered_df = filtered_df[filtered_df["Listing kind"] == "existing_supplier"]
+
 if show_only_mapped:
     filtered_df = filtered_df.dropna(subset=["Latitude_num", "Longitude_num"])
 
@@ -1871,6 +2067,20 @@ with tab_range:
 
     st.markdown(f"<div style='height:{TOP_ROW_GAP}px;'></div>", unsafe_allow_html=True)
 
+    if "Listing kind" in df.columns:
+        scope = df.copy()
+        if "City" in scope.columns and selected_city != "All":
+            scope = scope[scope["City"].astype(str).str.strip() == selected_city]
+        hidden_chains = int((scope["Listing kind"] == "retail_chain").sum())
+        already = int((filtered_df["Listing kind"] == "existing_supplier").sum()) if "Listing kind" in filtered_df.columns else 0
+        bits = []
+        if hide_retail_chains and hidden_chains:
+            bits.append(f"{hidden_chains} grocery-chain / Wolt store rows hidden")
+        if already:
+            bits.append(f"{already} already on the WM supplier list")
+        if bits:
+            st.caption(" · ".join(bits) + ". Uncheck the sidebar box or choose Already listed to see them.")
+
     if filtered_df.empty and selected_city_status == "Expansion":
         st.info(
             f"No local producers listed for {selected_city} yet — that is expected before a first store. "
@@ -1908,6 +2118,7 @@ with tab_range:
     top_left, top_right = st.columns(2, gap="large")
     with top_left:
         st.subheader("Top Categories")
+        st.caption("Share of listed local producers in the current filter, by ranging category — not sales.")
         category_counts = filtered_df["Category"].value_counts().reset_index()
         category_counts.columns = ["Category", "Count"]
         if not category_counts.empty:
@@ -1941,6 +2152,7 @@ with tab_range:
 
     with top_right:
         st.subheader("Top Neighbourhoods")
+        st.caption("Towns with the most listed producers in the current filter.")
         neighbourhood_counts = filtered_df["Neighbourhood"].value_counts().reset_index()
         neighbourhood_counts.columns = ["Neighbourhood", "Count"]
         top_neighbourhoods = neighbourhood_counts.head(10).sort_values("Count", ascending=True)
@@ -2172,13 +2384,29 @@ with tab_range:
             na_position="last",
         )
 
+    extra_caption = ""
+    if hide_retail_chains:
+        extra_caption += " Grocery chains and Wolt stores are hidden."
+    if supplier_mode == "New leads only":
+        extra_caption += " Showing producers not already on the WM supplier list."
+    elif supplier_mode == "Already listed":
+        extra_caption += " Showing producers already on the WM supplier list."
     st.caption(
         f"Showing {len(display_df)} of {len(scored_df)} producers "
         f"across {display_df['Neighbourhood'].nunique() if 'Neighbourhood' in display_df.columns else 0} neighbourhoods. "
         "Google rating and review filters stay off at 0, because most producers are not rated yet."
+        + extra_caption
     )
+    table_df = display_df.copy()
+    if "Listing kind" in table_df.columns:
+        table_df = table_df.drop(columns=["Listing kind"])
+    preferred = [c for c in table_df.columns if c not in {"Supplier status", "Matched WM vendor"}]
+    if "Producer" in preferred:
+        insert_at = preferred.index("Producer") + 1
+        status_cols = [c for c in ["Supplier status", "Matched WM vendor"] if c in table_df.columns]
+        preferred = preferred[:insert_at] + status_cols + preferred[insert_at:]
     st.dataframe(
-        display_df.reset_index(drop=True),
+        table_df[preferred].reset_index(drop=True),
         use_container_width=True,
         height=620,
     )
@@ -2205,6 +2433,15 @@ with tab_range:
         st.caption(
             f"{display_value(producer_data['Category'])} · {display_value(producer_data['Neighbourhood'])}"
         )
+        listing_kind = str(producer_data.get("Listing kind", "")).strip()
+        if listing_kind == "existing_supplier":
+            st.caption(
+                f"Already listed on Wolt Market as **{display_value(producer_data.get('Matched WM vendor'))}**."
+            )
+        elif listing_kind == "retail_chain":
+            st.caption("Grocery chain / Wolt store — not a sourcing lead.")
+        elif listing_kind == "new_lead":
+            st.caption("Not matched to the current WM supplier list — treat as a new lead.")
 
         details_img, details_stats, details_info = st.columns([1, 1, 1], gap="large")
         with details_img:
