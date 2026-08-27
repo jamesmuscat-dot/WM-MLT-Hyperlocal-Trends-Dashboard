@@ -135,6 +135,10 @@ ICON_LIGHTBULB = _svg(
     '<path d="M9 18h6"/>'
     '<path d="M10 22h4"/>'
 )
+ICON_SEARCH = _svg(
+    '<circle cx="11" cy="11" r="8"/>'
+    '<path d="m21 21-4.3-4.3"/>'
+)
 ICON_MAP_PIN = _svg(
     '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>'
     '<circle cx="12" cy="10" r="3"/>'
@@ -500,6 +504,113 @@ def strength_chip_style(strength):
     return "background:#edf2ff;color:#475569;"
 
 
+SEARCH_VALIDATED_MIN = 200
+SEARCH_WEAK_MIN = 30
+
+
+def parse_search_keywords(row) -> list:
+    raw = row.get("Search Keywords", "") if hasattr(row, "get") else ""
+    if str(raw).strip() in {"", "N/A", "nan", "None"}:
+        return []
+    return [p.strip().lower() for p in re.split(r"[;|,]", str(raw)) if p.strip()]
+
+
+def validation_chip_style(status: str) -> str:
+    s = str(status).strip().lower()
+    if s == "validated":
+        return "background:#E5F0FF;color:#2F6BFF;"
+    if s == "weak signal":
+        return "background:#fff1e6;color:#c2410c;"
+    if s == "not in search":
+        return "background:#F3F4F6;color:#4B5563;"
+    return "background:#F3F4F6;color:#9CA3AF;"
+
+
+def validate_trend_against_search(trend_row, search_df: pd.DataFrame) -> dict:
+    keywords = parse_search_keywords(trend_row)
+    country = str(trend_row.get("Country", "")).strip()
+    empty = {
+        "status": "No search data",
+        "message": "No in-venue app search extract for this country yet.",
+        "searches": 0,
+    }
+    if search_df is None or search_df.empty:
+        return empty
+    scoped = search_df
+    if "Country" in search_df.columns and country:
+        scoped = search_df[search_df["Country"].astype(str) == country]
+    if scoped.empty:
+        return empty
+    if not keywords:
+        return {
+            "status": "No search data",
+            "message": "Add Search Keywords on this trend to match it against app queries.",
+            "searches": 0,
+        }
+
+    queries = scoped.copy()
+    queries["QueryClean"] = queries["Query"].astype(str).str.split("?").str[0].str.strip()
+    queries["QueryLower"] = queries["QueryClean"].str.lower()
+    queries["Searches"] = pd.to_numeric(queries.get("Searches"), errors="coerce").fillna(0)
+
+    mask = pd.Series(False, index=queries.index)
+    for keyword in keywords:
+        if " " in keyword:
+            mask = mask | queries["QueryLower"].str.contains(
+                re.escape(keyword), regex=True, na=False
+            )
+        else:
+            mask = mask | queries["QueryLower"].str.contains(
+                rf"(?<![a-z0-9]){re.escape(keyword)}(?![a-z0-9])",
+                regex=True,
+                na=False,
+            )
+    hits = queries.loc[mask]
+    total = int(hits["Searches"].sum()) if not hits.empty else 0
+    if hits.empty:
+        top = []
+    else:
+        top_df = (
+            hits.groupby("QueryLower", as_index=False)["Searches"]
+            .sum()
+            .sort_values("Searches", ascending=False)
+            .head(3)
+        )
+        top = [
+            (str(r["QueryLower"]), int(r["Searches"]))
+            for _, r in top_df.iterrows()
+        ]
+
+    if total >= SEARCH_VALIDATED_MIN:
+        status = "Validated"
+        message = (
+            f"Customers are searching this in the Wolt Market app — "
+            f"{total:,} matching searches in the last 90 days."
+        )
+    elif total >= SEARCH_WEAK_MIN:
+        status = "Weak signal"
+        message = (
+            f"Some app search, but not a habit yet — "
+            f"{total:,} matching searches in the last 90 days."
+        )
+    elif total > 0:
+        status = "Not in search"
+        message = (
+            f"Not a current search habit — only {total:,} matching searches "
+            "in the last 90 days."
+        )
+    else:
+        status = "Not in search"
+        message = (
+            "Not showing up in app search yet. Creator-led for now, "
+            "not a current customer search habit."
+        )
+    if top:
+        bits = ", ".join(f"“{q}” ({n:,})" for q, n in top)
+        message += f" Top queries: {bits}."
+    return {"status": status, "message": message, "searches": total}
+
+
 def build_platform_split(df: pd.DataFrame) -> pd.DataFrame:
     d = df.copy()
     d["Primary Platform"] = d["Platform"].apply(primary_platform)
@@ -638,7 +749,12 @@ def build_trend_matching_prompt(trends_df: pd.DataFrame) -> str:
         trend = display_value(row.get("Trend", ""))
         strength = strength_score_label(row.get("Strength", ""))
         desc = display_value(row.get("Description", ""))
-        lines.append(f"{rank}. {trend} (Strength: {strength}) — {desc}")
+        search_status = display_value(row.get("Search Status", ""))
+        label = f"{rank}. {trend} (Strength: {strength}"
+        if search_status not in {"", "N/A", "—", "-"}:
+            label += f", App search: {search_status}"
+        label += f") — {desc}"
+        lines.append(label)
 
     lines += [
         "",
@@ -1010,7 +1126,7 @@ def render_neighbourhood_full_card(row) -> str:
     """
 
 
-def render_trend_card(rank, trend, strength, description, image_path=None):
+def render_trend_card(rank, trend, strength, description, image_path=None, validation=None, search_message=""):
     image_html = """
         <div style="
             width:96px;
@@ -1033,6 +1149,25 @@ def render_trend_card(rank, trend, strength, description, image_path=None):
             ">
         """
     strength_style = strength_chip_style(strength)
+    validation_html = ""
+    if validation:
+        validation_html = f"""
+                <div style="
+                    display:inline-block;
+                    padding:6px 14px;
+                    border-radius:999px;
+                    font-size:14px;
+                    font-weight:700;
+                    {validation_chip_style(validation)}
+                ">{html.escape(display_value(validation))}</div>
+        """
+    search_html = ""
+    if search_message:
+        search_html = f"""
+            <div style="margin-top:10px; font-size:13px; line-height:1.5; color:#374151; background:#F8FAFF; border:1px solid #E5EAF5; border-radius:10px; padding:8px 12px;">
+                {html.escape(display_value(search_message))}
+            </div>
+        """
     return f"""
     <div style="
         display:flex;
@@ -1073,10 +1208,12 @@ def render_trend_card(rank, trend, strength, description, image_path=None):
                     font-weight:700;
                     {strength_style}
                 ">{html.escape(display_value(strength))}</div>
+                {validation_html}
             </div>
             <div style="margin-top:8px; font-size:14px; line-height:1.55; color:#4b5563;">
                 {html.escape(display_value(description))}
             </div>
+            {search_html}
         </div>
     </div>
     """
@@ -1090,6 +1227,7 @@ SKIP_FOLDER_NAMES = {"assets", "devcontainer", "node_modules", "__pycache__"}
 PRODUCER_FILES = ["producers.csv", "malta_producers.csv"]
 CREATOR_FILES = ["creators.csv", "local_market_creators.csv"]
 TREND_FILES = ["trends.csv", "local_market_trends.csv"]
+SEARCH_FILES = ["search.csv"]
 NEIGHBOURHOOD_FILES = [
     "neighbourhoods.csv",
     "neighbourhood_demographics.csv",
@@ -1169,7 +1307,13 @@ def load_country_registry() -> pd.DataFrame:
 
 
 def _load_folder_pack(folder: Path, code: str):
-    pack = {"producers": None, "creators": None, "trends": None, "neighbourhoods": None}
+    pack = {
+        "producers": None,
+        "creators": None,
+        "trends": None,
+        "neighbourhoods": None,
+        "search": None,
+    }
     prod = _first_existing(folder, PRODUCER_FILES)
     if prod:
         pack["producers"] = _ensure_country(_read_csv(prod), code)
@@ -1182,12 +1326,61 @@ def _load_folder_pack(folder: Path, code: str):
     demo = _first_existing(folder, NEIGHBOURHOOD_FILES)
     if demo:
         pack["neighbourhoods"] = _ensure_country(_read_csv(demo), code)
+    sear = _first_existing(folder, SEARCH_FILES)
+    if sear:
+        pack["search"] = _ensure_country(_read_csv(sear), code)
     return pack
 
 
-def load_all_market_data():
+def _data_fingerprint() -> str:
+    """Invalidate cached loads when a country CSV is edited."""
+    parts = []
+    folders = list(_country_folders())
+    if not any(folder.name == "MLT" for folder in folders):
+        folders.append(Path("."))
+    for folder in folders:
+        if not folder.exists():
+            continue
+        for names in (
+            PRODUCER_FILES,
+            CREATOR_FILES,
+            TREND_FILES,
+            NEIGHBOURHOOD_FILES,
+            SEARCH_FILES,
+        ):
+            path = _first_existing(folder, names)
+            if path is None:
+                continue
+            info = path.stat()
+            parts.append(f"{path.resolve()}:{info.st_mtime_ns}:{info.st_size}")
+    for extra in (DATA_DIR / "countries.csv", Path("countries.csv")):
+        if extra.exists():
+            info = extra.stat()
+            parts.append(f"{extra.resolve()}:{info.st_mtime_ns}:{info.st_size}")
+    return "|".join(parts)
+
+
+def _attach_search_validation(trends: pd.DataFrame, search: pd.DataFrame) -> pd.DataFrame:
+    if trends is None or trends.empty:
+        return trends
+    statuses, messages, counts = [], [], []
+    for _, row in trends.iterrows():
+        result = validate_trend_against_search(row, search)
+        statuses.append(result["status"])
+        messages.append(result["message"])
+        counts.append(result["searches"])
+    out = trends.copy()
+    out["Search Status"] = statuses
+    out["Search Message"] = messages
+    out["Search Count"] = counts
+    return out
+
+
+@st.cache_data(show_spinner=False)
+def load_all_market_data(fingerprint: str = ""):
+    _ = fingerprint  # cache key: country CSV paths, sizes, and mtimes
     registry = load_country_registry()
-    producers, creators, trends, neighbourhoods = [], [], [], []
+    producers, creators, trends, neighbourhoods, searches = [], [], [], [], []
 
     folders = _country_folders()
     loaded_codes = set()
@@ -1202,6 +1395,8 @@ def load_all_market_data():
             trends.append(pack["trends"])
         if pack["neighbourhoods"] is not None:
             neighbourhoods.append(pack["neighbourhoods"])
+        if pack["search"] is not None:
+            searches.append(pack["search"])
         loaded_codes.add(code)
         if registry.empty or code not in set(registry["code"].astype(str)):
             extra = pd.DataFrame(
@@ -1221,6 +1416,8 @@ def load_all_market_data():
             trends.append(pack["trends"])
         if pack["neighbourhoods"] is not None:
             neighbourhoods.append(pack["neighbourhoods"])
+        if pack["search"] is not None:
+            searches.append(pack["search"])
         if pack["producers"] is not None and (
             registry.empty or "MLT" not in set(registry["code"].astype(str))
         ):
@@ -1229,12 +1426,16 @@ def load_all_market_data():
             )
             registry = pd.concat([registry, extra], ignore_index=True)
 
+    trends_out = _concat(trends)
+    search_out = _concat(searches)
+    trends_out = _attach_search_validation(trends_out, search_out)
     return (
         registry,
         _concat(producers),
         _concat(creators),
-        _concat(trends),
+        trends_out,
         _concat(neighbourhoods),
+        search_out,
     )
 
 
@@ -1269,7 +1470,14 @@ def map_view_for(df: pd.DataFrame, registry_row=None):
     return {"lat": float(lat[valid].mean()), "lon": float(lon[valid].mean())}, zoom
 
 
-registry_df, all_producers_df, all_creators_df, all_trends_df, all_demographics_df = load_all_market_data()
+(
+    registry_df,
+    all_producers_df,
+    all_creators_df,
+    all_trends_df,
+    all_demographics_df,
+    all_search_df,
+) = load_all_market_data(_data_fingerprint())
 
 if all_producers_df.empty:
     st.error(
@@ -1304,6 +1512,7 @@ df = all_producers_df.copy()
 creators_df = all_creators_df.copy()
 trends_df = all_trends_df.copy()
 demographics_df = all_demographics_df.copy()
+search_df = all_search_df.copy()
 
 if selected_country_code:
     df = df[df["Country"].astype(str) == selected_country_code]
@@ -1313,6 +1522,8 @@ if selected_country_code:
         trends_df = trends_df[trends_df["Country"].astype(str) == selected_country_code]
     if not demographics_df.empty and "Country" in demographics_df.columns:
         demographics_df = demographics_df[demographics_df["Country"].astype(str) == selected_country_code]
+    if not search_df.empty and "Country" in search_df.columns:
+        search_df = search_df[search_df["Country"].astype(str) == selected_country_code]
     MARKET_NAME = selected_country_label
     registry_row = None
     if not registry_df.empty:
@@ -1705,7 +1916,10 @@ with tab_range:
 # =========================================================
 with tab_trends:
     st.title("Trend Intelligence")
-    st.caption(f"Creator signals and emerging food & drink trends across {MARKET_NAME}")
+    st.caption(
+        f"Creator signals across {MARKET_NAME}, checked against what customers "
+        "actually type in the Wolt Market app (last 90 days)."
+    )
 
     selected_market = MARKET_NAME
 
@@ -1743,6 +1957,20 @@ with tab_trends:
             if "Image" not in trends_df.columns:
                 trends_df["Image"] = ""
 
+        trends_to_show = trends_df.head(5).copy() if not trends_df.empty else trends_df.copy()
+        trend_validations = []
+        for _, row in trends_to_show.iterrows():
+            status = str(row.get("Search Status", "")).strip()
+            message = str(row.get("Search Message", "")).strip()
+            if status in {"", "N/A", "nan", "None"}:
+                result = validate_trend_against_search(row, search_df)
+                status, message = result["status"], result["message"]
+            trend_validations.append({"status": status, "message": message})
+        if trend_validations:
+            trends_to_show["Search Status"] = [v["status"] for v in trend_validations]
+            trends_to_show["Search Message"] = [v["message"] for v in trend_validations]
+        validated_n = sum(1 for v in trend_validations if v["status"] == "Validated")
+
         top_strength = "Strong"
         top_trend_label = "—"
         if not trends_df.empty and "Strength" in trends_df.columns:
@@ -1750,26 +1978,36 @@ with tab_trends:
         if not trends_df.empty:
             top_trend_label = display_value(trends_df.iloc[0].get("Trend", ""))
         emerging_count = len(trends_df)
+        search_metric_value = (
+            f"{validated_n} of {len(trends_to_show)}" if not trends_to_show.empty else "—"
+        )
 
-        # ---- 1) Top Trend Strength + Emerging Trends (top row, full width) ----
-        strength_col1, strength_col2 = st.columns(2)
+        # ---- 1) Top Trend Strength + Emerging Trends + Search-validated ----
+        strength_col1, strength_col2, strength_col3 = st.columns(3)
         with strength_col1:
             st.markdown(clean_html(top_metric_card("Top Trend Strength", top_strength, top_trend_label, icon=ICON_TRENDING_UP, icon_bg="#E6F7EC", icon_color="#2E9E4F", value_color="#2E9E4F", card_bg="#F0FBF3")), unsafe_allow_html=True)
         with strength_col2:
             st.markdown(clean_html(top_metric_card("Emerging Trends", emerging_count, f"Key {MARKET_NAME} themes identified", icon=ICON_LIGHTBULB, icon_bg="#FFF7E0", icon_color="#F5A623", card_bg="#FFFBF0")), unsafe_allow_html=True)
+        with strength_col3:
+            st.markdown(clean_html(top_metric_card("Search-validated", search_metric_value, "Creator trends with 200+ matching app searches", icon=ICON_SEARCH, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
         # ---- 2) Top 5 Trends (full width, one card per row) ----
         st.markdown(f"### Top 5 {MARKET_NAME} Trends")
-        trends_to_show = trends_df.head(5).copy()
-        for _, row in trends_to_show.iterrows():
+        st.caption(
+            "The first chip is the creator/press read (Strong, Medium-strong, Medium). "
+            "The second chip is in-venue app search: Validated (200+ matching searches), "
+            "Weak signal (30–199), or Not in search."
+        )
+        for i, (_, row) in enumerate(trends_to_show.iterrows()):
             rank_raw = pd.to_numeric(row.get("Rank", 0), errors="coerce")
             rank = int(rank_raw) if pd.notna(rank_raw) else 0
             trend = display_value(row.get("Trend", ""))
             strength = strength_score_label(row.get("Strength", ""))
             description = display_value(row.get("Description", ""))
             image_path = resolve_trend_image(row.get("Image", ""))
+            validation = trend_validations[i] if i < len(trend_validations) else {}
 
             st.markdown(
                 clean_html(
@@ -1779,6 +2017,8 @@ with tab_trends:
                         strength=strength,
                         description=description,
                         image_path=image_path,
+                        validation=validation.get("status", ""),
+                        search_message=validation.get("message", ""),
                     )
                 ),
                 unsafe_allow_html=True,
