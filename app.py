@@ -507,12 +507,51 @@ def strength_chip_style(strength):
 SEARCH_VALIDATED_MIN = 200
 SEARCH_WEAK_MIN = 30
 
+# Used when the live GitHub trends file is still the old format without a
+# Search Keywords column. The spreadsheet remains the source of truth when
+# that column is present.
+DEFAULT_SEARCH_KEYWORDS = {
+    ("MLT", 1): "vegan; plant-based; plant based; oat milk; almond milk; soy milk; tofu; dairy free; dairy-free; alpro; oatly; seitan; meat free",
+    ("MLT", 2): "kefir; probiotic; prebiotic; kombucha; kimchi",
+    ("MLT", 3): "sourdough; organic bread; artisan bread",
+    ("MLT", 4): "seacuterie; tinned fish; canned fish; sardine; sardines; anchovy; anchovies; ventresca",
+    ("MLT", 5): "coffee; cold brew; lot61; lot 61; espresso; coffee beans",
+    ("CYP", 1): "halloumi",
+    ("CYP", 2): "laiki",
+    ("CYP", 3): "coffee",
+    ("CYP", 4): "pivo; craft beer",
+    ("CYP", 5): "loukoumi; geroskipou; lokum",
+    ("AZE", 1): "qatiq; qatıq; pendir; yogurt; yoghurt",
+    ("AZE", 2): "qutab; dolma; plov; tandir",
+    ("AZE", 3): "coffee; sensum",
+    ("AZE", 4): "savalan; wine; brandy; chabiant",
+    ("AZE", 5): "caviar; sturgeon; smoked fish",
+}
 
-def parse_search_keywords(row) -> list:
-    raw = row.get("Search Keywords", "") if hasattr(row, "get") else ""
+
+def _keywords_from_text(raw) -> list:
     if str(raw).strip() in {"", "N/A", "nan", "None"}:
         return []
     return [p.strip().lower() for p in re.split(r"[;|,]", str(raw)) if p.strip()]
+
+
+def parse_search_keywords(row) -> list:
+    raw = ""
+    if hasattr(row, "index"):
+        for key in row.index:
+            normalized = str(key).replace("\ufeff", "").strip().lower().replace("_", " ")
+            if normalized == "search keywords":
+                raw = row[key]
+                break
+    elif hasattr(row, "get"):
+        raw = row.get("Search Keywords", "")
+    found = _keywords_from_text(raw)
+    if found:
+        return found
+    country = str(row.get("Country", "")).strip() if hasattr(row, "get") else ""
+    rank = pd.to_numeric(row.get("Rank", 0), errors="coerce") if hasattr(row, "get") else 0
+    rank_i = int(rank) if pd.notna(rank) else 0
+    return _keywords_from_text(DEFAULT_SEARCH_KEYWORDS.get((country, rank_i), ""))
 
 
 def validation_chip_style(status: str) -> str:
@@ -1244,7 +1283,9 @@ def _first_existing(folder: Path, names):
 
 
 def _read_csv(path: Path) -> pd.DataFrame:
-    return pd.read_csv(path, keep_default_na=False).replace({"": "N/A"}).fillna("N/A")
+    df = pd.read_csv(path, keep_default_na=False)
+    df.columns = [str(c).replace("\ufeff", "").strip() for c in df.columns]
+    return df.replace({"": "N/A"}).fillna("N/A")
 
 
 def _ensure_country(df: pd.DataFrame, code: str) -> pd.DataFrame:
