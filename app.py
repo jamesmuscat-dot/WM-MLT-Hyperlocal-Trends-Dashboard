@@ -6,6 +6,7 @@ import unicodedata
 from datetime import date
 from difflib import SequenceMatcher
 from pathlib import Path
+from typing import Optional
 import numpy as np
 import pandas as pd
 import plotly.express as px
@@ -16,36 +17,244 @@ import streamlit.components.v1 as components
 # PAGE CONFIG
 # -----------------------
 st.set_page_config(
-    page_title="Hyperlocal & Trend Range Analytics",
+    page_title="Wolt Market · Hyperlocal Range",
     layout="wide",
 )
 
 # -----------------------
-# GLOBAL STYLES
+# WOLT MARKET BRAND
+# Cream + forest green sampled from official WM creative.
+# Type: Omnes Black (headlines), Omnes Regular/Semibold (body).
+# Tracking 0, leading 1.2 × size. Hand type only for short wishes.
+# Drop licensed Omnes files in assets/fonts/ to replace the fallback.
 # -----------------------
-st.markdown(
-    """
-    <style>
-        /* Keep the header/toolbar (Share, star, edit, GitHub, sidebar
-           collapse arrow) visible — just hide the menu/footer clutter */
-        #MainMenu { visibility: hidden; }
-        footer { visibility: hidden; }
+WM_GREEN = "#123111"
+WM_GREEN_DEEP = "#0F330F"
+WM_SAGE = "#2F5D32"
+WM_LEAF = "#3D7A45"
+WM_CREAM = "#F7F0E8"
+WM_CREAM_2 = "#F3EBE0"
+WM_WHITE = "#FFFCF8"
+WM_MINT = "#E7F0E4"
+WM_MUTED = "#5A6B57"
+WM_MUTED_2 = "#7A8776"
+WM_INK = "#3D4A3C"
+WM_BORDER = "#E2D8CC"
+WM_PEACH = "#F3D9C8"
+FONT_DIR = Path("assets/fonts")
+FONT_HEAD = '"Omnes Black", Omnes, Nunito, "Nunito Sans", sans-serif'
+FONT_BODY = '"Omnes Regular", Omnes, Nunito, "Nunito Sans", sans-serif'
+FONT_SEMI = '"Omnes Semibold", Omnes, Nunito, "Nunito Sans", sans-serif'
+FONT_HAND = '"Wolt Market Hand", "WoltMarketHand", Caveat, "Segoe Script", cursive'
 
-        /* Enough top padding for content to clear the fixed header,
-           so the tab bar doesn't render underneath it */
-        .block-container {
+
+def _font_file(*names: str) -> Optional[Path]:
+    for name in names:
+        path = FONT_DIR / name
+        if path.exists():
+            return path
+    return None
+
+
+def _font_face(family: str, weight: int, path: Path) -> str:
+    ext = path.suffix.lower()
+    fmt = {".woff2": "woff2", ".woff": "woff", ".otf": "opentype", ".ttf": "truetype"}.get(ext, "truetype")
+    mime = {
+        ".woff2": "font/woff2",
+        ".woff": "font/woff",
+        ".otf": "font/otf",
+        ".ttf": "font/ttf",
+    }.get(ext, "font/ttf")
+    data = base64.b64encode(path.read_bytes()).decode("ascii")
+    return (
+        f"@font-face{{font-family:'{family}';src:url(data:{mime};base64,{data}) "
+        f"format('{fmt}');font-weight:{weight};font-style:normal;font-display:swap;}}"
+    )
+
+
+def _brand_font_css() -> str:
+    faces = []
+    files = [
+        ("Omnes Black", 900, ("Omnes-Black.woff2", "OmnesBlack.woff2", "Omnes-Black.otf", "Omnes-Black.ttf")),
+        ("Omnes Regular", 400, ("Omnes-Regular.woff2", "OmnesRegular.woff2", "Omnes-Regular.otf", "Omnes-Regular.ttf")),
+        ("Omnes Semibold", 600, ("Omnes-Semibold.woff2", "Omnes-SemiBold.woff2", "OmnesSemibold.woff2", "Omnes-Semibold.otf")),
+        ("Omnes", 400, ("Omnes.woff2", "Omnes.otf", "Omnes.ttf")),
+        ("Wolt Market Hand", 500, ("WoltMarketHand.woff2", "Wolt-Market-Hand.woff2", "WM-Hand.woff2", "WoltMarketHand.otf")),
+    ]
+    for family, weight, names in files:
+        path = _font_file(*names)
+        if path:
+            faces.append(_font_face(family, weight, path))
+    google = (
+        "@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600"
+        "&family=Nunito:wght@400;600;800;900&display=swap');\n"
+        if not faces
+        else ""
+    )
+    # Always keep Nunito/Caveat as fallback if only some Omnes weights are present.
+    if faces:
+        google = (
+            "@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@500;600"
+            "&family=Nunito:wght@400;600;800;900&display=swap');\n"
+        )
+    return google + "".join(faces)
+
+
+st.markdown(
+    f"""
+    <style>
+        {_brand_font_css()}
+        :root {{
+            --wm-green: {WM_GREEN};
+            --wm-green-deep: {WM_GREEN_DEEP};
+            --wm-sage: {WM_SAGE};
+            --wm-cream: {WM_CREAM};
+            --wm-cream-2: {WM_CREAM_2};
+            --wm-white: {WM_WHITE};
+            --wm-mint: {WM_MINT};
+            --wm-muted: {WM_MUTED};
+            --wm-border: {WM_BORDER};
+            --wm-font-head: {FONT_HEAD};
+            --wm-font-body: {FONT_BODY};
+            --wm-font-semi: {FONT_SEMI};
+            --wm-font-hand: {FONT_HAND};
+        }}
+        #MainMenu {{ visibility: hidden; }}
+        footer {{ visibility: hidden; }}
+        html, body, [class*="st-"], .stApp, .stMarkdown, p, label, span, div {{
+            font-family: {FONT_BODY} !important;
+            letter-spacing: 0 !important;
+        }}
+        .stApp {{
+            background: {WM_CREAM} !important;
+            color: {WM_GREEN} !important;
+        }}
+        [data-testid="stHeader"] {{
+            background: {WM_CREAM} !important;
+        }}
+        .block-container {{
             padding-top: 3.5rem !important;
             padding-bottom: 2rem !important;
             max-width: 1600px;
-        }
-        .stApp {
-            background: #f7f8fc;
-        }
-        div[data-testid="stTabs"] {
+        }}
+        h1, h2, h3, h4,
+        [data-testid="stHeading"] h1,
+        [data-testid="stHeading"] h2,
+        [data-testid="stHeading"] h3,
+        .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {{
+            font-family: {FONT_HEAD} !important;
+            font-weight: 900 !important;
+            color: {WM_GREEN} !important;
+            letter-spacing: 0 !important;
+            line-height: 1.2 !important;
+        }}
+        p, li, label, .stCaption, [data-testid="stCaptionContainer"],
+        [data-testid="stWidgetLabel"] p {{
+            font-family: {FONT_BODY} !important;
+            color: {WM_INK};
+            line-height: 1.2 !important;
+            letter-spacing: 0 !important;
+        }}
+        .stCaption, [data-testid="stCaptionContainer"] {{
+            color: {WM_MUTED} !important;
+        }}
+        [data-testid="stSidebar"] {{
+            background: {WM_WHITE} !important;
+            border-right: 1px solid {WM_BORDER};
+        }}
+        [data-testid="stSidebar"] h1, [data-testid="stSidebar"] h2 {{
+            font-family: {FONT_HEAD} !important;
+            color: {WM_GREEN} !important;
+        }}
+        div[data-testid="stTabs"] {{
             margin-top: 0 !important;
             position: relative;
             z-index: 10;
-        }
+        }}
+        button[data-baseweb="tab"] {{
+            font-family: {FONT_SEMI} !important;
+            font-weight: 600 !important;
+            color: {WM_MUTED} !important;
+            letter-spacing: 0 !important;
+        }}
+        button[data-baseweb="tab"][aria-selected="true"] {{
+            color: {WM_GREEN} !important;
+        }}
+        [data-baseweb="tab-highlight"],
+        [data-baseweb="tab-border"] {{
+            background-color: {WM_GREEN} !important;
+            border-color: {WM_GREEN} !important;
+        }}
+        .stButton > button, .stDownloadButton > button, .stLinkButton > a {{
+            font-family: {FONT_SEMI} !important;
+            font-weight: 600 !important;
+            background: {WM_GREEN} !important;
+            color: {WM_CREAM} !important;
+            border: 0 !important;
+            border-radius: 999px !important;
+            letter-spacing: 0 !important;
+        }}
+        .stButton > button:hover, .stLinkButton > a:hover {{
+            background: {WM_SAGE} !important;
+            color: {WM_WHITE} !important;
+        }}
+        [data-testid="stMetricValue"] {{
+            font-family: {FONT_HEAD} !important;
+            color: {WM_GREEN} !important;
+        }}
+        [data-testid="stDataFrame"], [data-testid="stTable"] {{
+            font-family: {FONT_BODY} !important;
+        }}
+        .wm-hand {{
+            font-family: {FONT_HAND} !important;
+            font-size: 26px;
+            font-weight: 500;
+            color: {WM_GREEN};
+            line-height: 1.2;
+            letter-spacing: 0;
+            transform: rotate(-3deg);
+            display: inline-block;
+            margin: 4px 0 10px 2px;
+        }}
+        .wm-hand span {{ font-size: 20px; }}
+        div[data-testid="stAlert"] {{
+            background: {WM_MINT};
+            border: 1px solid {WM_BORDER};
+            color: {WM_GREEN};
+        }}
+        [data-testid="stExpander"] {{
+            background: {WM_WHITE};
+            border: 1px solid {WM_BORDER};
+            border-radius: 16px;
+        }}
+        [data-baseweb="select"] > div,
+        [data-baseweb="input"] {{
+            background-color: {WM_WHITE} !important;
+            border-color: {WM_BORDER} !important;
+        }}
+        [data-testid="stCheckbox"] label p,
+        [data-testid="stRadio"] label p {{
+            font-family: {FONT_BODY} !important;
+            color: {WM_GREEN} !important;
+        }}
+        .stSlider [role="slider"] {{
+            background-color: {WM_GREEN} !important;
+        }}
+        div[data-testid="stFileUploader"] {{
+            background: {WM_WHITE};
+            border: 1px dashed {WM_BORDER};
+            border-radius: 16px;
+        }}
+        .stMarkdown div[style*="font-weight:800"],
+        .stMarkdown div[style*="font-weight: 800"],
+        .stMarkdown div[style*="font-weight:900"] {{
+            font-family: {FONT_HEAD} !important;
+        }}
+        .stMarkdown div[style*="font-weight:700"],
+        .stMarkdown div[style*="font-weight: 700"],
+        .stMarkdown div[style*="font-weight:600"] {{
+            font-family: {FONT_SEMI} !important;
+        }}
     </style>
     """,
     unsafe_allow_html=True,
@@ -119,18 +328,20 @@ TREND_CATEGORY_FALLBACKS = [
     (["vegan", "plant-based", "tofu"], "Fruits & Vegetables"),
 ]
 CATEGORY_PIE_COLORS = [
-    "#6F5CFF",
-    "#4B3AD5",
-    "#2F6BFF",
-    "#F4C84E",
-    "#48B26B",
-    "#FF8A80",
-    "#A06CD5",
-    "#2E86C1",
-    "#F78FB3",
-    "#7F8C8D",
+    "#123111",
+    "#2F5D32",
+    "#4F7A4A",
+    "#7A9A62",
+    "#A3B88A",
+    "#C4D4B0",
+    "#8B5E3C",
+    "#D4A574",
+    "#5A6B57",
+    "#3D7A45",
 ]
-PURPLE_SCALE = ["#D9D0FF", "#6F5CFF"]
+BRAND_SCALE = ["#E7F0E4", "#123111"]
+PURPLE_SCALE = BRAND_SCALE  # charts still pass this name
+px.defaults.color_discrete_sequence = CATEGORY_PIE_COLORS
 
 # -----------------------
 # INLINE SVG ICONS (no external image files needed)
@@ -308,7 +519,7 @@ def get_display_image(row):
     return None
 
 
-def top_metric_card(label, value, subtitle, icon=None, icon_bg="#EEF0FF", icon_color="#6F5CFF", value_color="#2f3240", card_bg="#ffffff"):
+def top_metric_card(label, value, subtitle, icon=None, icon_bg="#E7F0E4", icon_color="#123111", value_color="#123111", card_bg="#FFFCF8"):
     icon_html = ""
     if icon:
         icon_html = f"""
@@ -329,7 +540,8 @@ def top_metric_card(label, value, subtitle, icon=None, icon_bg="#EEF0FF", icon_c
     <div style="
         background: {card_bg};
         border-radius: 16px;
-        box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06);
+        border: 1px solid #E2D8CC;
+        box-shadow: 0 8px 20px rgba(18, 49, 17, 0.06);
         padding: 16px 18px;
         display: flex;
         align-items: center;
@@ -339,13 +551,13 @@ def top_metric_card(label, value, subtitle, icon=None, icon_bg="#EEF0FF", icon_c
     ">
         {icon_html}
         <div style="min-width: 0;">
-            <div style="font-size: 13px; color: #6b7280; margin-bottom: 6px; font-weight: 600;">
+            <div style="font-size: 13px; color: #5A6B57; margin-bottom: 6px; font-weight: 600;">
                 {esc(label)}
             </div>
-            <div style="font-size: 28px; line-height: 1.1; font-weight: 700; color: {value_color};">
+            <div style="font-size: 28px; line-height: 1.2; font-weight: 900; color: {value_color};">
                 {esc(value)}
             </div>
-            <div style="font-size: 12px; color: #9096a3; margin-top: 6px;">
+            <div style="font-size: 12px; color: #7A8776; margin-top: 6px;">
                 {esc(subtitle)}
             </div>
         </div>
@@ -356,14 +568,14 @@ def top_metric_card(label, value, subtitle, icon=None, icon_bg="#EEF0FF", icon_c
 def stat_card(label, value):
     return f"""
     <div style="
-        background: #ffffff;
+        background: #FFFCF8;
         border-radius: 14px;
         padding: 10px 12px;
         margin-bottom: 8px;
-        box-shadow: 0 8px 18px rgba(17, 24, 39, 0.06);
+        box-shadow: 0 8px 18px rgba(18, 49, 17, 0.06);
     ">
-        <div style="font-size: 12px; color: #666; margin-bottom: 6px;">{esc(label)}</div>
-        <div style="font-size: 22px; font-weight: 700; line-height: 1;">{esc(value)}</div>
+        <div style="font-size: 12px; color: #5A6B57; margin-bottom: 6px;">{esc(label)}</div>
+        <div style="font-size: 22px; font-weight: 900; line-height: 1.2; color:#123111;">{esc(value)}</div>
     </div>
     """
 
@@ -534,10 +746,10 @@ def render_platform_icons_html(platform_value) -> str:
             icons_html.append(
                 f'<img src="{icon_uri}" alt="{html.escape(key)}" title="{html.escape(key)}" '
                 f'style="width:40px; height:40px; border-radius:10px; object-fit:cover; '
-                f'box-shadow:0 3px 8px rgba(17,24,39,0.12);">'
+                f'box-shadow:0 3px 8px rgba(18, 49, 17, 0.08);">'
             )
         else:
-            icons_html.append(f'<span style="font-size:13px; color:#4b5563;">{html.escape(name)}</span>')
+            icons_html.append(f'<span style="font-size:13px; color:#3D4A3C;">{html.escape(name)}</span>')
 
     if not icons_html:
         return html.escape(text)
@@ -582,7 +794,7 @@ def strength_chip_style(strength):
         return "background:#e6f4ea;color:#2e7d32;"
     if s == "medium":
         return "background:#fff7e6;color:#f59e0b;"
-    return "background:#edf2ff;color:#475569;"
+    return "background:#E7F0E4;color:#5A6B57;"
 
 
 SEARCH_VALIDATED_MIN = 200
@@ -638,12 +850,12 @@ def parse_search_keywords(row) -> list:
 def validation_chip_style(status: str) -> str:
     s = str(status).strip().lower()
     if s == "validated":
-        return "background:#E5F0FF;color:#2F6BFF;"
+        return "background:#E7F0E4;color:#2F5D32;"
     if s == "weak signal":
         return "background:#fff1e6;color:#c2410c;"
     if s == "not in search":
-        return "background:#F3F4F6;color:#4B5563;"
-    return "background:#F3F4F6;color:#9CA3AF;"
+        return "background:#F3EBE0;color:#5A6B57;"
+    return "background:#F3EBE0;color:#7A8776;"
 
 
 def validate_trend_against_search(trend_row, search_df: pd.DataFrame) -> dict:
@@ -770,7 +982,7 @@ def render_creator_table_html(df: pd.DataFrame) -> str:
                     height:56px;
                     border-radius:999px;
                     object-fit:cover;
-                    box-shadow:0 6px 14px rgba(17,24,39,0.12);
+                    box-shadow:0 6px 14px rgba(18, 49, 17, 0.08);
                 ">
             """
         else:
@@ -779,7 +991,7 @@ def render_creator_table_html(df: pd.DataFrame) -> str:
                     width:56px;
                     height:56px;
                     border-radius:999px;
-                    background:#e9ecf7;
+                    background:#E7F0E4;
                 "></div>
             """
         platform_html = render_platform_icons_html(row.get("Platform"))
@@ -790,17 +1002,17 @@ def render_creator_table_html(df: pd.DataFrame) -> str:
         if is_valid_link(example_link_raw):
             example_link_html = (
                 f'<a href="{html.escape(example_link_raw)}" target="_blank" rel="noopener noreferrer" '
-                f'style="color:#6F5CFF; font-weight:600; text-decoration:none;">View profile ↗</a>'
+                f'style="color:#123111; font-weight:600; text-decoration:none;">View profile ↗</a>'
             )
         else:
             example_link_html = html.escape(example_link_raw)
         rows.append(
             f"""
-            <tr style="border-bottom:1px solid #e7eaf3;">
+            <tr style="border-bottom:1px solid #E2D8CC;">
                 <td style="padding:14px 12px; width:84px; vertical-align:middle;">{pic_html}</td>
                 <td style="padding:14px 12px; min-width:240px; vertical-align:middle;">
-                    <div style="font-weight:700; color:#2f3240; line-height:1.2;">{html.escape(name_part)}</div>
-                    <div style="font-size:13px; color:#6b7280; margin-top:3px;">{html.escape(handle_part)}</div>
+                    <div style="font-weight:700; color:#123111; line-height:1.2;">{html.escape(name_part)}</div>
+                    <div style="font-size:13px; color:#5A6B57; margin-top:3px;">{html.escape(handle_part)}</div>
                 </td>
                 <td style="padding:14px 12px; width:130px; vertical-align:middle;">{platform_html}</td>
                 <td style="padding:14px 12px; width:120px; vertical-align:middle;">{html.escape(followers_txt)}</td>
@@ -812,11 +1024,11 @@ def render_creator_table_html(df: pd.DataFrame) -> str:
         )
     return f"""
     <div style="
-        background:#ffffff;
-        border:1px solid #e7eaf3;
+        background:#FFFCF8;
+        border:1px solid #E2D8CC;
         border-radius:16px;
         overflow:hidden;
-        box-shadow:0 8px 18px rgba(17,24,39,0.05);
+        box-shadow:0 8px 18px rgba(18, 49, 17, 0.06);
     ">
         <div style="max-height:430px; overflow:auto;">
             <table style="
@@ -826,11 +1038,11 @@ def render_creator_table_html(df: pd.DataFrame) -> str:
             ">
                 <thead>
                     <tr style="
-                        background:#fafbfe;
-                        color:#8a8f9c;
+                        background:#FFFCF8;
+                        color:#7A8776;
                         font-size:14px;
                         font-weight:700;
-                        border-bottom:1px solid #e7eaf3;
+                        border-bottom:1px solid #E2D8CC;
                     ">
                         <th style="padding:14px 12px; width:84px; text-align:left;">Profile Pic</th>
                         <th style="padding:14px 12px; min-width:240px; text-align:left;">Creator / Handle</th>
@@ -891,55 +1103,55 @@ def build_trend_matching_prompt(trends_df: pd.DataFrame) -> str:
 def render_catalogue_header_and_steps(trends_df: pd.DataFrame) -> str:
     step_icon_wrap = (
         "display:flex; align-items:center; justify-content:center; width:44px; height:44px; "
-        "min-width:44px; border-radius:999px; background:#6F5CFF; color:white; flex-shrink:0;"
+        "min-width:44px; border-radius:999px; background:#123111; color:white; flex-shrink:0;"
     )
 
     return f"""
     <div>
         <div style="display:flex; align-items:center; gap:8px;">
-            <div style="font-size:28px; font-weight:800; color:#2f3240;">Match Your Catalogue to These Trends</div>
-            <div style="color:#9096a3;">{ICON_LINK}</div>
+            <div style="font-size:28px; font-weight:800; color:#123111;">Match Your Catalogue to These Trends</div>
+            <div style="color:#7A8776;">{ICON_LINK}</div>
         </div>
-        <div style="font-size:14px; color:#6b7280; margin-top:4px; margin-bottom:16px;">
+        <div style="font-size:14px; color:#5A6B57; margin-top:4px; margin-bottom:16px;">
             Use AI to match your candidate products to the latest food &amp; drink trends and get a ranked shortlist.
         </div>
 
         <div style="
-            background:#ffffff; border:1px solid #ECEEF3; border-radius:16px;
-            box-shadow:0 8px 20px rgba(17,24,39,0.05); padding:18px 22px; margin-bottom:16px;
+            background:#FFFCF8; border:1px solid #E2D8CC; border-radius:16px;
+            box-shadow:0 8px 20px rgba(18, 49, 17, 0.06); padding:18px 22px; margin-bottom:16px;
             display:flex; align-items:center; justify-content:space-between; gap:10px;
         ">
             <div style="display:flex; align-items:center; justify-content:center; gap:14px; flex:1; min-width:0;">
                 <div style="{step_icon_wrap}">{ICON_FILE_TEXT}</div>
                 <div style="min-width:0;">
-                    <div style="font-weight:700; color:#2f3240; font-size:14px;">1. Copy the prompt</div>
-                    <div style="font-size:12px; color:#8a8f9c; margin-top:2px;">We've prepared a detailed prompt with the latest trend insights.</div>
+                    <div style="font-weight:700; color:#123111; font-size:14px;">1. Copy the prompt</div>
+                    <div style="font-size:12px; color:#7A8776; margin-top:2px;">We've prepared a detailed prompt with the latest trend insights.</div>
                 </div>
             </div>
-            <div style="color:#c3c7d1; font-size:20px; padding:0 6px;">→</div>
+            <div style="color:#C9D6C4; font-size:20px; padding:0 6px;">→</div>
             <div style="display:flex; align-items:center; justify-content:center; gap:14px; flex:1; min-width:0;">
                 <div style="{step_icon_wrap}">{ICON_CLIPBOARD_COPY}</div>
                 <div style="min-width:0;">
-                    <div style="font-weight:700; color:#2f3240; font-size:14px;">2. Paste into AI</div>
-                    <div style="font-size:12px; color:#8a8f9c; margin-top:2px;">Open Claude or ChatGPT and paste the prompt.</div>
+                    <div style="font-weight:700; color:#123111; font-size:14px;">2. Paste into AI</div>
+                    <div style="font-size:12px; color:#7A8776; margin-top:2px;">Open Claude or ChatGPT and paste the prompt.</div>
                 </div>
             </div>
-            <div style="color:#c3c7d1; font-size:20px; padding:0 6px;">→</div>
+            <div style="color:#C9D6C4; font-size:20px; padding:0 6px;">→</div>
             <div style="display:flex; align-items:center; justify-content:center; gap:14px; flex:1; min-width:0;">
                 <div style="{step_icon_wrap}">{ICON_CLOUD_UPLOAD}</div>
                 <div style="min-width:0;">
-                    <div style="font-weight:700; color:#2f3240; font-size:14px;">3. Upload your catalogue</div>
-                    <div style="font-size:12px; color:#8a8f9c; margin-top:2px;">Upload your candidate catalogue (CSV or Excel) and get results.</div>
+                    <div style="font-weight:700; color:#123111; font-size:14px;">3. Upload your catalogue</div>
+                    <div style="font-size:12px; color:#7A8776; margin-top:2px;">Upload your candidate catalogue (CSV or Excel) and get results.</div>
                 </div>
             </div>
         </div>
 
         <div style="
-            background:#FFF7E0; border:1px solid #F5E6B8; border-bottom:none;
+            background:#E7F0E4; border:1px solid #E2D8CC; border-bottom:none;
             border-radius:16px 16px 0 0; padding:14px 20px;
-            display:flex; align-items:center; gap:8px; font-weight:700; color:#9A7B1F; font-size:17px;
+            display:flex; align-items:center; gap:8px; font-weight:700; color:#123111; font-size:17px;
         ">
-            <span style="color:#F5A623;">{ICON_SPARKLES}</span>
+            <span style="color:#2F5D32;">{ICON_SPARKLES}</span>
             Prompt — copy and paste into Claude or ChatGPT
         </div>
     </div>
@@ -956,7 +1168,7 @@ def render_catalogue_footer() -> str:
             return f"""
                 <div style="
                     width:40px; height:40px; min-width:40px; border-radius:999px;
-                    background:#f0f1f5; display:flex; align-items:center; justify-content:center;
+                    background:#E7F0E4; display:flex; align-items:center; justify-content:center;
                     flex-shrink:0; overflow:hidden;
                 ">
                     <img src="{icon_uri}" alt="{html.escape(name)}" style="
@@ -978,32 +1190,32 @@ def render_catalogue_footer() -> str:
 
     return f"""
     <div>
-        <div style="background:#F5F3FF; border:1px solid #E2DBFF; border-radius:16px; padding:16px 20px; text-align:center; margin-bottom:14px;">
-            <div style="font-weight:700; color:#6F5CFF; font-size:15px;">Ready to get your ranked shortlist?</div>
-            <div style="font-size:13px; color:#6b7280; margin-top:2px;">Choose your preferred AI assistant to continue.</div>
+        <div style="background:#E7F0E4; border:1px solid #C9D6C4; border-radius:16px; padding:16px 20px; text-align:center; margin-bottom:14px;">
+            <div style="font-weight:700; color:#123111; font-size:15px;">Ready to get your ranked shortlist?</div>
+            <div style="font-size:13px; color:#5A6B57; margin-top:2px;">Choose your preferred AI assistant to continue.</div>
         </div>
 
         <div style="display:flex; gap:14px;">
             <a href="https://claude.ai/new" target="_blank" rel="noopener noreferrer" style="
                 flex:1; display:flex; align-items:center; gap:12px; text-decoration:none;
-                background:#ffffff; border:1px solid #ECEEF3; border-radius:14px; padding:14px 16px;
-                box-shadow:0 6px 16px rgba(17,24,39,0.05);
+                background:#FFFCF8; border:1px solid #E2D8CC; border-radius:14px; padding:14px 16px;
+                box-shadow:0 6px 16px rgba(18, 49, 17, 0.06);
             ">
                 {claude_icon_html}
                 <div style="min-width:0;">
-                    <div style="font-weight:700; color:#2f3240; font-size:14px;">Open in Claude</div>
-                    <div style="font-size:12px; color:#8a8f9c; margin-top:2px;">Paste the prompt and upload your catalogue</div>
+                    <div style="font-weight:700; color:#123111; font-size:14px;">Open in Claude</div>
+                    <div style="font-size:12px; color:#7A8776; margin-top:2px;">Paste the prompt and upload your catalogue</div>
                 </div>
             </a>
             <a href="https://chat.openai.com/" target="_blank" rel="noopener noreferrer" style="
                 flex:1; display:flex; align-items:center; gap:12px; text-decoration:none;
-                background:#ffffff; border:1px solid #ECEEF3; border-radius:14px; padding:14px 16px;
-                box-shadow:0 6px 16px rgba(17,24,39,0.05);
+                background:#FFFCF8; border:1px solid #E2D8CC; border-radius:14px; padding:14px 16px;
+                box-shadow:0 6px 16px rgba(18, 49, 17, 0.06);
             ">
                 {gpt_icon_html}
                 <div style="min-width:0;">
-                    <div style="font-weight:700; color:#2f3240; font-size:14px;">Open in ChatGPT</div>
-                    <div style="font-size:12px; color:#8a8f9c; margin-top:2px;">Paste the prompt and upload your catalogue</div>
+                    <div style="font-weight:700; color:#123111; font-size:14px;">Open in ChatGPT</div>
+                    <div style="font-size:12px; color:#7A8776; margin-top:2px;">Paste the prompt and upload your catalogue</div>
                 </div>
             </a>
         </div>
@@ -1018,7 +1230,7 @@ def render_neighbourhood_demographic_card(row) -> str:
         chips = [c.strip() for c in recommendations.split(";") if c.strip()]
         chips_html = "".join(
             f"""<span style="
-                display:inline-block; background:#EDEBFF; color:#6F5CFF;
+                display:inline-block; background:#E7F0E4; color:#123111;
                 font-size:12px; font-weight:600; padding:5px 12px;
                 border-radius:999px; margin:0 6px 6px 0;
             ">{html.escape(c)}</span>"""
@@ -1027,35 +1239,35 @@ def render_neighbourhood_demographic_card(row) -> str:
 
     return f"""
     <div style="
-        background:#ffffff; border:1px solid #ECEEF3; border-radius:16px;
-        box-shadow:0 8px 20px rgba(17,24,39,0.05); padding:18px 22px; margin-bottom:8px;
+        background:#FFFCF8; border:1px solid #E2D8CC; border-radius:16px;
+        box-shadow:0 8px 20px rgba(18, 49, 17, 0.06); padding:18px 22px; margin-bottom:8px;
     ">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
-            <span style="color:#6F5CFF;">{ICON_MAP_PIN}</span>
-            <div style="font-size:18px; font-weight:800; color:#2f3240;">
+            <span style="color:#123111;">{ICON_MAP_PIN}</span>
+            <div style="font-size:18px; font-weight:800; color:#123111;">
                 {html.escape(display_value(row.get("Neighbourhood")))} — Who lives here
             </div>
         </div>
-        <div style="font-size:14px; color:#4b5563; line-height:1.6; margin-bottom:12px;">
+        <div style="font-size:14px; color:#3D4A3C; line-height:1.6; margin-bottom:12px;">
             {html.escape(display_value(row.get("Summary")))}
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:12px;">
             <div style="flex:1; min-width:180px;">
-                <div style="font-size:12px; color:#9096a3; font-weight:600; margin-bottom:2px;">DOMINANT SEGMENTS</div>
-                <div style="font-size:13px; color:#2f3240;">{html.escape(display_value(row.get("Dominant Segments")))}</div>
+                <div style="font-size:12px; color:#7A8776; font-weight:600; margin-bottom:2px;">DOMINANT SEGMENTS</div>
+                <div style="font-size:13px; color:#123111;">{html.escape(display_value(row.get("Dominant Segments")))}</div>
             </div>
             <div style="flex:1; min-width:180px;">
-                <div style="font-size:12px; color:#9096a3; font-weight:600; margin-bottom:2px;">NOTABLE COMMUNITIES</div>
-                <div style="font-size:13px; color:#2f3240;">{html.escape(display_value(row.get("Notable Communities")))}</div>
+                <div style="font-size:12px; color:#7A8776; font-weight:600; margin-bottom:2px;">NOTABLE COMMUNITIES</div>
+                <div style="font-size:13px; color:#123111;">{html.escape(display_value(row.get("Notable Communities")))}</div>
             </div>
             <div style="flex:1; min-width:180px;">
-                <div style="font-size:12px; color:#9096a3; font-weight:600; margin-bottom:2px;">SPENDING PROFILE</div>
-                <div style="font-size:13px; color:#2f3240;">{html.escape(display_value(row.get("Spending Profile")))}</div>
+                <div style="font-size:12px; color:#7A8776; font-weight:600; margin-bottom:2px;">SPENDING PROFILE</div>
+                <div style="font-size:13px; color:#123111;">{html.escape(display_value(row.get("Spending Profile")))}</div>
             </div>
         </div>
-        <div style="font-size:12px; color:#9096a3; font-weight:600; margin-bottom:6px;">SUGGESTED RANGE FOCUS</div>
+        <div style="font-size:12px; color:#7A8776; font-weight:600; margin-bottom:6px;">SUGGESTED RANGE FOCUS</div>
         <div>{chips_html}</div>
-        <div style="font-size:11px; color:#b3b8c2; margin-top:12px;">
+        <div style="font-size:11px; color:#7A8776; margin-top:12px;">
             AI-researched overview — directional only, not verified statistics. Spot-check before using for sourcing decisions.
         </div>
     </div>
@@ -1078,7 +1290,7 @@ def render_city_planning_card(city: str, status: str, country_name: str) -> str:
             f"There is no Wolt Market store inside {city}, but local producers here are already on the ranging list for nearby catchments."
         )
         chip = "In range — no store in this city"
-        chip_style = "background:#E5F0FF;color:#2F6BFF;"
+        chip_style = "background:#E7F0E4;color:#2F5D32;"
     else:
         headline = f"{city} has a live Wolt Market store"
         body = f"Producers and catchments below are the current dark-store ranging set for {city}."
@@ -1086,14 +1298,14 @@ def render_city_planning_card(city: str, status: str, country_name: str) -> str:
         chip_style = "background:#E6F4EA;color:#2E7D32;"
     return f"""
     <div style="
-        background:#F8FAFF; border:1px solid #E5EAF5; border-radius:16px;
+        background:#F3EBE0; border:1px solid #E2D8CC; border-radius:16px;
         padding:16px 20px; margin-bottom:8px;
     ">
         <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:8px;">
-            <div style="font-size:16px; font-weight:800; color:#2f3240;">{html.escape(headline)}</div>
+            <div style="font-size:16px; font-weight:800; color:#123111;">{html.escape(headline)}</div>
             <div style="display:inline-block; padding:4px 12px; border-radius:999px; font-size:12px; font-weight:700; {chip_style}">{html.escape(chip)}</div>
         </div>
-        <div style="font-size:14px; color:#4b5563; line-height:1.55;">{html.escape(body)}</div>
+        <div style="font-size:14px; color:#3D4A3C; line-height:1.55;">{html.escape(body)}</div>
     </div>
     """
 
@@ -1134,11 +1346,11 @@ def spending_bucket(spending_text) -> str:
 
 
 SPENDING_BUCKET_COLORS = {
-    "Ultra-premium": "#4B3AD5",
-    "Premium": "#6F5CFF",
-    "Mixed": "#A99BFF",
-    "Mid-range": "#C9BFFF",
-    "Budget": "#E6E1FF",
+    "Ultra-premium": "#0F330F",
+    "Premium": "#123111",
+    "Mixed": "#4F7A4A",
+    "Mid-range": "#7A9A62",
+    "Budget": "#C4D4B0",
 }
 
 # Illustrative only — not measured data. Placeholder brackets until real
@@ -1155,13 +1367,13 @@ SPENDING_BUCKET_BRACKETS = {
 def render_spend_bracket_legend() -> str:
     rows_html = "".join(
         f"""
-        <tr style="border-bottom:1px solid #ECEEF3;">
+        <tr style="border-bottom:1px solid #E2D8CC;">
             <td style="padding:8px 6px;">
                 <span style="display:inline-block; width:10px; height:10px; border-radius:50%; background:{SPENDING_BUCKET_COLORS[tier]}; margin-right:8px;"></span>
-                <span style="font-size:13px; font-weight:600; color:#2f3240;">{html.escape(tier)}</span>
+                <span style="font-size:13px; font-weight:600; color:#123111;">{html.escape(tier)}</span>
             </td>
-            <td style="padding:8px 6px; font-size:13px; color:#4b5563;">{html.escape(bracket["weekly"])}</td>
-            <td style="padding:8px 6px; font-size:13px; color:#4b5563;">{html.escape(bracket["basket"])}</td>
+            <td style="padding:8px 6px; font-size:13px; color:#3D4A3C;">{html.escape(bracket["weekly"])}</td>
+            <td style="padding:8px 6px; font-size:13px; color:#3D4A3C;">{html.escape(bracket["basket"])}</td>
         </tr>
         """
         for tier, bracket in SPENDING_BUCKET_BRACKETS.items()
@@ -1170,15 +1382,15 @@ def render_spend_bracket_legend() -> str:
     <div>
         <table style="width:100%; border-collapse:collapse; margin-bottom:8px;">
             <thead>
-                <tr style="border-bottom:1px solid #ECEEF3;">
-                    <th style="text-align:left; padding:6px; font-size:11px; color:#9096a3; font-weight:600;">TIER</th>
-                    <th style="text-align:left; padding:6px; font-size:11px; color:#9096a3; font-weight:600;">WEEKLY FOOD SPEND</th>
-                    <th style="text-align:left; padding:6px; font-size:11px; color:#9096a3; font-weight:600;">BASKET VALUE</th>
+                <tr style="border-bottom:1px solid #E2D8CC;">
+                    <th style="text-align:left; padding:6px; font-size:11px; color:#7A8776; font-weight:600;">TIER</th>
+                    <th style="text-align:left; padding:6px; font-size:11px; color:#7A8776; font-weight:600;">WEEKLY FOOD SPEND</th>
+                    <th style="text-align:left; padding:6px; font-size:11px; color:#7A8776; font-weight:600;">BASKET VALUE</th>
                 </tr>
             </thead>
             <tbody>{rows_html}</tbody>
         </table>
-        <div style="font-size:11px; color:#b3b8c2;">
+        <div style="font-size:11px; color:#7A8776;">
             Illustrative brackets, not measured — placeholders pending real average order value (AOV) data.
         </div>
     </div>
@@ -1187,7 +1399,7 @@ def render_spend_bracket_legend() -> str:
 
 CONFIDENCE_BADGE_STYLE = {
     "High": "background:#E6F7EC; color:#2E9E4F;",
-    "Medium-High": "background:#E5F0FF; color:#2F6BFF;",
+    "Medium-High": "background:#E7F0E4; color:#2F5D32;",
     "Medium": "background:#FFF7E0; color:#F5A623;",
     "Low": "background:#FFE9E5; color:#E4572E;",
 }
@@ -1200,7 +1412,7 @@ def render_neighbourhood_full_card(row) -> str:
         chips = [c.strip() for c in recommendations.split(";") if c.strip()]
         chips_html = "".join(
             f"""<span style="
-                display:inline-block; background:#EDEBFF; color:#6F5CFF;
+                display:inline-block; background:#E7F0E4; color:#123111;
                 font-size:12px; font-weight:600; padding:5px 12px;
                 border-radius:999px; margin:0 6px 6px 0;
             ">{html.escape(c)}</span>"""
@@ -1210,15 +1422,15 @@ def render_neighbourhood_full_card(row) -> str:
     tags = get_neighbourhood_tags(row)
     tags_html = "".join(
         f"""<span style="
-            display:inline-block; background:#F5F3FF; color:#6F5CFF;
+            display:inline-block; background:#E7F0E4; color:#123111;
             font-size:11px; font-weight:700; padding:4px 10px;
-            border-radius:999px; margin:0 6px 6px 0; border:1px solid #E2DBFF;
+            border-radius:999px; margin:0 6px 6px 0; border:1px solid #C9D6C4;
         ">{html.escape(t)}</span>"""
         for t in tags
     )
 
     confidence = display_value(row.get("Confidence"))
-    confidence_style = CONFIDENCE_BADGE_STYLE.get(confidence, "background:#EEF0FF; color:#6F5CFF;")
+    confidence_style = CONFIDENCE_BADGE_STYLE.get(confidence, "background:#E7F0E4; color:#123111;")
 
     detail_fields = [
         ("AGE / LIFE-STAGE SKEW", row.get("Age Life Stage Skew")),
@@ -1229,8 +1441,8 @@ def render_neighbourhood_full_card(row) -> str:
     detail_html = "".join(
         f"""
         <div style="flex:1; min-width:200px; margin-bottom:12px;">
-            <div style="font-size:11px; color:#9096a3; font-weight:600; margin-bottom:2px;">{label}</div>
-            <div style="font-size:13px; color:#2f3240;">{html.escape(display_value(value))}</div>
+            <div style="font-size:11px; color:#7A8776; font-weight:600; margin-bottom:2px;">{label}</div>
+            <div style="font-size:13px; color:#123111;">{html.escape(display_value(value))}</div>
         </div>
         """
         for label, value in detail_fields
@@ -1238,13 +1450,13 @@ def render_neighbourhood_full_card(row) -> str:
 
     return f"""
     <div style="
-        background:#ffffff; border:1px solid #ECEEF3; border-radius:18px;
-        box-shadow:0 10px 26px rgba(17,24,39,0.06); padding:22px 26px;
+        background:#FFFCF8; border:1px solid #E2D8CC; border-radius:18px;
+        box-shadow:0 10px 26px rgba(18, 49, 17, 0.06); padding:22px 26px;
     ">
         <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:6px;">
             <div style="display:flex; align-items:center; gap:8px;">
-                <span style="color:#6F5CFF;">{ICON_MAP_PIN}</span>
-                <div style="font-size:22px; font-weight:800; color:#2f3240;">
+                <span style="color:#123111;">{ICON_MAP_PIN}</span>
+                <div style="font-size:22px; font-weight:800; color:#123111;">
                     {html.escape(display_value(row.get("Neighbourhood")))}
                 </div>
             </div>
@@ -1253,29 +1465,29 @@ def render_neighbourhood_full_card(row) -> str:
                 font-size:12px; font-weight:700; {confidence_style}
             ">Confidence: {html.escape(confidence)}</span>
         </div>
-        <div style="font-size:14px; color:#4b5563; line-height:1.6; margin:10px 0 14px 0;">
+        <div style="font-size:14px; color:#3D4A3C; line-height:1.6; margin:10px 0 14px 0;">
             {html.escape(display_value(row.get("Summary")))}
         </div>
         <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:10px;">
             <div style="flex:1; min-width:200px; margin-bottom:12px;">
-                <div style="font-size:11px; color:#9096a3; font-weight:600; margin-bottom:2px;">DOMINANT SEGMENTS</div>
-                <div style="font-size:13px; color:#2f3240;">{html.escape(display_value(row.get("Dominant Segments")))}</div>
+                <div style="font-size:11px; color:#7A8776; font-weight:600; margin-bottom:2px;">DOMINANT SEGMENTS</div>
+                <div style="font-size:13px; color:#123111;">{html.escape(display_value(row.get("Dominant Segments")))}</div>
             </div>
             <div style="flex:1; min-width:200px; margin-bottom:12px;">
-                <div style="font-size:11px; color:#9096a3; font-weight:600; margin-bottom:2px;">NOTABLE COMMUNITIES</div>
-                <div style="font-size:13px; color:#2f3240;">{html.escape(display_value(row.get("Notable Communities")))}</div>
+                <div style="font-size:11px; color:#7A8776; font-weight:600; margin-bottom:2px;">NOTABLE COMMUNITIES</div>
+                <div style="font-size:13px; color:#123111;">{html.escape(display_value(row.get("Notable Communities")))}</div>
             </div>
             <div style="flex:1; min-width:200px; margin-bottom:12px;">
-                <div style="font-size:11px; color:#9096a3; font-weight:600; margin-bottom:2px;">SPENDING PROFILE</div>
-                <div style="font-size:13px; color:#2f3240;">{html.escape(display_value(row.get("Spending Profile")))}</div>
+                <div style="font-size:11px; color:#7A8776; font-weight:600; margin-bottom:2px;">SPENDING PROFILE</div>
+                <div style="font-size:13px; color:#123111;">{html.escape(display_value(row.get("Spending Profile")))}</div>
             </div>
             {detail_html}
         </div>
-        <div style="font-size:12px; color:#9096a3; font-weight:600; margin-bottom:6px;">QUICK TAGS</div>
-        <div style="margin-bottom:12px;">{tags_html if tags_html else '<span style="font-size:12px; color:#b3b8c2;">No strong tags detected</span>'}</div>
-        <div style="font-size:12px; color:#9096a3; font-weight:600; margin-bottom:6px;">SUGGESTED RANGE FOCUS</div>
+        <div style="font-size:12px; color:#7A8776; font-weight:600; margin-bottom:6px;">QUICK TAGS</div>
+        <div style="margin-bottom:12px;">{tags_html if tags_html else '<span style="font-size:12px; color:#7A8776;">No strong tags detected</span>'}</div>
+        <div style="font-size:12px; color:#7A8776; font-weight:600; margin-bottom:6px;">SUGGESTED RANGE FOCUS</div>
         <div>{chips_html}</div>
-        <div style="font-size:11px; color:#b3b8c2; margin-top:14px;">
+        <div style="font-size:11px; color:#7A8776; margin-top:14px;">
             AI-researched overview — directional only, not verified statistics. Spot-check before using for sourcing decisions.
         </div>
     </div>
@@ -1288,7 +1500,7 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
             width:96px;
             height:96px;
             border-radius:999px;
-            background:#e9ecf7;
+            background:#E7F0E4;
             flex-shrink:0;
         "></div>
     """
@@ -1305,7 +1517,7 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
                 border-radius:999px;
                 object-fit:cover;
                 flex-shrink:0;
-                box-shadow:0 8px 18px rgba(17,24,39,0.12);
+                box-shadow:0 8px 18px rgba(18, 49, 17, 0.08);
             ">
         """
     strength_style = strength_chip_style(strength)
@@ -1324,7 +1536,7 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
     search_html = ""
     if search_message:
         search_html = f"""
-            <div style="margin-top:10px; font-size:13px; line-height:1.5; color:#374151; background:#F8FAFF; border:1px solid #E5EAF5; border-radius:10px; padding:8px 12px;">
+            <div style="margin-top:10px; font-size:13px; line-height:1.5; color:#3D4A3C; background:#F3EBE0; border:1px solid #E2D8CC; border-radius:10px; padding:8px 12px;">
                 {html.escape(display_value(search_message))}
             </div>
         """
@@ -1333,18 +1545,18 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
         display:flex;
         gap:14px;
         align-items:flex-start;
-        background:#ffffff;
-        border:1px solid #e7eaf3;
+        background:#FFFCF8;
+        border:1px solid #E2D8CC;
         border-radius:16px;
         padding:14px 16px;
-        box-shadow: 0 8px 18px rgba(17,24,39,0.05);
+        box-shadow: 0 8px 18px rgba(18, 49, 17, 0.06);
         margin-bottom:14px;
     ">
         <div style="
             width:30px;
             height:30px;
             border-radius:8px;
-            background:#4caf50;
+            background:#123111;
             color:white;
             display:flex;
             align-items:center;
@@ -1357,7 +1569,7 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
         {image_html}
         <div style="flex:1; min-width:0;">
             <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-                <div style="font-size:24px; font-weight:800; color:#2f3240;">
+                <div style="font-size:24px; font-weight:800; color:#123111;">
                     {html.escape(display_value(trend))}
                 </div>
                 <div style="
@@ -1370,7 +1582,7 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
                 ">{html.escape(display_value(strength))}</div>
                 {validation_html}
             </div>
-            <div style="margin-top:8px; font-size:14px; line-height:1.55; color:#4b5563;">
+            <div style="margin-top:8px; font-size:14px; line-height:1.55; color:#3D4A3C;">
                 {html.escape(display_value(description))}
             </div>
             {search_html}
@@ -1584,6 +1796,11 @@ def _scatter_tile_map(df, *, map_style="carto-positron", **kwargs):
     else:
         fig = px.scatter_mapbox(df, **kwargs)
         fig.update_layout(mapbox_style=map_style)
+    fig.update_layout(
+        font=dict(family="Omnes, Nunito, sans-serif", color=WM_GREEN, size=13),
+        paper_bgcolor="rgba(0,0,0,0)",
+        colorway=CATEGORY_PIE_COLORS,
+    )
     return fig
 
 
@@ -1845,6 +2062,10 @@ else:
 # -----------------------
 # SIDEBAR FILTERS
 # -----------------------
+st.sidebar.markdown(
+    clean_html('<div class="wm-hand">Enjoy! <span>♥</span></div>'),
+    unsafe_allow_html=True,
+)
 st.sidebar.title("Filters")
 selected_country_label = st.sidebar.selectbox("Country", country_options, index=default_country_index)
 selected_country_code = None if selected_country_label == "All countries" else label_to_code.get(selected_country_label)
@@ -2057,13 +2278,13 @@ with tab_range:
 
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     with kpi1:
-        st.markdown(clean_html(top_metric_card("Total Producers", len(filtered_df), producer_scope, icon=ICON_USERS, icon_bg="#EDEBFF", icon_color="#6F5CFF", card_bg="#F5F3FF")), unsafe_allow_html=True)
+        st.markdown(clean_html(top_metric_card("Total Producers", len(filtered_df), producer_scope, icon=ICON_USERS, icon_bg="#E7F0E4", icon_color="#123111", card_bg="#E7F0E4")), unsafe_allow_html=True)
     with kpi2:
-        st.markdown(clean_html(top_metric_card("Neighbourhoods", filtered_df["Neighbourhood"].nunique(), f"Across {MARKET_NAME}" if selected_city == "All" else f"In {selected_city}", icon=ICON_MAP_PIN, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
+        st.markdown(clean_html(top_metric_card("Neighbourhoods", filtered_df["Neighbourhood"].nunique(), f"Across {MARKET_NAME}" if selected_city == "All" else f"In {selected_city}", icon=ICON_MAP_PIN, icon_bg="#E7F0E4", icon_color="#2F5D32", card_bg="#FFFCF8")), unsafe_allow_html=True)
     with kpi3:
-        st.markdown(clean_html(top_metric_card("Categories", filtered_df["Category"].nunique(), "Artisanal categories", icon=ICON_GRID, icon_bg="#E6F7EC", icon_color="#48B26B", card_bg="#F0FBF3")), unsafe_allow_html=True)
+        st.markdown(clean_html(top_metric_card("Categories", filtered_df["Category"].nunique(), "Artisanal categories", icon=ICON_GRID, icon_bg="#E7F0E4", icon_color="#123111", card_bg="#FFFCF8")), unsafe_allow_html=True)
     with kpi4:
-        st.markdown(clean_html(top_metric_card("Mapped Rows", len(filtered_map_df), "Have coordinates", icon=ICON_MAP, icon_bg="#FFF3E0", icon_color="#F4A94E", card_bg="#FFFBF0")), unsafe_allow_html=True)
+        st.markdown(clean_html(top_metric_card("Mapped Rows", len(filtered_map_df), "Have coordinates", icon=ICON_MAP, icon_bg="#E7F0E4", icon_color="#2F5D32", card_bg="#FFFCF8")), unsafe_allow_html=True)
 
     st.markdown(f"<div style='height:{TOP_ROW_GAP}px;'></div>", unsafe_allow_html=True)
 
@@ -2137,6 +2358,8 @@ with tab_range:
             fig_donut.update_layout(
                 height=CHART_HEIGHT,
                 margin=dict(r=0, t=20, l=0, b=0),
+                font=dict(family="Omnes, Nunito, sans-serif", color=WM_GREEN, size=13),
+                paper_bgcolor="rgba(0,0,0,0)",
                 legend_title_text="Categories",
                 legend=dict(
                     orientation="v",
@@ -2169,6 +2392,8 @@ with tab_range:
             fig_nb.update_layout(
                 height=CHART_HEIGHT,
                 margin=dict(r=0, t=20, l=0, b=0),
+                font=dict(family="Omnes, Nunito, sans-serif", color=WM_GREEN, size=13),
+                paper_bgcolor="rgba(0,0,0,0)",
                 coloraxis_showscale=False,
                 xaxis_title="Producer count",
                 yaxis_title="",
@@ -2557,11 +2782,11 @@ with tab_trends:
         # ---- 1) Top Trend Strength + Emerging Trends + Search-validated ----
         strength_col1, strength_col2, strength_col3 = st.columns(3)
         with strength_col1:
-            st.markdown(clean_html(top_metric_card("Top Trend Strength", top_strength, top_trend_label, icon=ICON_TRENDING_UP, icon_bg="#E6F7EC", icon_color="#2E9E4F", value_color="#2E9E4F", card_bg="#F0FBF3")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Top Trend Strength", top_strength, top_trend_label, icon=ICON_TRENDING_UP, icon_bg="#E7F0E4", icon_color="#2F5D32", value_color="#123111", card_bg="#FFFCF8")), unsafe_allow_html=True)
         with strength_col2:
-            st.markdown(clean_html(top_metric_card("Emerging Trends", emerging_count, f"Key {MARKET_NAME} themes identified", icon=ICON_LIGHTBULB, icon_bg="#FFF7E0", icon_color="#F5A623", card_bg="#FFFBF0")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Emerging Trends", emerging_count, f"Key {MARKET_NAME} themes identified", icon=ICON_LIGHTBULB, icon_bg="#E7F0E4", icon_color="#123111", card_bg="#FFFCF8")), unsafe_allow_html=True)
         with strength_col3:
-            st.markdown(clean_html(top_metric_card("Search-validated", search_metric_value, "Creator trends with 200+ matching app searches", icon=ICON_SEARCH, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Search-validated", search_metric_value, "Creator trends with 200+ matching app searches", icon=ICON_SEARCH, icon_bg="#E7F0E4", icon_color="#2F5D32", card_bg="#FFFCF8")), unsafe_allow_html=True)
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
@@ -2601,9 +2826,9 @@ with tab_trends:
         # ---- 3) Total Creators + Total Followers (full width) ----
         creator_col1, creator_col2 = st.columns(2)
         with creator_col1:
-            st.markdown(clean_html(top_metric_card("Total Creators", creator_count, f"Tracked {MARKET_NAME} food creators", icon=ICON_USERS, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Total Creators", creator_count, f"Tracked {MARKET_NAME} food creators", icon=ICON_USERS, icon_bg="#E7F0E4", icon_color="#2F5D32", card_bg="#FFFCF8")), unsafe_allow_html=True)
         with creator_col2:
-            st.markdown(clean_html(top_metric_card("Total Followers", f"{total_followers:,}", "Combined audience", icon=ICON_USER_GROUP, icon_bg="#EDEBFF", icon_color="#6F5CFF", card_bg="#F5F3FF")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Total Followers", f"{total_followers:,}", "Combined audience", icon=ICON_USER_GROUP, icon_bg="#E7F0E4", icon_color="#123111", card_bg="#E7F0E4")), unsafe_allow_html=True)
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
@@ -2645,7 +2870,7 @@ with tab_trends:
                     values="Count",
                     hole=0.62,
                     color="Platform",
-                    color_discrete_sequence=["#6F5CFF", "#4B3AD5", "#B8ADFF"],
+                    color_discrete_sequence=["#123111", "#2F5D32", "#7A9A62"],
                 )
                 fig_platform.update_traces(
                     textinfo="none",
@@ -2654,6 +2879,8 @@ with tab_trends:
                 fig_platform.update_layout(
                     height=300,
                     margin=dict(r=0, t=20, l=0, b=0),
+                    font=dict(family="Omnes, Nunito, sans-serif", color=WM_GREEN, size=13),
+                    paper_bgcolor="rgba(0,0,0,0)",
                     showlegend=True,
                     legend_title_text="",
                 )
@@ -2676,6 +2903,8 @@ with tab_trends:
                 fig_focus.update_layout(
                     height=300,
                     margin=dict(r=0, t=20, l=0, b=0),
+                    font=dict(family="Omnes, Nunito, sans-serif", color=WM_GREEN, size=13),
+                    paper_bgcolor="rgba(0,0,0,0)",
                     coloraxis_showscale=False,
                     xaxis_title="Number of Creators",
                     yaxis_title="",
@@ -2697,8 +2926,8 @@ with tab_trends:
             """
             <style>
                 div[data-testid="stCode"], div[data-testid="stCodeBlock"] {
-                    background-color: #FFF7E0 !important;
-                    border: 1px solid #F5E6B8 !important;
+                    background-color: #FFFCF8 !important;
+                    border: 1px solid #E2D8CC !important;
                     border-top: none !important;
                     border-radius: 0 0 16px 16px !important;
                     margin-top: -14px !important;
@@ -2706,10 +2935,10 @@ with tab_trends:
                 div[data-testid="stCode"] pre, div[data-testid="stCodeBlock"] pre {
                     background-color: transparent !important;
                     font-size: 12px !important;
-                    line-height: 1.6 !important;
+                    line-height: 1.2 !important;
                 }
                 div[data-testid="stCode"] code, div[data-testid="stCodeBlock"] code {
-                    color: #5a4a1a !important;
+                    color: #123111 !important;
                 }
             </style>
             """,
@@ -2755,13 +2984,13 @@ with tab_demo:
 
         demo_kpi1, demo_kpi2, demo_kpi3, demo_kpi4 = st.columns(4)
         with demo_kpi1:
-            st.markdown(clean_html(top_metric_card("Neighbourhoods Profiled", len(demo_work), "AI-researched overviews", icon=ICON_MAP_PIN, icon_bg="#E5F0FF", icon_color="#2F6BFF", card_bg="#EFF6FF")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Neighbourhoods Profiled", len(demo_work), "AI-researched overviews", icon=ICON_MAP_PIN, icon_bg="#E7F0E4", icon_color="#2F5D32", card_bg="#FFFCF8")), unsafe_allow_html=True)
         with demo_kpi2:
-            st.markdown(clean_html(top_metric_card("Halal Demand Areas", int(halal_count), "Flagged for halal range", icon=ICON_USERS, icon_bg="#E6F7EC", icon_color="#2E9E4F", card_bg="#F0FBF3")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Halal Demand Areas", int(halal_count), "Flagged for halal range", icon=ICON_USERS, icon_bg="#E7F0E4", icon_color="#2F5D32", card_bg="#FFFCF8")), unsafe_allow_html=True)
         with demo_kpi3:
-            st.markdown(clean_html(top_metric_card("Vegan / Plant-based Areas", int(vegan_count), "Flagged for plant-based range", icon=ICON_GRID, icon_bg="#EDEBFF", icon_color="#6F5CFF", card_bg="#F5F3FF")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Vegan / Plant-based Areas", int(vegan_count), "Flagged for plant-based range", icon=ICON_GRID, icon_bg="#E7F0E4", icon_color="#123111", card_bg="#E7F0E4")), unsafe_allow_html=True)
         with demo_kpi4:
-            st.markdown(clean_html(top_metric_card("Premium-Tier Areas", int(premium_count), "Flagged for premium range", icon=ICON_TRENDING_UP, icon_bg="#FFF3E0", icon_color="#F4A94E", card_bg="#FFFBF0")), unsafe_allow_html=True)
+            st.markdown(clean_html(top_metric_card("Premium-Tier Areas", int(premium_count), "Flagged for premium range", icon=ICON_TRENDING_UP, icon_bg="#E7F0E4", icon_color="#123111", card_bg="#FFFCF8")), unsafe_allow_html=True)
 
         st.markdown(f"<div style='height:{TOP_ROW_GAP}px;'></div>", unsafe_allow_html=True)
 
@@ -2864,15 +3093,15 @@ with tab_demo:
             else:
                 chips = "".join(
                     f"""<span style="
-                        display:inline-block; background:#F5F3FF; color:#6F5CFF; border:1px solid #E2DBFF;
+                        display:inline-block; background:#E7F0E4; color:#123111; border:1px solid #C9D6C4;
                         font-size:13px; font-weight:700; padding:7px 14px; border-radius:999px; margin:0 8px 8px 0;
                     ">{html.escape(n)}</span>"""
                     for n in matching["Neighbourhood"].tolist()
                 )
                 st.markdown(
                     clean_html(f"""
-                    <div style="background:#ffffff; border:1px solid #ECEEF3; border-radius:16px; padding:16px 20px; box-shadow:0 8px 20px rgba(17,24,39,0.05);">
-                        <div style="font-size:12px; color:#9096a3; font-weight:600; margin-bottom:10px;">{len(matching)} MATCHING AREAS</div>
+                    <div style="background:#FFFCF8; border:1px solid #E2D8CC; border-radius:16px; padding:16px 20px; box-shadow:0 8px 20px rgba(18, 49, 17, 0.06);">
+                        <div style="font-size:12px; color:#7A8776; font-weight:600; margin-bottom:10px;">{len(matching)} MATCHING AREAS</div>
                         {chips}
                     </div>
                     """),
@@ -2898,6 +3127,8 @@ with tab_demo:
                 fig_bucket.update_layout(
                     height=320,
                     margin=dict(r=0, t=20, l=0, b=0),
+                    font=dict(family="Omnes, Nunito, sans-serif", color=WM_GREEN, size=13),
+                    paper_bgcolor="rgba(0,0,0,0)",
                     showlegend=False,
                 )
                 st.plotly_chart(fig_bucket, use_container_width=True)
