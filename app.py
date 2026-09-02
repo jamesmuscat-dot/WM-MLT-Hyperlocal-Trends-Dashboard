@@ -458,6 +458,82 @@ def _choice_values(series) -> list:
     return sorted(vals.unique().tolist())
 
 
+# Long / high-cardinality columns — always a contains box, never a dropdown.
+_HEADER_TEXT_FILTER_COLS = {
+    "Producer",
+    "Matched WM vendor",
+    "Also ranged in",
+    "Key Products/Specialties",
+    "Website / IG",
+    "Email",
+    "Press Mentions",
+    "Selection Rationale",
+}
+_HEADER_FILTER_SELECT_MAX = 20
+
+
+def _series_as_filter_text(series: pd.Series) -> pd.Series:
+    s = series.fillna("").astype(str).str.strip()
+    return s.replace({"": "N/A", "nan": "N/A", "None": "N/A", "<NA>": "N/A"})
+
+
+def apply_column_header_filters(df: pd.DataFrame, key_prefix: str) -> pd.DataFrame:
+    """One filter widget per column, sitting above the table like header filters.
+
+    Low-cardinality columns get a dropdown (All + values). Everything else is a
+    contains search. Options are taken from the unfiltered frame so a tight
+    filter on one column does not empty the other dropdowns.
+    """
+    if df is None or df.empty:
+        return df
+    cols = list(df.columns)
+    out = df
+    n_per_row = 5
+    st.caption(
+        "Each box filters that column. Set **Supplier status** to New lead to hide "
+        "producers already on the Wolt Market supplier list."
+    )
+    for start in range(0, len(cols), n_per_row):
+        chunk = cols[start : start + n_per_row]
+        slots = st.columns(len(chunk))
+        for col_name, slot in zip(chunk, slots):
+            with slot:
+                full_text = _series_as_filter_text(df[col_name])
+                unique_vals = sorted(
+                    full_text.unique().tolist(),
+                    key=lambda x: (str(x).upper() == "N/A", str(x).lower()),
+                )
+                widget_key = f"{key_prefix}::{col_name}"
+                use_select = (
+                    col_name not in _HEADER_TEXT_FILTER_COLS
+                    and 1 < len(unique_vals) <= _HEADER_FILTER_SELECT_MAX
+                )
+                if use_select:
+                    picked = st.selectbox(
+                        col_name,
+                        options=["All"] + unique_vals,
+                        index=0,
+                        key=widget_key,
+                    )
+                    if picked != "All":
+                        out_text = _series_as_filter_text(out[col_name])
+                        out = out[out_text == picked]
+                else:
+                    query = st.text_input(
+                        col_name,
+                        value="",
+                        placeholder="Contains…",
+                        key=widget_key,
+                    )
+                    needle = str(query).strip()
+                    if needle:
+                        out_text = _series_as_filter_text(out[col_name])
+                        out = out[
+                            out_text.str.contains(re.escape(needle), case=False, na=False)
+                        ]
+    return out
+
+
 def esc(value):
     return html.escape(display_value(value))
 
@@ -465,6 +541,81 @@ def esc(value):
 def is_valid_link(value):
     text = str(value).strip()
     return text.startswith("http://") or text.startswith("https://")
+
+
+def to_http_url(value) -> str:
+    text = str(value or "").strip()
+    if text.lower() in {"", "n/a", "nan", "none", "-"}:
+        return ""
+    if text.startswith("http://") or text.startswith("https://"):
+        return text
+    if text.startswith("www."):
+        return "https://" + text
+    if re.match(r"^(instagram|facebook|fb)\.com/", text, re.I):
+        return "https://" + text
+    if text.startswith("@") and " " not in text:
+        handle = text[1:].split("/")[0]
+        if handle:
+            return f"https://www.instagram.com/{handle}/"
+    return ""
+
+
+def is_valid_email(value) -> bool:
+    text = str(value or "").strip()
+    if text.lower().startswith("mailto:"):
+        text = text[7:].strip()
+    if text.lower() in {"", "n/a", "nan", "none", "-"}:
+        return False
+    return bool(re.fullmatch(r"[^@\s]+@[^@\s]+\.[^@\s]+", text))
+
+
+def to_mailto_url(value) -> str:
+    text = str(value or "").strip()
+    if text.lower().startswith("mailto:"):
+        text = text[7:].strip()
+    if not is_valid_email(text):
+        return ""
+    return f"mailto:{text}"
+
+
+def _blank_non_urls(series: pd.Series) -> pd.Series:
+    return series.map(to_http_url).replace({"": None})
+
+
+def _mailto_or_blank(series: pd.Series) -> pd.Series:
+    return series.map(to_mailto_url).replace({"": None})
+
+
+def producer_table_view(df: pd.DataFrame) -> pd.DataFrame:
+    """Copy for st.dataframe: real URLs stay, N/A becomes blank so LinkColumn works."""
+    view = df.copy()
+    if "Website / IG" in view.columns:
+        view["Website / IG"] = _blank_non_urls(view["Website / IG"])
+    if "Email" in view.columns:
+        view["Email"] = _mailto_or_blank(view["Email"])
+    return view
+
+
+def producer_table_column_config(df: pd.DataFrame) -> dict:
+    cfg = {}
+    if "Website / IG" in df.columns:
+        cfg["Website / IG"] = st.column_config.LinkColumn(
+            "Website / IG",
+            help="Opens the producer website or Instagram.",
+        )
+    if "Email" in df.columns:
+        try:
+            cfg["Email"] = st.column_config.LinkColumn(
+                "Email",
+                display_text=r"mailto:(.+)",
+                help="Opens your email app to this producer.",
+            )
+        except TypeError:
+            cfg["Email"] = st.column_config.LinkColumn(
+                "Email",
+                help="Opens your email app to this producer.",
+            )
+    return cfg
 
 
 def safe_followers_text(value):
@@ -1794,9 +1945,13 @@ def collapse_duplicate_producers(df: pd.DataFrame) -> pd.DataFrame:
     for _, group in work.groupby("_identity", sort=False):
         group = group.copy()
         websites = group["Website / IG"].astype(str) if "Website / IG" in group.columns else pd.Series([""] * len(group), index=group.index)
-        ranked = group.assign(_web=websites.where(~websites.isin({"", "N/A", "nan", "None"}), other=""))
-        ranked = ranked.sort_values("_web", ascending=False)
-        keep = ranked.iloc[0].drop(labels=["_web"], errors="ignore")
+        emails = group["Email"].astype(str) if "Email" in group.columns else pd.Series([""] * len(group), index=group.index)
+        ranked = group.assign(
+            _web=websites.where(~websites.isin({"", "N/A", "nan", "None"}), other=""),
+            _em=emails.where(~emails.isin({"", "N/A", "nan", "None"}), other=""),
+        )
+        ranked = ranked.sort_values(["_web", "_em"], ascending=False)
+        keep = ranked.iloc[0].drop(labels=["_web", "_em"], errors="ignore")
         neighbourhoods = []
         if "Neighbourhood" in group.columns:
             neighbourhoods = [
@@ -2094,7 +2249,14 @@ def load_all_market_data(fingerprint: str = ""):
     search_out = _concat(searches)
     vendors_out = _concat(vendors)
     trends_out = _attach_search_validation(trends_out, search_out)
-    producers_out = annotate_producer_listing(_concat(producers), vendors_out)
+    producers_out = _concat(producers)
+    if not producers_out.empty and "Email" not in producers_out.columns:
+        if "Website / IG" in producers_out.columns:
+            insert_at = list(producers_out.columns).index("Website / IG") + 1
+            producers_out.insert(insert_at, "Email", "N/A")
+        else:
+            producers_out["Email"] = "N/A"
+    producers_out = annotate_producer_listing(producers_out, vendors_out)
     return (
         registry,
         producers_out,
@@ -2743,12 +2905,6 @@ with tab_range:
         extra_caption += " Showing producers not already on the WM supplier list."
     elif supplier_mode == "Already listed":
         extra_caption += " Showing producers already on the WM supplier list."
-    st.caption(
-        f"Showing {len(display_df)} of {len(scored_df)} producers "
-        f"across {display_df['Neighbourhood'].nunique() if 'Neighbourhood' in display_df.columns else 0} neighbourhoods. "
-        "Google rating and review filters stay off at 0, because most producers are not rated yet."
-        + extra_caption
-    )
     table_df = display_df.copy()
     drop_cols = [c for c in ["Listing kind", "Scale", "_identity", "_web"] if c in table_df.columns]
     if drop_cols:
@@ -2759,10 +2915,27 @@ with tab_range:
         insert_at = preferred.index("Producer") + 1
         preferred = preferred[:insert_at] + front_cols + preferred[insert_at:]
     preferred = list(dict.fromkeys(preferred))
+    if "Email" in table_df.columns:
+        preferred = [c for c in preferred if c != "Email"]
+        if "Website / IG" in preferred:
+            insert_at = preferred.index("Website / IG") + 1
+            preferred = preferred[:insert_at] + ["Email"] + preferred[insert_at:]
+        else:
+            preferred.append("Email")
+    table_df = table_df.loc[:, preferred].reset_index(drop=True)
+    table_df = apply_column_header_filters(table_df, key_prefix="prod_db_hdr")
+    st.caption(
+        f"Showing {len(table_df)} of {len(scored_df)} producers "
+        f"across {table_df['Neighbourhood'].nunique() if 'Neighbourhood' in table_df.columns and not table_df.empty else 0} neighbourhoods. "
+        "Google rating and review filters stay off at 0, because most producers are not rated yet."
+        + extra_caption
+    )
     st.dataframe(
-        table_df.loc[:, preferred].reset_index(drop=True),
+        producer_table_view(table_df),
         use_container_width=True,
         height=620,
+        hide_index=True,
+        column_config=producer_table_column_config(table_df),
     )
 
     st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
@@ -2821,10 +2994,22 @@ with tab_range:
             st.write(display_value(producer_data["Selection Rationale"]))
             st.divider()
             st.markdown("### Website / IG")
-            if is_valid_link(producer_data["Website / IG"]):
+            web_url = to_http_url(producer_data.get("Website / IG"))
+            if web_url:
                 st.link_button(
                     "Open producer link",
-                    producer_data["Website / IG"],
+                    web_url,
+                    use_container_width=True,
+                )
+            else:
+                st.write("-")
+            st.divider()
+            st.markdown("### Email")
+            email_url = to_mailto_url(producer_data.get("Email"))
+            if email_url:
+                st.link_button(
+                    str(producer_data.get("Email", "")).replace("mailto:", "").strip(),
+                    email_url,
                     use_container_width=True,
                 )
             else:
