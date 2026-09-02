@@ -2750,16 +2750,17 @@ with tab_range:
         + extra_caption
     )
     table_df = display_df.copy()
-    drop_cols = [c for c in ["Listing kind", "Scale"] if c in table_df.columns]
+    drop_cols = [c for c in ["Listing kind", "Scale", "_identity", "_web"] if c in table_df.columns]
     if drop_cols:
         table_df = table_df.drop(columns=drop_cols)
-    preferred = [c for c in table_df.columns if c not in {"Supplier status", "Matched WM vendor"}]
+    front_cols = [c for c in ["Supplier status", "Matched WM vendor", "Also ranged in"] if c in table_df.columns]
+    preferred = [c for c in table_df.columns if c not in set(front_cols)]
     if "Producer" in preferred:
         insert_at = preferred.index("Producer") + 1
-        status_cols = [c for c in ["Supplier status", "Matched WM vendor", "Also ranged in"] if c in table_df.columns]
-        preferred = preferred[:insert_at] + status_cols + preferred[insert_at:]
+        preferred = preferred[:insert_at] + front_cols + preferred[insert_at:]
+    preferred = list(dict.fromkeys(preferred))
     st.dataframe(
-        table_df[preferred].reset_index(drop=True),
+        table_df.loc[:, preferred].reset_index(drop=True),
         use_container_width=True,
         height=620,
     )
