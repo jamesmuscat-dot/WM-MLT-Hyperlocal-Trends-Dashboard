@@ -213,7 +213,7 @@ st.markdown(
         }}
         .wm-hand {{
             font-family: {FONT_HAND} !important;
-            font-size: 26px;
+            font-size: 28px;
             font-weight: 500;
             color: {WM_GREEN};
             line-height: 1.2;
@@ -222,7 +222,6 @@ st.markdown(
             display: inline-block;
             margin: 4px 0 10px 2px;
         }}
-        .wm-hand span {{ font-size: 20px; }}
         div[data-testid="stAlert"] {{
             background: {WM_MINT};
             border: 1px solid {WM_BORDER};
@@ -1648,6 +1647,64 @@ def normalize_supplier_name(text: str) -> str:
     return re.sub(r"\s+", " ", text).strip()
 
 
+def producer_identity(name: str) -> str:
+    """Stable key so 'KEAN' and 'KEAN / local water' count as one producer."""
+    raw = str(name or "")
+    raw = re.sub(r"\([^)]*\)", " ", raw)
+    raw = raw.split("/")[0]
+    return normalize_supplier_name(raw)
+
+
+def producer_match_candidates(name: str) -> list:
+    """Names to try against the WM vendor list, including slash-separated brands."""
+    raw = str(name or "").strip()
+    parts = [raw]
+    for chunk in re.split(r"[/,]", raw):
+        chunk = chunk.strip()
+        if chunk and chunk not in parts:
+            parts.append(chunk)
+    keys = []
+    seen = set()
+    for part in parts:
+        key = normalize_supplier_name(re.sub(r"\([^)]*\)", " ", part))
+        if key and key not in seen:
+            seen.add(key)
+            keys.append(key)
+    return keys
+
+
+# Island-wide / export factory brands. Always excluded from Hyperlocal Range.
+NATIONAL_PRODUCER_KEYS = {
+    "CYP": {"kean", "charalambides christis", "charalambides", "pittas", "keo"},
+    "MLT": {"farsons", "farsons cask", "kinnie"},
+    "AZE": {"badamli", "sirab"},
+}
+
+# Same physical store, two names CMs search for.
+CITY_FILTER_ALIASES = {
+    ("CYP", "Paralimni"): ["Paralimni", "Ammochostos"],
+    ("CYP", "Ammochostos"): ["Ammochostos", "Paralimni"],
+}
+
+
+def city_filter_values(country: str, city: str):
+    if not city or city == "All":
+        return None
+    return CITY_FILTER_ALIASES.get((str(country or ""), str(city)), [city])
+
+
+def infer_producer_scale(country: str, name: str, existing: str = "") -> str:
+    folded = normalize_supplier_name(name)
+    ident = producer_identity(name)
+    keys = NATIONAL_PRODUCER_KEYS.get(str(country).strip(), set())
+    if ident in keys or any(k == ident or f" {k} " in f" {folded} " for k in keys):
+        return "National"
+    current = str(existing or "").strip().title()
+    if current in {"National", "Hyperlocal"}:
+        return current
+    return "Hyperlocal"
+
+
 def is_retail_chain_name(name: str) -> bool:
     raw = str(name or "")
     folded = normalize_supplier_name(raw)
@@ -1655,6 +1712,9 @@ def is_retail_chain_name(name: str) -> bool:
     if any(needle in folded or needle in lowered for needle in RETAIL_CHAIN_NEEDLES):
         return True
     return any(rx.search(raw) or rx.search(folded) for rx in RETAIL_CHAIN_REGEXES)
+
+
+_SKIP_VENDOR_KEYS = {"and", "the", "ltd", "co", "cyprus", "wolt", "market", "vendor"}
 
 
 def _vendor_alias_index(vendors_df: pd.DataFrame) -> dict:
@@ -1672,42 +1732,84 @@ def _vendor_alias_index(vendors_df: pd.DataFrame) -> dict:
         skus = pd.to_numeric(pd.Series([row.get("SKUs")]), errors="coerce").iloc[0]
         skus = int(skus) if pd.notna(skus) else 0
         key = normalize_supplier_name(vendor)
-        if len(key) < 5:
+        if len(key) < 3 or key in _SKIP_VENDOR_KEYS:
             continue
         index.setdefault(country, []).append((key, vendor, skus))
     return index
 
 
-def match_producer_to_vendor(producer_name: str, aliases) -> tuple[str, float]:
+def _whole_word(needle: str, haystack: str) -> bool:
+    if not needle or not haystack:
+        return False
+    return bool(re.search(rf"(^|\s){re.escape(needle)}(\s|$)", haystack))
+
+
+def _score_name_against_alias(name: str, alias: str) -> float:
+    if not name or not alias:
+        return 0.0
+    if name == alias:
+        return 1.0
+    if _whole_word(alias, name) or _whole_word(name, alias):
+        return 0.97 if min(len(alias), len(name)) >= 3 else 0.0
+    if alias in name or name in alias:
+        shorter = alias if len(alias) <= len(name) else name
+        if len(shorter) >= 8:
+            return 0.96 if alias in name else 0.93
+        return SequenceMatcher(None, name, alias).ratio()
+    score = SequenceMatcher(None, name, alias).ratio()
+    tokens = [token for token in name.split() if len(token) >= 4]
+    if len(tokens) >= 2 and all(token in alias for token in tokens):
+        score = max(score, 0.9)
+    return score
+
+
+def match_producer_to_vendor(producer_name: str, aliases) -> tuple:
     if not aliases:
-        return "", 0.0
-    name = normalize_supplier_name(producer_name)
-    if not name:
         return "", 0.0
     best_vendor = ""
     best_score = 0.0
     best_skus = -1
-    for alias, vendor, skus in aliases:
-        if name == alias:
-            score = 1.0
-        elif alias in name or name in alias:
-            shorter = alias if len(alias) <= len(name) else name
-            if len(shorter) < 10:
-                score = SequenceMatcher(None, name, alias).ratio()
-            else:
-                score = 0.96 if alias in name else 0.93
-        else:
-            score = SequenceMatcher(None, name, alias).ratio()
-            tokens = [token for token in name.split() if len(token) >= 5]
-            if len(tokens) >= 2 and all(token in alias for token in tokens):
-                score = max(score, 0.9)
-        if score > best_score or (abs(score - best_score) < 1e-9 and skus > best_skus):
-            best_score = score
-            best_vendor = vendor
-            best_skus = skus
+    for name in producer_match_candidates(producer_name):
+        for alias, vendor, skus in aliases:
+            score = _score_name_against_alias(name, alias)
+            if score > best_score or (abs(score - best_score) < 1e-9 and skus > best_skus):
+                best_score = score
+                best_vendor = vendor
+                best_skus = skus
     if best_score >= 0.86:
         return best_vendor, best_score
     return "", 0.0
+
+
+def collapse_duplicate_producers(df: pd.DataFrame) -> pd.DataFrame:
+    """One row per producer identity; extra catchments go in 'Also ranged in'."""
+    if df is None or df.empty or "Producer" not in df.columns:
+        return df
+    work = df.copy()
+    work["_identity"] = work["Producer"].map(producer_identity)
+    work = work[work["_identity"] != ""]
+    if work.empty:
+        return df
+    rows = []
+    for _, group in work.groupby("_identity", sort=False):
+        group = group.copy()
+        websites = group["Website / IG"].astype(str) if "Website / IG" in group.columns else pd.Series([""] * len(group), index=group.index)
+        ranked = group.assign(_web=websites.where(~websites.isin({"", "N/A", "nan", "None"}), other=""))
+        ranked = ranked.sort_values("_web", ascending=False)
+        keep = ranked.iloc[0].drop(labels=["_web"], errors="ignore")
+        neighbourhoods = []
+        if "Neighbourhood" in group.columns:
+            neighbourhoods = [
+                str(n).strip()
+                for n in group["Neighbourhood"].tolist()
+                if str(n).strip() not in {"", "N/A", "nan", "None"}
+            ]
+        unique_nb = list(dict.fromkeys(neighbourhoods))
+        primary = str(keep.get("Neighbourhood", "")).strip()
+        extras = [n for n in unique_nb if n != primary]
+        keep["Also ranged in"] = "; ".join(extras) if extras else "N/A"
+        rows.append(keep.drop(labels=["_identity"], errors="ignore"))
+    return pd.DataFrame(rows).reset_index(drop=True)
 
 
 def annotate_producer_listing(producers: pd.DataFrame, vendors: pd.DataFrame) -> pd.DataFrame:
@@ -1718,6 +1820,7 @@ def annotate_producer_listing(producers: pd.DataFrame, vendors: pd.DataFrame) ->
     statuses = []
     matched = []
     kinds = []
+    scales = []
     for _, row in out.iterrows():
         name = str(row.get("Producer", "")).strip()
         country = str(row.get("Country", "")).strip()
@@ -1737,10 +1840,12 @@ def annotate_producer_listing(producers: pd.DataFrame, vendors: pd.DataFrame) ->
             kinds.append("new_lead")
             statuses.append("New lead")
             matched.append("N/A")
+        scales.append(infer_producer_scale(country, name, str(row.get("Scale", ""))))
         _ = score
     out["Listing kind"] = kinds
     out["Supplier status"] = statuses
     out["Matched WM vendor"] = matched
+    out["Scale"] = scales
     return out
 
 
@@ -2069,7 +2174,7 @@ else:
 # SIDEBAR FILTERS
 # -----------------------
 st.sidebar.markdown(
-    clean_html('<div class="wm-hand">Enjoy! <span>♥</span></div>'),
+    clean_html('<div class="wm-hand">Wolt Market</div>'),
     unsafe_allow_html=True,
 )
 st.sidebar.title("Filters")
@@ -2102,6 +2207,11 @@ if selected_country_code:
 else:
     MARKET_NAME = "Wolt Market"
     MAP_CENTER, MAP_ZOOM = map_view_for(df)
+
+national_hidden = 0
+if "Scale" in df.columns:
+    national_hidden = int((df["Scale"].astype(str) == "National").sum())
+    df = df[df["Scale"].astype(str) != "National"].copy()
 
 if not creators_df.empty and "Name / Handle" in creators_df.columns:
     creators_df["Profile Pic"] = creators_df["Name / Handle"].apply(resolve_creator_pic)
@@ -2179,7 +2289,7 @@ hide_retail_chains = st.sidebar.checkbox(
 supplier_mode = st.sidebar.selectbox(
     "WM supplier list",
     ["All", "New leads only", "Already listed"],
-    help="Match against vendors.csv (Malta WM offering). Existing suppliers stay visible unless you choose New leads only.",
+    help="Match against vendors.csv for this country. Existing suppliers stay visible unless you choose New leads only.",
 )
 if all_vendors_df is None or all_vendors_df.empty:
     st.sidebar.caption("No vendors.csv for this market yet — supplier matching is off.")
@@ -2192,7 +2302,8 @@ elif selected_country_code:
 
 city_scope_df = df.copy()
 if "City" in df.columns and selected_city != "All":
-    city_scope_df = city_scope_df[city_scope_df["City"].astype(str).str.strip() == selected_city]
+    city_vals = city_filter_values(selected_country_code, selected_city)
+    city_scope_df = city_scope_df[city_scope_df["City"].astype(str).str.strip().isin(city_vals)]
 if hide_retail_chains and "Listing kind" in city_scope_df.columns:
     city_scope_df = city_scope_df[city_scope_df["Listing kind"] != "retail_chain"]
 if supplier_mode == "New leads only" and "Listing kind" in city_scope_df.columns:
@@ -2202,7 +2313,9 @@ elif supplier_mode == "Already listed" and "Listing kind" in city_scope_df.colum
 
 nbhd_names = _choice_values(city_scope_df["Neighbourhood"])
 if selected_city != "All" and not demographics_df.empty and "City" in demographics_df.columns:
-    demo_city = demographics_df[demographics_df["City"].astype(str).str.strip() == selected_city]
+    demo_city = demographics_df[
+        demographics_df["City"].astype(str).str.strip().isin(city_filter_values(selected_country_code, selected_city))
+    ]
     for name in _choice_values(demo_city["Neighbourhood"]):
         if name not in nbhd_names:
             nbhd_names.append(name)
@@ -2231,7 +2344,9 @@ show_only_mapped = st.sidebar.checkbox("Show only rows with coordinates", value=
 filtered_df = df.copy()
 
 if "City" in df.columns and selected_city != "All":
-    filtered_df = filtered_df[filtered_df["City"].astype(str).str.strip() == selected_city]
+    city_vals = city_filter_values(selected_country_code, selected_city)
+    city_match = filtered_df["City"].astype(str).str.strip().isin(city_vals)
+    filtered_df = filtered_df[city_match]
 
 if selected_neighbourhood != "All":
     filtered_df = filtered_df[filtered_df["Neighbourhood"] == selected_neighbourhood]
@@ -2255,6 +2370,7 @@ elif supplier_mode == "Already listed" and "Listing kind" in filtered_df.columns
 if show_only_mapped:
     filtered_df = filtered_df.dropna(subset=["Latitude_num", "Longitude_num"])
 
+filtered_df = collapse_duplicate_producers(filtered_df)
 filtered_map_df = filtered_df.dropna(subset=["Latitude_num", "Longitude_num"]).copy()
 
 # -----------------------
@@ -2297,7 +2413,7 @@ with tab_range:
     if "Listing kind" in df.columns:
         scope = df.copy()
         if "City" in scope.columns and selected_city != "All":
-            scope = scope[scope["City"].astype(str).str.strip() == selected_city]
+            scope = scope[scope["City"].astype(str).str.strip().isin(city_filter_values(selected_country_code, selected_city))]
         hidden_chains = int((scope["Listing kind"] == "retail_chain").sum())
         already = int((filtered_df["Listing kind"] == "existing_supplier").sum()) if "Listing kind" in filtered_df.columns else 0
         bits = []
@@ -2307,6 +2423,11 @@ with tab_range:
             bits.append(f"{already} already on the WM supplier list")
         if bits:
             st.caption(" · ".join(bits) + ". Uncheck the sidebar box or choose Already listed to see them.")
+    if national_hidden:
+        st.caption(
+            f"{national_hidden} island-wide / national brands excluded. "
+            "This tab is catchment makers only."
+        )
 
     if filtered_df.empty and selected_city_status == "Expansion":
         st.info(
@@ -2629,12 +2750,13 @@ with tab_range:
         + extra_caption
     )
     table_df = display_df.copy()
-    if "Listing kind" in table_df.columns:
-        table_df = table_df.drop(columns=["Listing kind"])
+    drop_cols = [c for c in ["Listing kind", "Scale"] if c in table_df.columns]
+    if drop_cols:
+        table_df = table_df.drop(columns=drop_cols)
     preferred = [c for c in table_df.columns if c not in {"Supplier status", "Matched WM vendor"}]
     if "Producer" in preferred:
         insert_at = preferred.index("Producer") + 1
-        status_cols = [c for c in ["Supplier status", "Matched WM vendor"] if c in table_df.columns]
+        status_cols = [c for c in ["Supplier status", "Matched WM vendor", "Also ranged in"] if c in table_df.columns]
         preferred = preferred[:insert_at] + status_cols + preferred[insert_at:]
     st.dataframe(
         table_df[preferred].reset_index(drop=True),
@@ -2979,7 +3101,9 @@ with tab_demo:
     else:
         demo_work = demographics_df.copy()
         if selected_city != "All" and "City" in demo_work.columns:
-            demo_work = demo_work[demo_work["City"].astype(str).str.strip() == selected_city]
+            demo_work = demo_work[
+                demo_work["City"].astype(str).str.strip().isin(city_filter_values(selected_country_code, selected_city))
+            ]
         demo_work["Spending Bucket"] = demo_work["Spending Profile"].apply(spending_bucket)
         demo_work["Tags"] = demo_work.apply(get_neighbourhood_tags, axis=1)
 
