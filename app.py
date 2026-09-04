@@ -1778,6 +1778,11 @@ RETAIL_CHAIN_NEEDLES = (
     "auchan",
     "rewe",
     "edeka",
+    "sklavenitis",
+    "vassilopoulos",
+    "masoutis",
+    "my market",
+    "galaxias",
 )
 RETAIL_CHAIN_REGEXES = (
     re.compile(r"\bspar\b", re.I),
@@ -1829,6 +1834,20 @@ NATIONAL_PRODUCER_KEYS = {
     "CYP": {"kean", "charalambides christis", "charalambides", "pittas", "keo"},
     "MLT": {"farsons", "farsons cask", "kinnie"},
     "AZE": {"badamli", "sirab"},
+    "GRC": {
+        "fage",
+        "mevgal",
+        "vivartia",
+        "mythos",
+        "loux",
+        "creta farm",
+        "minerva",
+        "green cola",
+        "dodoni",
+        "athenian brewery",
+        "fix hellas",
+        "epsa",
+    },
 }
 
 # Same physical store, two names CMs search for.
