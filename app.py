@@ -1783,6 +1783,13 @@ RETAIL_CHAIN_NEEDLES = (
     "masoutis",
     "my market",
     "galaxias",
+    "alnatura",
+    "kaufland",
+    "penny markt",
+    "willys",
+    "hemkop",
+    "city gross",
+    "cba",
 )
 RETAIL_CHAIN_REGEXES = (
     re.compile(r"\bspar\b", re.I),
@@ -1791,6 +1798,8 @@ RETAIL_CHAIN_REGEXES = (
     re.compile(r"\bconvenience shops?\b", re.I),
     re.compile(r"\bgrocers\b", re.I),
     re.compile(r"\bproduce (shops|counters)\b", re.I),
+    re.compile(r"\bica\b", re.I),
+    re.compile(r"\bcoop\b", re.I),
 )
 
 
@@ -1848,12 +1857,63 @@ NATIONAL_PRODUCER_KEYS = {
         "fix hellas",
         "epsa",
     },
+    "DEU": {
+        "dr oetker",
+        "wiesenhof",
+        "ruegenwalder",
+        "rugenwalder",
+        "krombacher",
+        "bitburger",
+        "warsteiner",
+        "fritz kola",
+        "paulaner",
+        "erdinger",
+        "becks",
+    },
+    "SWE": {
+        "arla",
+        "scan",
+        "marabou",
+        "pagen",
+        "spendrups",
+        "falcon",
+        "pripps",
+        "gevalia",
+        "lofbergs",
+        "findus",
+        "felix",
+        "wasa",
+        "polarbrod",
+        "zoegas",
+    },
+    "HUN": {
+        "pick",
+        "dreher",
+        "borsodi",
+        "soproni",
+        "unicum",
+        "zwack",
+        "gyori keksz",
+        "sole mizo",
+        "alfoldi",
+        "herz",
+    },
 }
 
 # Same physical store, two names CMs search for.
 CITY_FILTER_ALIASES = {
     ("CYP", "Paralimni"): ["Paralimni", "Ammochostos"],
     ("CYP", "Ammochostos"): ["Ammochostos", "Paralimni"],
+    ("DEU", "Hanover"): ["Hanover", "Hannover"],
+    ("DEU", "Hannover"): ["Hanover", "Hannover"],
+    ("DEU", "Cologne"): ["Cologne", "Köln", "Koln"],
+    ("DEU", "Köln"): ["Cologne", "Köln", "Koln"],
+    ("DEU", "Munich"): ["Munich", "München", "Munchen"],
+    ("DEU", "München"): ["Munich", "München", "Munchen"],
+    ("DEU", "Nuremberg"): ["Nuremberg", "Nürnberg", "Nurnberg"],
+    ("DEU", "Nürnberg"): ["Nuremberg", "Nürnberg", "Nurnberg"],
+    ("SWE", "Gothenburg"): ["Gothenburg", "Göteborg", "Goteborg"],
+    ("SWE", "Göteborg"): ["Gothenburg", "Göteborg", "Goteborg"],
 }
 
 
@@ -1861,6 +1921,18 @@ def city_filter_values(country: str, city: str):
     if not city or city == "All":
         return None
     return CITY_FILTER_ALIASES.get((str(country or ""), str(city)), [city])
+
+
+def rows_in_selected_city(frame: pd.DataFrame, country: str, city: str) -> pd.Series:
+    """Match warehouse City or catchment Neighbourhood so Solna/Glyfada/Buda filters work."""
+    vals = city_filter_values(country, city)
+    if not vals or frame is None or frame.empty:
+        return pd.Series(True, index=frame.index if frame is not None else None)
+    city_match = frame["City"].astype(str).str.strip().isin(vals) if "City" in frame.columns else pd.Series(False, index=frame.index)
+    if "Neighbourhood" not in frame.columns:
+        return city_match
+    nb_match = frame["Neighbourhood"].astype(str).str.strip().isin(vals)
+    return city_match | nb_match
 
 
 def infer_producer_scale(country: str, name: str, existing: str = "") -> str:
@@ -2483,8 +2555,7 @@ elif selected_country_code:
 
 city_scope_df = df.copy()
 if "City" in df.columns and selected_city != "All":
-    city_vals = city_filter_values(selected_country_code, selected_city)
-    city_scope_df = city_scope_df[city_scope_df["City"].astype(str).str.strip().isin(city_vals)]
+    city_scope_df = city_scope_df[rows_in_selected_city(city_scope_df, selected_country_code, selected_city)]
 if hide_retail_chains and "Listing kind" in city_scope_df.columns:
     city_scope_df = city_scope_df[city_scope_df["Listing kind"] != "retail_chain"]
 if supplier_mode == "New leads only" and "Listing kind" in city_scope_df.columns:
@@ -2525,9 +2596,7 @@ show_only_mapped = st.sidebar.checkbox("Show only rows with coordinates", value=
 filtered_df = df.copy()
 
 if "City" in df.columns and selected_city != "All":
-    city_vals = city_filter_values(selected_country_code, selected_city)
-    city_match = filtered_df["City"].astype(str).str.strip().isin(city_vals)
-    filtered_df = filtered_df[city_match]
+    filtered_df = filtered_df[rows_in_selected_city(filtered_df, selected_country_code, selected_city)]
 
 if selected_neighbourhood != "All":
     filtered_df = filtered_df[filtered_df["Neighbourhood"] == selected_neighbourhood]
@@ -2594,7 +2663,7 @@ with tab_range:
     if "Listing kind" in df.columns:
         scope = df.copy()
         if "City" in scope.columns and selected_city != "All":
-            scope = scope[scope["City"].astype(str).str.strip().isin(city_filter_values(selected_country_code, selected_city))]
+            scope = scope[rows_in_selected_city(scope, selected_country_code, selected_city)]
         hidden_chains = int((scope["Listing kind"] == "retail_chain").sum())
         already = int((filtered_df["Listing kind"] == "existing_supplier").sum()) if "Listing kind" in filtered_df.columns else 0
         bits = []
