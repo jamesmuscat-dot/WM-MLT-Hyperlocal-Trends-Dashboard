@@ -306,20 +306,20 @@ CATEGORY_TILES = {
 }
 DEFAULT_TILE = str(CATEGORY_TILE_DIR / "default.jpg")
 TREND_IMAGE_KEYWORDS = [
-    (["vegan", "plant-based", "plant based", "tofu", "oat milk", "alpro"], "vegan_plant_based.png"),
-    (["kefir", "probiotic", "kombucha", "kimchi", "prebiotic"], "gut_health.png"),
-    (["sourdough", "organic bread", "artisan bread"], "sourdough.png"),
-    (["seacuterie", "tinned fish", "canned fish", "sardine", "anchovy", "ventresca"], "tinned_fish.png"),
-    (["halloumi"], "halloumi.png"),
-    (["laiki"], "laiki_produce.png"),
-    (["pivo", "craft beer"], "craft_beer.png"),
-    (["loukoumi", "lokum", "geroskipou"], "loukoumi.png"),
-    (["qatiq", "qatıq", "pendir"], "village_dairy.png"),
-    (["qutab", "dolma", "plov", "tandir"], "national_dishes.png"),
-    (["savalan", "brandy", "chabiant"], "wine_brandy.png"),
-    (["caviar", "sturgeon", "smoked fish"], "caviar.png"),
-    (["coffee", "cold brew", "espresso", "lot61"], "specialty_coffee.png"),
-    (["wine"], "wine_brandy.png"),
+    (["vegan", "plant-based", "plant based", "tofu", "oat milk", "alpro"], "vegan_plant_based.jpg"),
+    (["kefir", "probiotic", "kombucha", "kimchi", "prebiotic"], "gut_health.jpg"),
+    (["sourdough", "organic bread", "artisan bread"], "sourdough.jpg"),
+    (["seacuterie", "tinned fish", "canned fish", "sardine", "anchovy", "ventresca"], "tinned_fish.jpg"),
+    (["halloumi"], "halloumi.jpg"),
+    (["laiki"], "laiki_produce.jpg"),
+    (["pivo", "craft beer"], "craft_beer.jpg"),
+    (["loukoumi", "lokum", "geroskipou"], "loukoumi.jpg"),
+    (["qatiq", "qatıq", "pendir"], "village_dairy.jpg"),
+    (["qutab", "dolma", "plov", "tandir"], "national_dishes.jpg"),
+    (["savalan", "brandy", "chabiant"], "wine_brandy.jpg"),
+    (["caviar", "sturgeon", "smoked fish"], "caviar.jpg"),
+    (["coffee", "cold brew", "espresso", "lot61"], "specialty_coffee.jpg"),
+    (["wine"], "wine_brandy.jpg"),
 ]
 TREND_CATEGORY_FALLBACKS = [
     (["coffee"], "Coffee Roastery"),
@@ -461,7 +461,6 @@ def _choice_values(series) -> list:
 # Long / high-cardinality columns — always a contains box, never a dropdown.
 _HEADER_TEXT_FILTER_COLS = {
     "Producer",
-    "Matched WM vendor",
     "Also ranged in",
     "Key Products/Specialties",
     "Website / IG",
@@ -586,6 +585,20 @@ def _mailto_or_blank(series: pd.Series) -> pd.Series:
     return series.map(to_mailto_url).replace({"": None})
 
 
+def format_rating_display(value) -> str:
+    number = pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
+    if pd.isna(number):
+        return "—"
+    return f"{float(number):.1f} ★"
+
+
+def format_reviews_display(value) -> str:
+    number = pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
+    if pd.isna(number):
+        return "—"
+    return f"{int(number):,}"
+
+
 def producer_table_view(df: pd.DataFrame) -> pd.DataFrame:
     """Copy for st.dataframe: real URLs stay, N/A becomes blank so LinkColumn works."""
     view = df.copy()
@@ -593,11 +606,34 @@ def producer_table_view(df: pd.DataFrame) -> pd.DataFrame:
         view["Website / IG"] = _blank_non_urls(view["Website / IG"])
     if "Email" in view.columns:
         view["Email"] = _mailto_or_blank(view["Email"])
+    if "Google Rating" in view.columns:
+        view["Google Rating"] = view["Google Rating"].map(format_rating_display)
+    if "Google Reviews" in view.columns:
+        view["Google Reviews"] = view["Google Reviews"].map(format_reviews_display)
     return view
 
 
 def producer_table_column_config(df: pd.DataFrame) -> dict:
     cfg = {}
+    if "Also ranged in" in df.columns:
+        cfg["Also ranged in"] = st.column_config.TextColumn(
+            "Also ranged in",
+            help=(
+                "Other Wolt Market catchments this same producer already appears in. "
+                "The main Neighbourhood column is the primary pin; these are extra stores "
+                "that can range the same maker without listing them twice."
+            ),
+        )
+    if "Google Rating" in df.columns:
+        cfg["Google Rating"] = st.column_config.TextColumn(
+            "Google Rating",
+            help="Public star rating snapshot (Google Maps where matched). Dash = no snapshot yet.",
+        )
+    if "Google Reviews" in df.columns:
+        cfg["Google Reviews"] = st.column_config.TextColumn(
+            "Google Reviews",
+            help="Public review-count snapshot for that listing. Dash = no snapshot yet.",
+        )
     if "Website / IG" in df.columns:
         cfg["Website / IG"] = st.column_config.LinkColumn(
             "Website / IG",
@@ -781,7 +817,6 @@ def build_producer_scores(df: pd.DataFrame) -> pd.DataFrame:
 def resolve_creator_pic(name_handle: str):
     if not name_handle:
         return None
-    import re
     raw = str(name_handle).strip()
     match = re.search(r"@([A-Za-z0-9._]+)", raw)
     candidates = []
@@ -792,6 +827,9 @@ def resolve_creator_pic(name_handle: str):
                 PROFILE_PIC_DIR / f"@{handle}.jpg",
                 PROFILE_PIC_DIR / f"@{handle}.jpeg",
                 PROFILE_PIC_DIR / f"@{handle}.png",
+                PROFILE_PIC_DIR / f"{handle}.jpg",
+                PROFILE_PIC_DIR / f"{handle}.jpeg",
+                PROFILE_PIC_DIR / f"{handle}.png",
             ]
         )
     normalized = raw.lower().replace(" ", "_")
@@ -806,6 +844,36 @@ def resolve_creator_pic(name_handle: str):
         if path.exists():
             return str(path)
     return None
+
+
+def ensure_creator_avatar(name_handle: str):
+    """Return a local profile image, generating a branded initials avatar if needed."""
+    existing = resolve_creator_pic(name_handle)
+    if existing:
+        return existing
+    PROFILE_PIC_DIR.mkdir(parents=True, exist_ok=True)
+    match = re.search(r"@([A-Za-z0-9._]+)", str(name_handle or ""))
+    stem = f"@{match.group(1)}" if match else re.sub(r"[^a-z0-9]+", "_", str(name_handle or "creator").lower()).strip("_")
+    path = PROFILE_PIC_DIR / f"{stem}.png"
+    if path.exists():
+        return str(path)
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError:
+        return None
+    size = 168
+    img = Image.new("RGB", (size, size), "#0f3310")
+    draw = ImageDraw.Draw(img)
+    initials = creator_initials(name_handle)
+    try:
+        font = ImageFont.truetype("arial.ttf", 58)
+    except OSError:
+        font = ImageFont.load_default()
+    bbox = draw.textbbox((0, 0), initials, font=font)
+    tw, th = bbox[2] - bbox[0], bbox[3] - bbox[1]
+    draw.text(((size - tw) / 2 - bbox[0], (size - th) / 2 - bbox[1]), initials, fill="#d1f694", font=font)
+    img.save(path)
+    return str(path)
 
 
 def resolve_trend_image(image_value, trend_row=None):
@@ -1118,6 +1186,17 @@ def build_content_focus(df: pd.DataFrame) -> pd.DataFrame:
     return out
 
 
+def creator_initials(name_handle: str) -> str:
+    name_part = str(name_handle or "").split("/")[0].strip()
+    parts = [p for p in re.split(r"\s+", name_part) if p]
+    if not parts:
+        return "?"
+    if len(parts) == 1:
+        token = re.sub(r"[^A-Za-z0-9]", "", parts[0]) or parts[0]
+        return token[:2].upper()
+    return (parts[0][0] + parts[-1][0]).upper()
+
+
 def render_creator_table_html(df: pd.DataFrame) -> str:
     rows = []
     for _, row in df.iterrows():
@@ -1129,11 +1208,28 @@ def render_creator_table_html(df: pd.DataFrame) -> str:
             handle_part = "@" + handle_part
         elif " / " in name_handle:
             name_part, handle_part = name_handle.split(" / ", 1)
-        profile_pic_path = resolve_creator_pic(name_handle)
+        profile_pic_path = ensure_creator_avatar(name_handle)
         profile_pic_uri = image_path_to_data_uri(profile_pic_path) if profile_pic_path else None
+        initials = html.escape(creator_initials(name_handle))
+        fallback_html = f"""
+                <div style="
+                    width:56px;
+                    height:56px;
+                    border-radius:999px;
+                    background:#0f3310;
+                    color:#d1f694;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    font-weight:800;
+                    font-size:16px;
+                    letter-spacing:0.04em;
+                    box-shadow:0 6px 14px rgba(15, 51, 16, 0.08);
+                ">{initials}</div>
+            """
         if profile_pic_uri:
             pic_html = f"""
-                <img src="{profile_pic_uri}" style="
+                <img src="{profile_pic_uri}" alt="{initials}" style="
                     width:56px;
                     height:56px;
                     border-radius:999px;
@@ -1142,14 +1238,7 @@ def render_creator_table_html(df: pd.DataFrame) -> str:
                 ">
             """
         else:
-            pic_html = """
-                <div style="
-                    width:56px;
-                    height:56px;
-                    border-radius:999px;
-                    background:#d1f694;
-                "></div>
-            """
+            pic_html = fallback_html
         platform_html = render_platform_icons_html(row.get("Platform"))
         followers_txt = safe_followers_text(row.get("Followers", row.get("Followers_num", "-")))
         content_focus = display_value(row.get("Content Focus"))
@@ -1185,6 +1274,7 @@ def render_creator_table_html(df: pd.DataFrame) -> str:
         border-radius:16px;
         overflow:hidden;
         box-shadow:0 8px 18px rgba(15, 51, 16, 0.06);
+        font-family: Nunito, Omnes, sans-serif;
     ">
         <div style="max-height:430px; overflow:auto;">
             <table style="
@@ -1520,6 +1610,91 @@ SPENDING_BUCKET_BRACKETS = {
 }
 
 
+def load_price_architecture_mix() -> pd.DataFrame:
+    path = DATA_DIR / "neighbourhood_price_mix.csv"
+    if not path.exists():
+        return pd.DataFrame()
+    try:
+        return _read_csv(path)
+    except Exception:
+        return pd.DataFrame()
+
+
+def lookup_price_architecture_mix(mix_df: pd.DataFrame, country: str, neighbourhood: str) -> dict | None:
+    if mix_df is None or mix_df.empty or not neighbourhood:
+        return None
+    work = mix_df.copy()
+    if "Neighbourhood" not in work.columns:
+        return None
+    nb = work["Neighbourhood"].astype(str).str.strip().str.lower()
+    mask = nb == str(neighbourhood).strip().lower()
+    if "Country" in work.columns and country:
+        mask = mask & (work["Country"].astype(str).str.strip() == str(country).strip())
+    hit = work.loc[mask]
+    if hit.empty:
+        return None
+    row = hit.iloc[0]
+    def _pct(col):
+        return pd.to_numeric(pd.Series([row.get(col)]), errors="coerce").iloc[0]
+    entry = _pct("Price Entry %")
+    core = _pct("Core %")
+    premium = _pct("Premium %")
+    if pd.isna(entry) and pd.isna(core) and pd.isna(premium):
+        return None
+    return {
+        "entry": float(entry) if pd.notna(entry) else 0.0,
+        "core": float(core) if pd.notna(core) else 0.0,
+        "premium": float(premium) if pd.notna(premium) else 0.0,
+        "orders": display_value(row.get("Orders", "")),
+        "window": display_value(row.get("Window", "Last 90 days")),
+    }
+
+
+def render_price_architecture_mix(mix: dict | None, spending_profile: str) -> str:
+    profile = display_value(spending_profile)
+    if not mix:
+        return f"""
+        <div style="margin:12px 0 16px 0; padding:12px 14px; background:#f6f0e9; border:1px solid #d6ba97; border-radius:12px;">
+            <div style="font-size:12px; font-weight:700; color:#0f3310; margin-bottom:6px;">WOLT MARKET PRICE MIX</div>
+            <div style="font-size:13px; color:#0f3310; line-height:1.5;">
+                Catchment read: {html.escape(profile)}. Live Price Entry / Core / Premium purchase mix
+                is not loaded yet — this comes from Wolt Market Snowflake sales only
+                (never Wolt production), written to data/neighbourhood_price_mix.csv.
+            </div>
+        </div>
+        """
+    bars = [
+        ("Price Entry", mix["entry"], "#d6ba97"),
+        ("Core", mix["core"], "#a1ce47"),
+        ("Premium", mix["premium"], "#0f3310"),
+    ]
+    bars_html = "".join(
+        f"""
+        <div style="margin-bottom:8px;">
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:#0f3310; font-weight:600;">
+                <span>{html.escape(label)}</span><span>{pct:.0f}%</span>
+            </div>
+            <div style="height:8px; background:#f6f0e9; border-radius:999px; overflow:hidden;">
+                <div style="width:{max(pct, 0):.1f}%; height:8px; background:{color};"></div>
+            </div>
+        </div>
+        """
+        for label, pct, color in bars
+    )
+    extra = ""
+    if mix.get("orders") not in {"", "-", "N/A"}:
+        extra = f" · {html.escape(str(mix['orders']))} purchases"
+    return f"""
+    <div style="margin:12px 0 16px 0; padding:12px 14px; background:#eef6d8; border:1px solid #a1ce47; border-radius:12px;">
+        <div style="font-size:12px; font-weight:700; color:#0f3310; margin-bottom:6px;">WOLT MARKET PRICE MIX</div>
+        <div style="font-size:13px; color:#0f3310; margin-bottom:10px;">
+            Catchment read: {html.escape(profile)}. Actual WM purchases ({html.escape(str(mix.get('window') or 'Last 90 days'))}{extra}).
+        </div>
+        {bars_html}
+    </div>
+    """
+
+
 def render_spend_bracket_legend() -> str:
     rows_html = "".join(
         f"""
@@ -1561,7 +1736,7 @@ CONFIDENCE_BADGE_STYLE = {
 }
 
 
-def render_neighbourhood_full_card(row) -> str:
+def render_neighbourhood_full_card(row, price_mix=None) -> str:
     recommendations = str(row.get("Product Recommendations", "")).strip()
     chips_html = ""
     if recommendations and recommendations != "N/A":
@@ -1639,6 +1814,7 @@ def render_neighbourhood_full_card(row) -> str:
             </div>
             {detail_html}
         </div>
+        {render_price_architecture_mix(price_mix, row.get("Spending Profile"))}
         <div style="font-size:12px; color:#0f3310; font-weight:600; margin-bottom:6px;">QUICK TAGS</div>
         <div style="margin-bottom:12px;">{tags_html if tags_html else '<span style="font-size:12px; color:#0f3310;">No strong tags detected</span>'}</div>
         <div style="font-size:12px; color:#0f3310; font-weight:600; margin-bottom:6px;">SUGGESTED RANGE FOCUS</div>
@@ -1650,7 +1826,105 @@ def render_neighbourhood_full_card(row) -> str:
     """
 
 
-def render_trend_card(rank, trend, strength, description, image_path=None, validation=None, search_message=""):
+def trend_keyword_list(row) -> list:
+    raw = str(row.get("Search Keywords", "") or "")
+    keys = [k.strip().lower() for k in re.split(r"[;,/]", raw) if len(k.strip()) >= 3]
+    trend = str(row.get("Trend", "") or "")
+    keys.extend(w.lower() for w in re.findall(r"[A-Za-zÀ-ÿ]{4,}", trend))
+    skip = {"versus", "with", "from", "that", "this", "dark", "store", "grocery"}
+    return [k for k in dict.fromkeys(keys) if k not in skip]
+
+
+_ASSORTMENT_SKIP_QUERIES = {
+    "water",
+    "milk",
+    "bread",
+    "eggs",
+    "chicken",
+    "ice",
+    "cheese",
+    "ice cream",
+    "butter",
+    "ham",
+    "rice",
+    "pasta",
+    "garlic",
+    "toilet",
+    "egg",
+    "tomato",
+    "beer",
+    "banana",
+    "pizza",
+    "coke",
+    "coca",
+    "lemon",
+    "chocolate",
+    "onion",
+    "cream",
+    "toilet paper",
+    "bacon",
+    "salad",
+    "wipes",
+    "yogurt",
+    "vape",
+    "coffee",
+}
+
+
+def matching_assortment_products(trend_row, search_df: pd.DataFrame) -> list:
+    """Product-like in-app queries that already fire for this trend."""
+    keys = trend_keyword_list(trend_row)
+    if search_df is None or search_df.empty or not keys or "Query" not in search_df.columns:
+        return []
+    work = search_df.copy()
+    work["_q"] = work["Query"].astype(str).str.strip()
+    work["_ql"] = work["_q"].str.lower()
+    work["_n"] = pd.to_numeric(work["Searches"], errors="coerce") if "Searches" in work.columns else 0
+    work["_n"] = pd.to_numeric(work["_n"], errors="coerce").fillna(0)
+    hits = []
+    for _, srow in work.sort_values("_n", ascending=False).iterrows():
+        query = str(srow["_ql"])
+        if query in _ASSORTMENT_SKIP_QUERIES or len(query) < 3:
+            continue
+        if any(key == query or (len(key) >= 4 and (key in query or query in key)) for key in keys):
+            hits.append(str(srow["_q"]))
+        if len(hits) >= 6:
+            break
+    return [h for h in dict.fromkeys(hits) if h]
+
+
+def build_trend_assortment_excerpt(trend_row, producers_df: pd.DataFrame, search_df: pd.DataFrame | None = None) -> str:
+    products = matching_assortment_products(trend_row, search_df)
+    listed = producers_df
+    if listed is not None and not listed.empty and "Listing kind" in listed.columns:
+        listed = listed[listed["Listing kind"] == "existing_supplier"]
+    maker_hits = []
+    keys = trend_keyword_list(trend_row)
+    if listed is not None and not listed.empty:
+        for _, prow in listed.iterrows():
+            hay = " ".join(
+                [
+                    str(prow.get("Producer", "")),
+                    str(prow.get("Category", "")),
+                    str(prow.get("Key Products/Specialties", "")),
+                ]
+            ).lower()
+            if any(k in hay for k in keys if len(k) >= 4):
+                maker_hits.append(str(prow.get("Producer", "")).split("/")[0].strip())
+            if len(maker_hits) >= 5:
+                break
+    maker_hits = [h for h in dict.fromkeys(maker_hits) if h]
+    bits = []
+    if products:
+        bits.append("Similar products already in WM (customers search these): " + " · ".join(products[:5]))
+    if maker_hits:
+        bits.append("Local makers already listed: " + " · ".join(maker_hits[:4]))
+    if bits:
+        return " | ".join(bits)
+    return "No close match in current WM search or supplier list — treat as a ranging gap."
+
+
+def render_trend_card(rank, trend, strength, description, image_path=None, validation=None, search_message="", assortment_excerpt=""):
     image_html = """
         <div style="
             width:96px;
@@ -1694,6 +1968,13 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
         search_html = f"""
             <div style="margin-top:10px; font-size:13px; line-height:1.5; color:#0f3310; background:#f6f0e9; border:1px solid #d6ba97; border-radius:10px; padding:8px 12px;">
                 {html.escape(display_value(search_message))}
+            </div>
+        """
+    assortment_html = ""
+    if assortment_excerpt:
+        assortment_html = f"""
+            <div style="margin-top:8px; font-size:13px; line-height:1.5; color:#0f3310; background:#eef6d8; border:1px solid #a1ce47; border-radius:10px; padding:8px 12px;">
+                {html.escape(display_value(assortment_excerpt))}
             </div>
         """
     return f"""
@@ -1742,6 +2023,7 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
                 {html.escape(display_value(description))}
             </div>
             {search_html}
+            {assortment_html}
         </div>
     </div>
     """
@@ -1842,7 +2124,7 @@ def producer_match_candidates(name: str) -> list:
 NATIONAL_PRODUCER_KEYS = {
     "CYP": {"kean", "charalambides christis", "charalambides", "pittas", "keo"},
     "MLT": {"farsons", "farsons cask", "kinnie"},
-    "AZE": {"badamli", "sirab"},
+    "AZE": {"badamli", "badamlı", "sirab"},
     "GRC": {
         "fage",
         "mevgal",
@@ -1956,6 +2238,179 @@ def is_retail_chain_name(name: str) -> bool:
     return any(rx.search(raw) or rx.search(folded) for rx in RETAIL_CHAIN_REGEXES)
 
 
+# Dining venues, markets and invented catchment composites — not dark-store makers.
+RESTAURANT_NEEDLES = (
+    "restaurant",
+    "trattoria",
+    "pizzeria",
+    "bistro",
+    "cafeteria",
+    "osteria",
+    "brasserie",
+    "taverna",
+    "tavern",
+    "wine bar",
+    "ristorante",
+    "beer bar",
+    "brewpub",
+    "taproom",
+    "kafe bar",
+    "coffee bar",
+    "coffee bars",
+    "craft beer bar",
+    "pastizzerija",
+    "caterer",
+    "catering",
+    "food store",
+    "kitchen",
+)
+NAMED_RESTAURANT_KEYS = {
+    "emmas kitchen",
+    "emma s kitchen",
+    "da roberto",
+    "marelli cafe",
+    "cafe olavi",
+    "focacceria dal pani",
+    "old bakery s kitchen",
+    "coffee circus lisboa",
+    "67 kapitali",
+    "wild honey beer bar",
+    "wild honey",
+    "toma kafe bar",
+    "the grassy hopper",
+    "ta rikardu citadel",
+    "ta rikardu",
+    "diar il bniet local deli",
+    "diar il bniet",
+    "dave s food store birkirkara",
+    "tuck a bag confectionery and daily needs",
+    "dayfresh butcher and grill",
+    "beerbasa mehle",
+    "ryumochnaya by beerbasa",
+}
+MARKET_NEEDLES = (
+    "fish market",
+    "sunday market",
+    "weekly market",
+    "weekly-market",
+    "produce stalls",
+    "produce stall",
+    "laiki",
+    "wochenmarkt",
+    "saluhall",
+    "markthalle",
+    "bazaar",
+    "agora",
+    "market produce",
+    "market butchers",
+    "market deli",
+    "market cheese",
+    "market olives",
+    "market snacks",
+    "fish hall",
+    "meat hall",
+    "produce halls",
+    "dairy stalls",
+    "pickle stalls",
+    "cheese stalls",
+    "deli stalls",
+    "fishermen s catch",
+    "fish landing",
+)
+GENERIC_CATCHMENT_NEEDLES = (
+    "neighbourhood baker",
+    "neighborhood baker",
+    "neighbourhood butcher",
+    "neighborhood butcher",
+    "produce shops",
+    "produce shop",
+    "produce counters",
+    "farm shops",
+    "fish shops",
+    "grocers",
+    "snack shops",
+    "snack trade",
+    "beach snacks",
+    "student snacks",
+    "family snacks",
+    "school-run snacks",
+    "worker and student",
+    "resort grocers",
+    "beverage shops",
+    "waterfront fish shops",
+    "mini market",
+    "mini markets",
+    "convenience shops",
+    "convenience shop",
+    "daily needs",
+    "short set",
+    "as grocery",
+)
+_MARKET_WORD_RE = re.compile(
+    r"\b(markets?|laiki|piac|csarnok|agora|bazaar|saluhall|markthalle|wochenmarkt)\b",
+    re.I,
+)
+_MARKET_SUBSTR_RE = re.compile(
+    r"csarnok|bazari|bazarı|bazar\b|fischmarkt|viktualienmarkt|h[öo]torget|isemarkt|hallarna|salt pans",
+    re.I,
+)
+_CAFE_NAME_RE = re.compile(r"\b(cafe|café|kaffebar|kaffeehaus)\b", re.I)
+_GENERIC_TAIL_RE = re.compile(
+    r"\b(shops|counters|bars|landing|stalls|halls|grocers)\s*$",
+    re.I,
+)
+_UNNAMED_COMPOSITE_RE = re.compile(
+    r"specialty roasters|village halloumi|east-coast halloumi|wine estates|"
+    r"dakos rusks|cooperative society|neighbourhood pub|pelion produce",
+    re.I,
+)
+_DINING_URL_RE = re.compile(
+    r"tripadvisor\.com/.*/restaurant",
+    re.I,
+)
+_DINING_RATIONALE_RE = re.compile(
+    r"shop-restaurant|dining venue|bar scene|nightlife belt|brunch menu",
+    re.I,
+)
+
+
+def is_non_producer_row(name: str, website: str = "", rationale: str = "") -> bool:
+    """True for restaurants, markets, grocery chains and generic catchment rows."""
+    raw = str(name or "").strip()
+    if not raw:
+        return True
+    folded = normalize_supplier_name(raw)
+    lowered = raw.lower()
+    hay = f"{website or ''} {rationale or ''}"
+    if is_retail_chain_name(raw):
+        return True
+    if folded in NAMED_RESTAURANT_KEYS:
+        return True
+    if any(needle in folded or needle in lowered for needle in RESTAURANT_NEEDLES):
+        return True
+    if any(needle in folded or needle in lowered for needle in MARKET_NEEDLES):
+        return True
+    if any(needle in folded or needle in lowered for needle in GENERIC_CATCHMENT_NEEDLES):
+        return True
+    if lowered.endswith(" bakeries") or lowered.endswith(" butchers"):
+        return True
+    if _MARKET_WORD_RE.search(raw) or _MARKET_SUBSTR_RE.search(raw):
+        return True
+    if _CAFE_NAME_RE.search(raw) and "roaster" not in folded:
+        return True
+    if _GENERIC_TAIL_RE.search(raw) and "roaster" not in folded and "estate" not in folded:
+        return True
+    if lowered.endswith(" produce") and "estate" not in folded:
+        return True
+    if folded.endswith("specialty coffee") or folded.endswith("neighbourhood pub"):
+        return True
+    if _UNNAMED_COMPOSITE_RE.search(raw):
+        return True
+    if _DINING_URL_RE.search(hay) or _DINING_RATIONALE_RE.search(hay):
+        return True
+    return False
+
+
 _SKIP_VENDOR_KEYS = {"and", "the", "ltd", "co", "cyprus", "wolt", "market", "vendor"}
 
 
@@ -2064,7 +2519,6 @@ def annotate_producer_listing(producers: pd.DataFrame, vendors: pd.DataFrame) ->
     out = producers.copy()
     vendor_index = _vendor_alias_index(vendors)
     statuses = []
-    matched = []
     kinds = []
     scales = []
     for _, row in out.iterrows():
@@ -2074,23 +2528,23 @@ def annotate_producer_listing(producers: pd.DataFrame, vendors: pd.DataFrame) ->
         if not aliases and "" in vendor_index:
             aliases = vendor_index.get("", [])
         vendor, score = match_producer_to_vendor(name, aliases)
-        if is_retail_chain_name(name):
-            kinds.append("retail_chain")
-            statuses.append("Grocery chain")
-            matched.append(vendor if vendor else "N/A")
+        if is_non_producer_row(
+            name,
+            str(row.get("Website / IG", "")),
+            str(row.get("Selection Rationale", "")),
+        ):
+            kinds.append("not_producer")
+            statuses.append("Not a producer")
         elif vendor:
             kinds.append("existing_supplier")
             statuses.append("Already listed")
-            matched.append(vendor)
         else:
             kinds.append("new_lead")
             statuses.append("New lead")
-            matched.append("N/A")
         scales.append(infer_producer_scale(country, name, str(row.get("Scale", ""))))
         _ = score
     out["Listing kind"] = kinds
     out["Supplier status"] = statuses
-    out["Matched WM vendor"] = matched
     out["Scale"] = scales
     return out
 
@@ -2400,6 +2854,7 @@ def map_view_for(df: pd.DataFrame, registry_row=None):
     all_vendors_df,
 ) = load_all_market_data(_data_fingerprint())
 cities_df = load_cities_registry()
+price_mix_df = load_price_architecture_mix()
 
 if all_producers_df.empty:
     st.error(
@@ -2467,7 +2922,7 @@ if "Scale" in df.columns:
     df = df[df["Scale"].astype(str) != "National"].copy()
 
 if not creators_df.empty and "Name / Handle" in creators_df.columns:
-    creators_df["Profile Pic"] = creators_df["Name / Handle"].apply(resolve_creator_pic)
+    creators_df["Profile Pic"] = creators_df["Name / Handle"].apply(ensure_creator_avatar)
 
 selected_city = "All"
 selected_city_status = ""
@@ -2535,9 +2990,9 @@ if selected_country_code:
                 st.sidebar.caption("Producers here are ranged from nearby stores; no WM store in this city.")
 
 hide_retail_chains = st.sidebar.checkbox(
-    "Hide grocery chains & Wolt stores",
+    "Producers only",
     value=True,
-    help="Hides Wolt Market venues, SPAR/EUROSPAR, SaveMart, convenience chains and generic grocery rows so the list is actual producers.",
+    help="Keeps named local makers. Hides restaurants, cafés, markets, grocery chains, Wolt stores and generic catchment rows.",
 )
 supplier_mode = st.sidebar.selectbox(
     "WM supplier list",
@@ -2557,7 +3012,7 @@ city_scope_df = df.copy()
 if "City" in df.columns and selected_city != "All":
     city_scope_df = city_scope_df[rows_in_selected_city(city_scope_df, selected_country_code, selected_city)]
 if hide_retail_chains and "Listing kind" in city_scope_df.columns:
-    city_scope_df = city_scope_df[city_scope_df["Listing kind"] != "retail_chain"]
+    city_scope_df = city_scope_df[~city_scope_df["Listing kind"].isin(["retail_chain", "not_producer"])]
 if supplier_mode == "New leads only" and "Listing kind" in city_scope_df.columns:
     city_scope_df = city_scope_df[city_scope_df["Listing kind"] == "new_lead"]
 elif supplier_mode == "Already listed" and "Listing kind" in city_scope_df.columns:
@@ -2610,7 +3065,7 @@ if search_term:
     ]
 
 if hide_retail_chains and "Listing kind" in filtered_df.columns:
-    filtered_df = filtered_df[filtered_df["Listing kind"] != "retail_chain"]
+    filtered_df = filtered_df[~filtered_df["Listing kind"].isin(["retail_chain", "not_producer"])]
 
 if supplier_mode == "New leads only" and "Listing kind" in filtered_df.columns:
     filtered_df = filtered_df[filtered_df["Listing kind"] == "new_lead"]
@@ -2988,16 +3443,16 @@ with tab_range:
 
     extra_caption = ""
     if hide_retail_chains:
-        extra_caption += " Grocery chains and Wolt stores are hidden."
+        extra_caption += " Restaurants, markets, grocery chains and generic catchment rows are hidden."
     if supplier_mode == "New leads only":
         extra_caption += " Showing producers not already on the WM supplier list."
     elif supplier_mode == "Already listed":
         extra_caption += " Showing producers already on the WM supplier list."
     table_df = display_df.copy()
-    drop_cols = [c for c in ["Listing kind", "Scale", "_identity", "_web"] if c in table_df.columns]
+    drop_cols = [c for c in ["Listing kind", "Scale", "_identity", "_web", "Matched WM vendor"] if c in table_df.columns]
     if drop_cols:
         table_df = table_df.drop(columns=drop_cols)
-    front_cols = [c for c in ["Supplier status", "Matched WM vendor", "Also ranged in"] if c in table_df.columns]
+    front_cols = [c for c in ["Supplier status", "Also ranged in", "Google Rating", "Google Reviews"] if c in table_df.columns]
     preferred = [c for c in table_df.columns if c not in set(front_cols)]
     if "Producer" in preferred:
         insert_at = preferred.index("Producer") + 1
@@ -3015,7 +3470,9 @@ with tab_range:
     st.caption(
         f"Showing {len(table_df)} of {len(scored_df)} producers "
         f"across {table_df['Neighbourhood'].nunique() if 'Neighbourhood' in table_df.columns and not table_df.empty else 0} neighbourhoods. "
-        "Google rating and review filters stay off at 0, because most producers are not rated yet."
+        "**Also ranged in** = other catchments that can stock this same maker "
+        "(the producer is not duplicated as a second row). "
+        "Google rating/reviews are a public snapshot, not a live Maps feed."
         + extra_caption
     )
     st.dataframe(
@@ -3050,11 +3507,11 @@ with tab_range:
         )
         listing_kind = str(producer_data.get("Listing kind", "")).strip()
         if listing_kind == "existing_supplier":
-            st.caption(
-                f"Already listed on Wolt Market as **{display_value(producer_data.get('Matched WM vendor'))}**."
-            )
+            st.caption("Already listed on Wolt Market.")
         elif listing_kind == "retail_chain":
             st.caption("Grocery chain / Wolt store — not a sourcing lead.")
+        elif listing_kind == "not_producer":
+            st.caption("Restaurant, market or generic catchment row — not a local manufacturer.")
         elif listing_kind == "new_lead":
             st.caption("Not matched to the current WM supplier list — treat as a new lead.")
 
@@ -3066,8 +3523,8 @@ with tab_range:
                 st.info("No image available")
 
         with details_stats:
-            st.markdown(clean_html(stat_card("Google Rating", producer_data["Google Rating"])), unsafe_allow_html=True)
-            st.markdown(clean_html(stat_card("Reviews", producer_data["Google Reviews"])), unsafe_allow_html=True)
+            st.markdown(clean_html(stat_card("Google Rating", format_rating_display(producer_data["Google Rating"]))), unsafe_allow_html=True)
+            st.markdown(clean_html(stat_card("Reviews", format_reviews_display(producer_data["Google Reviews"]))), unsafe_allow_html=True)
             st.markdown(clean_html(stat_card("IG Followers", safe_followers_text(producer_data["Instagram Followers"]))), unsafe_allow_html=True)
             st.markdown(clean_html(stat_card("TikTok Followers", safe_followers_text(producer_data["TikTok Followers"]))), unsafe_allow_html=True)
 
@@ -3207,6 +3664,7 @@ with tab_trends:
             description = display_value(row.get("Description", ""))
             image_path = resolve_trend_image(row.get("Image", ""), trend_row=row)
             validation = trend_validations[i] if i < len(trend_validations) else {}
+            assortment_excerpt = build_trend_assortment_excerpt(row, df, search_df=search_df)
 
             st.markdown(
                 clean_html(
@@ -3218,6 +3676,7 @@ with tab_trends:
                         image_path=image_path,
                         validation=validation.get("status", ""),
                         search_message=validation.get("message", ""),
+                        assortment_excerpt=assortment_excerpt,
                     )
                 ),
                 unsafe_allow_html=True,
@@ -3257,7 +3716,8 @@ with tab_trends:
                 lambda x: f"{int(x):,}" if pd.notna(x) else "-"
             )
 
-        st.markdown(clean_html(render_creator_table_html(creators_table_df)), unsafe_allow_html=True)
+        creator_html = clean_html(render_creator_table_html(creators_table_df))
+        components.html(creator_html, height=min(520, 92 * max(len(creators_table_df), 1) + 80), scrolling=True)
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
@@ -3413,7 +3873,15 @@ with tab_demo:
                 key=f"demo_detail_select_{selected_country_code}_{selected_city}",
             )
             detail_row = demo_work[demo_work["Neighbourhood"] == selected_demo_neighbourhood].iloc[0]
-            st.markdown(clean_html(render_neighbourhood_full_card(detail_row)), unsafe_allow_html=True)
+            price_mix = lookup_price_architecture_mix(
+                price_mix_df,
+                selected_country_code,
+                selected_demo_neighbourhood,
+            )
+            st.markdown(
+                clean_html(render_neighbourhood_full_card(detail_row, price_mix=price_mix)),
+                unsafe_allow_html=True,
+            )
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
