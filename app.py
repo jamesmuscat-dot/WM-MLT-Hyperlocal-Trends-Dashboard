@@ -1620,22 +1620,10 @@ def load_price_architecture_mix() -> pd.DataFrame:
         return pd.DataFrame()
 
 
-def lookup_price_architecture_mix(mix_df: pd.DataFrame, country: str, neighbourhood: str) -> dict | None:
-    if mix_df is None or mix_df.empty or not neighbourhood:
-        return None
-    work = mix_df.copy()
-    if "Neighbourhood" not in work.columns:
-        return None
-    nb = work["Neighbourhood"].astype(str).str.strip().str.lower()
-    mask = nb == str(neighbourhood).strip().lower()
-    if "Country" in work.columns and country:
-        mask = mask & (work["Country"].astype(str).str.strip() == str(country).strip())
-    hit = work.loc[mask]
-    if hit.empty:
-        return None
-    row = hit.iloc[0]
+def _price_mix_from_row(row, grain: str, matched_name: str) -> dict | None:
     def _pct(col):
         return pd.to_numeric(pd.Series([row.get(col)]), errors="coerce").iloc[0]
+
     entry = _pct("Price Entry %")
     core = _pct("Core %")
     premium = _pct("Premium %")
@@ -1647,10 +1635,67 @@ def lookup_price_architecture_mix(mix_df: pd.DataFrame, country: str, neighbourh
         "premium": float(premium) if pd.notna(premium) else 0.0,
         "orders": display_value(row.get("Orders", "")),
         "window": display_value(row.get("Window", "Last 90 days")),
+        "grain": grain,
+        "matched_name": matched_name,
     }
 
 
-def render_price_architecture_mix(mix: dict | None, spending_profile: str) -> str:
+def lookup_price_architecture_mix(
+    mix_df: pd.DataFrame,
+    country: str,
+    neighbourhood: str,
+    city: str | None = None,
+) -> dict | None:
+    if mix_df is None or mix_df.empty or not neighbourhood:
+        return None
+    if "Neighbourhood" not in mix_df.columns:
+        return None
+    work = mix_df.copy()
+    work["_nb"] = work["Neighbourhood"].astype(str).str.strip()
+    if "Country" in work.columns and country:
+        work = work.loc[work["Country"].astype(str).str.strip() == str(country).strip()]
+    if work.empty:
+        return None
+
+    def _named(name: str):
+        key = str(name or "").strip().lower()
+        if not key or key in {"all", "n/a", "-"}:
+            return work.iloc[0:0]
+        return work.loc[work["_nb"].str.lower() == key]
+
+    hit = _named(neighbourhood)
+    if not hit.empty:
+        grain = display_value(hit.iloc[0].get("Grain", "Store city"))
+        if grain in {"-", "N/A"}:
+            grain = "Store city"
+        return _price_mix_from_row(hit.iloc[0], grain, str(hit.iloc[0]["Neighbourhood"]))
+
+    city_key = str(city or "").strip()
+    if city_key.lower() not in {"", "all", "n/a", "-"}:
+        hit = _named(city_key)
+        if not hit.empty:
+            return _price_mix_from_row(hit.iloc[0], "Store city", str(hit.iloc[0]["Neighbourhood"]))
+
+    if "Grain" in work.columns:
+        country_rows = work.loc[work["Grain"].astype(str).str.strip().str.lower() == "country"]
+        if not country_rows.empty:
+            row = country_rows.iloc[0]
+            return _price_mix_from_row(row, "Country", "all stores")
+    hit = _named("ALL")
+    if not hit.empty:
+        return _price_mix_from_row(hit.iloc[0], "Country", "all stores")
+    return None
+
+
+def _format_sold_units(orders) -> str:
+    raw = str(orders or "").replace(",", "").strip()
+    try:
+        return f"{int(float(raw)):,} units"
+    except (TypeError, ValueError):
+        return ""
+
+
+def render_price_architecture_mix(mix: dict | None, spending_profile: str, neighbourhood: str = "") -> str:
     profile = display_value(spending_profile)
     if not mix:
         return f"""
@@ -1681,14 +1726,41 @@ def render_price_architecture_mix(mix: dict | None, spending_profile: str) -> st
         """
         for label, pct, color in bars
     )
-    extra = ""
-    if mix.get("orders") not in {"", "-", "N/A"}:
-        extra = f" · {html.escape(str(mix['orders']))} purchases"
+    units = _format_sold_units(mix.get("orders"))
+    extra = f" · {html.escape(units)}" if units else ""
+    grain = str(mix.get("grain") or "Store city")
+    matched = display_value(mix.get("matched_name"))
+    place = html.escape(display_value(neighbourhood) if neighbourhood else "this area")
+    if grain.lower() == "country":
+        grain_copy = (
+            f"No dedicated WM store in {place}. Showing all WM stores in this country "
+            f"({html.escape(str(mix.get('window') or 'Last 90 days'))}{extra}). "
+            "Country mix, not dropoff neighbourhood — towns without a store cannot "
+            "be split from the live dark-store cities on this grain."
+        )
+    else:
+        grain_copy = (
+            f"Live WM sold units at stores in {html.escape(matched)} "
+            f"({html.escape(str(mix.get('window') or 'Last 90 days'))}{extra}). "
+            "Store-city grain, not dropoff neighbourhood. Untagged SKUs mean the three bars may not sum to 100%."
+        )
+    profile_l = str(spending_profile or "").lower()
+    corroboration = ""
+    if "premium" in profile_l and mix["premium"] < 12:
+        corroboration = (
+            f" Catchment read ({html.escape(profile)}) is richer than current WM sold-unit mix "
+            f"({mix['premium']:.0f}% Premium / {mix['core']:.0f}% Core)."
+        )
+    elif any(token in profile_l for token in ("budget", "value")) and mix["entry"] < 8:
+        corroboration = (
+            f" Catchment read ({html.escape(profile)}) is more value-led than the live mix, "
+            f"which is still Core-heavy ({mix['core']:.0f}% Core / {mix['entry']:.0f}% Price Entry)."
+        )
     return f"""
     <div style="margin:12px 0 16px 0; padding:12px 14px; background:#eef6d8; border:1px solid #a1ce47; border-radius:12px;">
         <div style="font-size:12px; font-weight:700; color:#0f3310; margin-bottom:6px;">WOLT MARKET PRICE MIX</div>
         <div style="font-size:13px; color:#0f3310; margin-bottom:10px;">
-            Catchment read: {html.escape(profile)}. Actual WM purchases ({html.escape(str(mix.get('window') or 'Last 90 days'))}{extra}).
+            Catchment read: {html.escape(profile)}. {grain_copy}{corroboration}
         </div>
         {bars_html}
     </div>
@@ -1814,7 +1886,7 @@ def render_neighbourhood_full_card(row, price_mix=None) -> str:
             </div>
             {detail_html}
         </div>
-        {render_price_architecture_mix(price_mix, row.get("Spending Profile"))}
+        {render_price_architecture_mix(price_mix, row.get("Spending Profile"), row.get("Neighbourhood"))}
         <div style="font-size:12px; color:#0f3310; font-weight:600; margin-bottom:6px;">QUICK TAGS</div>
         <div style="margin-bottom:12px;">{tags_html if tags_html else '<span style="font-size:12px; color:#0f3310;">No strong tags detected</span>'}</div>
         <div style="font-size:12px; color:#0f3310; font-weight:600; margin-bottom:6px;">SUGGESTED RANGE FOCUS</div>
@@ -3877,6 +3949,7 @@ with tab_demo:
                 price_mix_df,
                 selected_country_code,
                 selected_demo_neighbourhood,
+                city=detail_row.get("City") or selected_city,
             )
             st.markdown(
                 clean_html(render_neighbourhood_full_card(detail_row, price_mix=price_mix)),
