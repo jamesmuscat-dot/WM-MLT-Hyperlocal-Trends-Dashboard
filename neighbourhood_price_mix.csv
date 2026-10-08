@@ -1,195 +1,179 @@
-Country,Neighbourhood,Price Entry %,Core %,Premium %,Orders,Window,Grain
-AZE,Baku,1.72,77.85,5.2,3410441,Last 90 days,Store city
-CYP,Limassol,2.37,73.22,7.0,3497712,Last 90 days,Store city
-CYP,Nicosia,2.52,73.4,6.31,1169340,Last 90 days,Store city
-CYP,Paphos,2.75,73.71,6.65,860801,Last 90 days,Store city
-CYP,Larnaca,2.53,73.8,6.35,856554,Last 90 days,Store city
-CYP,Ammochostos,2.37,74.4,5.91,311595,Last 90 days,Store city
-DEU,Berlin,13.76,67.05,6.35,5437378,Last 90 days,Store city
-DEU,Hamburg,14.58,67.9,5.84,1515551,Last 90 days,Store city
-DEU,Munich,13.2,69.07,6.35,1220627,Last 90 days,Store city
-DEU,Frankfurt,13.74,68.34,5.86,831561,Last 90 days,Store city
-DEU,Cologne,15.5,67.57,5.73,510021,Last 90 days,Store city
-DEU,Düsseldorf,16.92,65.95,5.51,340514,Last 90 days,Store city
-DEU,Nuremberg,15.6,68.39,4.47,277620,Last 90 days,Store city
-DEU,Hanover,16.49,66.46,5.01,220095,Last 90 days,Store city
-GRC,Athens,1.17,81.0,8.88,6805859,Last 90 days,Store city
-GRC,Thessaloniki,1.24,82.94,7.44,1628830,Last 90 days,Store city
-GRC,Heraklion,0.64,84.04,6.04,292824,Last 90 days,Store city
-GRC,Chania,0.68,83.34,6.85,271225,Last 90 days,Store city
-GRC,Patra,0.75,82.68,7.71,214610,Last 90 days,Store city
-HUN,Budapest,1.99,86.1,4.88,5939004,Last 90 days,Store city
-HUN,Debrecen,2.17,85.91,4.46,586288,Last 90 days,Store city
-HUN,Pécs,2.22,86.18,3.97,462696,Last 90 days,Store city
-HUN,Szeged,2.24,86.02,4.14,399391,Last 90 days,Store city
-HUN,Győr,2.59,86.38,3.67,250811,Last 90 days,Store city
-MLT,San Gwann,4.78,79.77,7.97,1148888,Last 90 days,Store city
-MLT,Marsa,5.65,80.16,7.02,775903,Last 90 days,Store city
-MLT,Qormi,5.65,80.16,7.02,775903,Last 90 days,Store city
-MLT,Burmarrad,5.53,79.22,7.97,566592,Last 90 days,Store city
-SWE,Stockholm,5.04,83.99,6.42,1002649,Last 90 days,Store city
-SWE,Örebro,4.79,85.94,5.11,234596,Last 90 days,Store city
-SWE,Malmö,5.06,84.87,5.71,200257,Last 90 days,Store city
-AZE,ALL,1.72,77.85,5.2,3410441,Last 90 days,Country
-CYP,ALL,2.47,73.44,6.7,6696002,Last 90 days,Country
-DEU,ALL,14.11,67.53,6.1,10353367,Last 90 days,Country
-GRC,ALL,1.14,81.55,8.45,9213348,Last 90 days,Country
-HUN,ALL,2.05,86.1,4.71,7638190,Last 90 days,Country
-MLT,ALL,5.22,79.77,7.67,2491383,Last 90 days,Country
-SWE,ALL,5.0,84.43,6.11,1437502,Last 90 days,Country
-AZE,Yasamal,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Landmark,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Binagadi,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Khalglar,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Nasimi,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Ganja,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Sumqayit,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Mingachevir,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Lankaran,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Nakhchivan,1.72,77.85,5.2,3410441,Last 90 days,Country
-AZE,Sheki,1.72,77.85,5.2,3410441,Last 90 days,Country
-CYP,Limassol Central,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Limassol West,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Agios Athanasios,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Nicosia Central,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Dali,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Parissinos,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Larnaca Central,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Ayia Napa,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Germasogeia,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Mesa Geitonia,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Ypsonas,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Strovolos,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Engomi,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Lakatamia,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Aglantzia,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Aradippou,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Livadia,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Geroskipou,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Kato Paphos,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Paralimni,2.47,73.44,6.7,6696002,Last 90 days,Country
-CYP,Protaras,2.47,73.44,6.7,6696002,Last 90 days,Country
-DEU,Checkpoint Charlie,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Charlottenburg,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Gesundbrunnen,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Prenzlauer Berg,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Neukölln,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Tempelhof,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Kreuzberg,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Ehrenfeld,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Lierenfeld,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Ostend,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Barmbek,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Eimsbüttel,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Altona,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Vahrenwald,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Schwabing,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Sendling,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Giesing,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Gibitzenhof,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Dortmund,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Leipzig,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Stuttgart,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Wedding,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Friedrichshain,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Schöneberg,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Moabit,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Nippes,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Flingern,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Sachsenhausen,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Eppendorf,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Maxvorstadt,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Haidhausen,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Gostenhof,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Steglitz,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,St. Pauli,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Winterhude,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Lindenthal,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,List,14.11,67.53,6.1,10353367,Last 90 days,Country
-DEU,Bornheim,14.11,67.53,6.1,10353367,Last 90 days,Country
-GRC,Koukaki,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Ampelokipoi,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Glyfada,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Marousi,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Nea Ionia,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Piraeus,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Peristeri,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Chalandri,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Rafina,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Kifisia,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Palaio Faliro,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Kallithea,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Nikaia,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Stavroupoli,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Papafi,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Kalamaria,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Rhodes,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Volos,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Nea Smyrni,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Alimos,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Voula,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Agia Paraskevi,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Evosmos,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Platanias,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Rio,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Ilioupoli,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Keratsini,1.14,81.55,8.45,9213348,Last 90 days,Country
-GRC,Toumba,1.14,81.55,8.45,9213348,Last 90 days,Country
-HUN,Buda,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Dél-Pest,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Keleti,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Lehel,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Zugló,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Óbuda,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Újbuda,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Miskolc,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Ferencváros,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Józsefváros,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Angyalföld,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Kispest,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Újlipótváros,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Csepel,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Nagyerdő,2.05,86.1,4.71,7638190,Last 90 days,Country
-HUN,Újszeged,2.05,86.1,4.71,7638190,Last 90 days,Country
-MLT,Valletta,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Sliema,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,St Julian's,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Birkirkara,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Mosta,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Msida,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Hamrun,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Marsaxlokk,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Mellieha,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,St Paul's Bay,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Rabat,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Victoria (Gozo),5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Marsalforn (Gozo),5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Paola,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Marsaskala,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Gzira,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Swieqi,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Naxxar,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Attard,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Fgura,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Zejtun,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Mdina,5.22,79.77,7.67,2491383,Last 90 days,Country
-MLT,Luqa,5.22,79.77,7.67,2491383,Last 90 days,Country
-SWE,Stockholm City,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Solna,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Söderort,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Södermalm,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Sundbyberg,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Limhamn,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Gothenburg,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Uppsala,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Vasastan,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Östermalm,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Nacka,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Kungsholmen,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Möllevången,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Västra Hamnen,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Lund,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Majorna,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Haga,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Hammarby,5.0,84.43,6.11,1437502,Last 90 days,Country
-SWE,Linné,5.0,84.43,6.11,1437502,Last 90 days,Country
+Country,Neighbourhood,Price Entry %,Core %,Premium %,Orders,Window,Grain,Inbound Orders,Area AOV,Country AOV
+AZE,Baku,1.71,77.85,5.2,3443445,Last 90 days,Store city,,,
+CYP,Limassol,2.36,73.21,7.0,3538313,Last 90 days,Store city,,,
+CYP,Nicosia,2.52,73.39,6.3,1183153,Last 90 days,Store city,,,
+CYP,Paphos,2.75,73.69,6.65,870586,Last 90 days,Store city,,,
+CYP,Larnaca,2.53,73.79,6.35,865502,Last 90 days,Store city,,,
+CYP,Ammochostos,2.37,74.36,5.91,314874,Last 90 days,Store city,,,
+DEU,Berlin,13.76,67.07,6.34,5496356,Last 90 days,Store city,,,
+DEU,Hamburg,14.56,67.93,5.84,1533860,Last 90 days,Store city,,,
+DEU,Munich,13.18,69.08,6.36,1236113,Last 90 days,Store city,,,
+DEU,Frankfurt,13.71,68.36,5.85,842340,Last 90 days,Store city,,,
+DEU,Cologne,15.47,67.6,5.74,515281,Last 90 days,Store city,,,
+DEU,Düsseldorf,16.92,65.94,5.52,344558,Last 90 days,Store city,,,
+DEU,Nuremberg,15.58,68.39,4.47,281569,Last 90 days,Store city,,,
+DEU,Hanover,16.51,66.44,5.02,222605,Last 90 days,Store city,,,
+GRC,Athens,1.17,80.97,8.88,6880679,Last 90 days,Store city,,,
+GRC,Thessaloniki,1.24,82.92,7.44,1644740,Last 90 days,Store city,,,
+GRC,Heraklion,0.64,84.0,6.05,295905,Last 90 days,Store city,,,
+GRC,Chania,0.67,83.31,6.84,273916,Last 90 days,Store city,,,
+GRC,Patra,0.75,82.66,7.7,216882,Last 90 days,Store city,,,
+HUN,Budapest,1.99,86.08,4.87,6001408,Last 90 days,Store city,,,
+HUN,Debrecen,2.16,85.88,4.46,593441,Last 90 days,Store city,,,
+HUN,Pécs,2.22,86.16,3.97,468084,Last 90 days,Store city,,,
+HUN,Szeged,2.24,86.0,4.13,404332,Last 90 days,Store city,,,
+HUN,Győr,2.58,86.35,3.67,253018,Last 90 days,Store city,,,
+MLT,San Gwann,4.79,79.75,7.97,1154274,Last 90 days,Store city,,,
+MLT,Marsa,5.66,80.14,7.02,779971,Last 90 days,Store city,,,
+MLT,Qormi,5.66,80.14,7.02,779971,Last 90 days,Store city,,,
+MLT,Burmarrad,5.53,79.22,7.97,570966,Last 90 days,Store city,,,
+SWE,Stockholm,5.05,84.0,6.41,1012642,Last 90 days,Store city,,,
+SWE,Örebro,4.79,85.94,5.11,237186,Last 90 days,Store city,,,
+SWE,Malmö,5.07,84.87,5.7,202063,Last 90 days,Store city,,,
+AZE,ALL,1.71,77.85,5.2,3443445,Last 90 days,Country,,,
+CYP,ALL,2.46,73.43,6.7,6772428,Last 90 days,Country,,,
+DEU,ALL,14.1,67.55,6.1,10472682,Last 90 days,Country,,,
+GRC,ALL,1.14,81.52,8.45,9312122,Last 90 days,Country,,,
+HUN,ALL,2.05,86.07,4.71,7720283,Last 90 days,Country,,,
+MLT,ALL,5.23,79.75,7.67,2505211,Last 90 days,Country,,,
+SWE,ALL,5.01,84.44,6.1,1451891,Last 90 days,Country,,,
+AZE,Baku,2.12,90.1,7.67,1456243,Last 90 days,Dropoff,136273,32.46,31.83
+CYP,Mesa Geitonia,3.96,91.4,4.64,772504,Last 90 days,Dropoff,56452,41.58,39.37
+CYP,Germasogeia,3.76,90.22,6.02,420819,Last 90 days,Dropoff,30762,43.45,39.37
+CYP,Paphos,4.15,91.33,4.52,286990,Last 90 days,Dropoff,23381,37.19,39.37
+CYP,Larnaca,4.19,91.87,3.93,241736,Last 90 days,Dropoff,19914,36.61,39.37
+CYP,Limassol,3.77,91.97,4.26,234619,Last 90 days,Dropoff,18185,39.06,39.37
+CYP,Strovolos,4.61,90.9,4.49,208648,Last 90 days,Dropoff,15695,39.88,39.37
+CYP,Ypsonas,4.18,91.36,4.46,198395,Last 90 days,Dropoff,15345,40.46,39.37
+CYP,Aglantzia,4.0,91.56,4.44,133423,Last 90 days,Dropoff,10348,38.35,39.37
+CYP,Livadia,4.48,90.65,4.87,112416,Last 90 days,Dropoff,7972,43.65,39.37
+CYP,Engomi,4.19,91.6,4.21,99462,Last 90 days,Dropoff,8140,36.9,39.37
+CYP,Nicosia,4.65,91.65,3.69,90475,Last 90 days,Dropoff,7840,34.3,39.37
+CYP,Ammochostos,4.63,92.14,3.23,66663,Last 90 days,Dropoff,,,39.37
+CYP,Kato Paphos,9.13,87.07,3.8,64103,Last 90 days,Dropoff,4586,39.81,39.37
+CYP,Lakatamia,4.17,92.21,3.62,47149,Last 90 days,Dropoff,3430,41.61,39.37
+CYP,Aradippou,4.34,92.01,3.65,44473,Last 90 days,Dropoff,3454,38.1,39.37
+CYP,Geroskipou,4.17,92.31,3.52,41173,Last 90 days,Dropoff,2978,42.65,39.37
+CYP,Ayia Napa,4.29,92.23,3.48,39116,Last 90 days,Dropoff,2946,40.77,39.37
+CYP,Protaras,4.17,90.95,4.88,28017,Last 90 days,Dropoff,2021,44.62,39.37
+DEU,Wedding,22.78,72.02,4.85,595625,Last 90 days,Dropoff,38667,36.41,38.34
+DEU,Neukölln,22.41,71.88,5.4,475458,Last 90 days,Dropoff,29765,37.86,38.34
+DEU,Berlin,18.63,75.08,5.95,449864,Last 90 days,Dropoff,28033,39.8,38.34
+DEU,Charlottenburg,19.15,75.2,5.31,374448,Last 90 days,Dropoff,23411,38.91,38.34
+DEU,Prenzlauer Berg,21.52,72.7,5.41,358702,Last 90 days,Dropoff,23158,37.27,38.34
+DEU,Kreuzberg,21.06,72.82,5.77,347650,Last 90 days,Dropoff,21280,39.12,38.34
+DEU,Friedrichshain,20.97,72.89,5.83,338832,Last 90 days,Dropoff,20183,40.97,38.34
+DEU,Sendling,20.63,73.82,5.27,319037,Last 90 days,Dropoff,20410,38.04,38.34
+DEU,Barmbek,24.01,71.52,4.08,306502,Last 90 days,Dropoff,18587,38.62,38.34
+DEU,Schöneberg,20.66,73.4,5.6,280817,Last 90 days,Dropoff,17163,39.74,38.34
+DEU,Eimsbüttel,22.18,73.09,4.36,242040,Last 90 days,Dropoff,14556,38.53,38.34
+DEU,Frankfurt,19.85,74.36,5.41,232324,Last 90 days,Dropoff,14196,39.74,38.34
+DEU,Bornheim,21.74,73.26,4.61,216895,Last 90 days,Dropoff,13346,37.96,38.34
+DEU,Steglitz,22.21,72.85,4.62,194954,Last 90 days,Dropoff,11627,39.67,38.34
+DEU,Schwabing,19.77,75.13,4.78,182059,Last 90 days,Dropoff,11896,36.63,38.34
+DEU,Moabit,21.09,73.54,5.03,180827,Last 90 days,Dropoff,11047,39.24,38.34
+DEU,Flingern,25.99,69.16,4.23,154414,Last 90 days,Dropoff,9404,37.64,38.34
+DEU,Maxvorstadt,20.13,73.79,5.76,137417,Last 90 days,Dropoff,8585,39.15,38.34
+DEU,Ehrenfeld,22.8,72.07,4.62,124164,Last 90 days,Dropoff,7544,38.21,38.34
+DEU,Hamburg,20.32,73.95,5.36,113186,Last 90 days,Dropoff,6164,44.64,38.34
+DEU,Nuremberg,23.34,73.33,2.71,111209,Last 90 days,Dropoff,7021,36.59,38.34
+DEU,Sachsenhausen,20.81,73.88,4.86,109099,Last 90 days,Dropoff,6691,38.58,38.34
+DEU,Munich,19.52,74.32,5.9,106910,Last 90 days,Dropoff,6326,41.42,38.34
+DEU,Altona,20.42,73.98,5.22,99843,Last 90 days,Dropoff,5985,39.83,38.34
+DEU,Lindenthal,23.01,71.75,4.85,92910,Last 90 days,Dropoff,5570,39.73,38.34
+DEU,St. Pauli,21.59,72.37,5.56,88655,Last 90 days,Dropoff,5341,39.86,38.34
+DEU,Eppendorf,20.63,73.43,5.53,87930,Last 90 days,Dropoff,5157,41.63,38.34
+DEU,Winterhude,20.23,73.9,5.47,86627,Last 90 days,Dropoff,5087,41.51,38.34
+DEU,Cologne,21.02,73.44,5.1,82204,Last 90 days,Dropoff,4811,40.77,38.34
+DEU,Düsseldorf,23.86,70.25,5.2,80105,Last 90 days,Dropoff,4810,40.03,38.34
+DEU,List,24.23,71.23,3.85,77377,Last 90 days,Dropoff,4621,38.75,38.34
+DEU,Gostenhof,23.51,72.97,2.91,77114,Last 90 days,Dropoff,4566,38.95,38.34
+DEU,Hanover,24.73,70.49,3.99,72378,Last 90 days,Dropoff,4076,40.83,38.34
+DEU,Haidhausen,19.88,74.0,5.76,70135,Last 90 days,Dropoff,4057,42.67,38.34
+DEU,Nippes,25.16,70.04,4.32,53418,Last 90 days,Dropoff,2936,41.43,38.34
+GRC,Athens,1.77,89.37,8.86,1049626,Last 90 days,Dropoff,91590,29.52,28.91
+GRC,Chalandri,1.53,88.11,10.36,429785,Last 90 days,Dropoff,37884,30.89,28.91
+GRC,Thessaloniki,1.96,91.3,6.73,384055,Last 90 days,Dropoff,31571,28.98,28.91
+GRC,Peristeri,1.99,91.51,6.49,349573,Last 90 days,Dropoff,31839,27.96,28.91
+GRC,Toumba,1.93,91.33,6.73,315344,Last 90 days,Dropoff,28160,27.3,28.91
+GRC,Marousi,1.57,89.54,8.87,254188,Last 90 days,Dropoff,22861,29.68,28.91
+GRC,Agia Paraskevi,1.42,88.43,10.16,236063,Last 90 days,Dropoff,19527,33.22,28.91
+GRC,Glyfada,1.36,87.61,11.02,223719,Last 90 days,Dropoff,19268,30.13,28.91
+GRC,Nea Smyrni,1.78,90.2,8.02,222456,Last 90 days,Dropoff,20724,27.75,28.91
+GRC,Kifisia,1.5,87.21,11.28,180587,Last 90 days,Dropoff,14494,34.59,28.91
+GRC,Nikaia,2.35,92.32,5.32,179454,Last 90 days,Dropoff,15979,27.54,28.91
+GRC,Piraeus,1.94,90.16,7.88,168132,Last 90 days,Dropoff,15531,27.78,28.91
+GRC,Voula,1.34,85.96,12.69,157038,Last 90 days,Dropoff,11526,36.24,28.91
+GRC,Heraklion,0.85,95.23,3.92,154368,Last 90 days,Dropoff,15465,24.66,28.91
+GRC,Chania,0.86,94.01,5.13,131905,Last 90 days,Dropoff,12612,26.67,28.91
+GRC,Kallithea,2.13,90.24,7.63,126755,Last 90 days,Dropoff,11250,28.84,28.91
+GRC,Kalamaria,1.52,90.02,8.43,124842,Last 90 days,Dropoff,9785,31.51,28.91
+GRC,Evosmos,1.96,91.99,6.04,108702,Last 90 days,Dropoff,9304,28.1,28.91
+GRC,Ilioupoli,2.0,90.44,7.55,102248,Last 90 days,Dropoff,8851,29.81,28.91
+GRC,Patra,1.13,92.4,6.46,101178,Last 90 days,Dropoff,11230,22.37,28.91
+GRC,Keratsini,2.27,91.86,5.87,68100,Last 90 days,Dropoff,5641,29.72,28.91
+GRC,Palaio Faliro,1.64,87.42,10.94,64489,Last 90 days,Dropoff,5110,33.91,28.91
+GRC,Alimos,1.6,87.54,10.85,53731,Last 90 days,Dropoff,4379,33.27,28.91
+GRC,Platanias,0.69,93.25,6.05,7864,Last 90 days,Dropoff,575,36.33,28.91
+GRC,Rio,1.16,93.13,5.71,7614,Last 90 days,Dropoff,763,26.04,28.91
+HUN,Óbuda,2.2,93.58,4.2,391339,Last 90 days,Dropoff,28008,9117.33,8358.79
+HUN,Zugló,2.47,94.42,3.08,386870,Last 90 days,Dropoff,27808,8832.98,8358.79
+HUN,Budapest,1.91,93.22,4.86,362006,Last 90 days,Dropoff,24857,9592.86,8358.79
+HUN,Angyalföld,2.3,94.13,3.56,335692,Last 90 days,Dropoff,24910,8654.79,8358.79
+HUN,Józsefváros,2.23,94.15,3.6,310077,Last 90 days,Dropoff,23616,8328.84,8358.79
+HUN,Lehel,2.0,93.69,4.3,284887,Last 90 days,Dropoff,22412,8402.67,8358.79
+HUN,Újlipótváros,1.72,92.88,5.38,272554,Last 90 days,Dropoff,19342,9285.92,8358.79
+HUN,Pécs,2.71,94.73,2.51,262786,Last 90 days,Dropoff,20824,7761.68,8358.79
+HUN,Keleti,2.31,94.06,3.62,241855,Last 90 days,Dropoff,18750,8211.59,8358.79
+HUN,Újbuda,2.06,94.28,3.65,237266,Last 90 days,Dropoff,16669,9089.81,8358.79
+HUN,Dél-Pest,2.7,94.72,2.55,214556,Last 90 days,Dropoff,15309,8521.09,8358.79
+HUN,Debrecen,2.8,94.15,2.98,211633,Last 90 days,Dropoff,17035,8030.11,8358.79
+HUN,Győr,3.41,93.87,2.54,145661,Last 90 days,Dropoff,13140,7097.75,8358.79
+HUN,Kispest,3.0,94.6,2.35,145194,Last 90 days,Dropoff,10451,8388.4,8358.79
+HUN,Szeged,2.58,94.48,2.86,142906,Last 90 days,Dropoff,12424,7358.22,8358.79
+HUN,Ferencváros,1.89,94.32,3.76,127846,Last 90 days,Dropoff,9163,8950.22,8358.79
+HUN,Nagyerdő,2.46,93.66,3.82,123805,Last 90 days,Dropoff,10228,8056.34,8358.79
+HUN,Buda,1.87,94.51,3.6,103441,Last 90 days,Dropoff,7385,8943.5,8358.79
+HUN,Csepel,2.91,94.55,2.48,90280,Last 90 days,Dropoff,5947,9436.01,8358.79
+HUN,Újszeged,3.07,94.47,2.36,77296,Last 90 days,Dropoff,6134,8193.62,8358.79
+MLT,St Paul's Bay,10.16,85.27,4.57,153880,Last 90 days,Dropoff,11346,41.23,43.44
+MLT,Hamrun,10.08,86.26,3.66,93320,Last 90 days,Dropoff,7529,37.82,43.44
+MLT,Gzira,8.64,86.53,4.82,92424,Last 90 days,Dropoff,6471,45.33,43.44
+MLT,Swieqi,7.2,87.47,5.32,91268,Last 90 days,Dropoff,6242,46.02,43.44
+MLT,Sliema,8.36,86.74,4.89,88528,Last 90 days,Dropoff,5709,49.27,43.44
+MLT,Birkirkara,8.53,87.1,4.36,83989,Last 90 days,Dropoff,5757,44.54,43.44
+MLT,Mosta,8.85,86.98,4.17,82994,Last 90 days,Dropoff,5688,44.7,43.44
+MLT,St Julian's,7.81,87.56,4.62,78952,Last 90 days,Dropoff,6120,40.7,43.44
+MLT,Attard,8.06,87.54,4.39,74997,Last 90 days,Dropoff,4959,47.18,43.44
+MLT,Mellieha,8.88,86.28,4.83,64293,Last 90 days,Dropoff,4259,47.9,43.44
+MLT,Luqa,9.44,86.84,3.72,64060,Last 90 days,Dropoff,4448,44.12,43.44
+MLT,Naxxar,7.67,87.87,4.46,62113,Last 90 days,Dropoff,4347,45.71,43.44
+MLT,Msida,9.42,86.47,4.1,60125,Last 90 days,Dropoff,4617,40.25,43.44
+MLT,Fgura,9.9,86.4,3.69,59097,Last 90 days,Dropoff,4054,44.52,43.44
+MLT,San Gwann,8.33,87.55,4.11,57309,Last 90 days,Dropoff,4270,41.37,43.44
+MLT,Valletta,9.67,86.3,4.02,40752,Last 90 days,Dropoff,2975,41.72,43.44
+MLT,Zejtun,9.5,86.32,4.18,35298,Last 90 days,Dropoff,2175,50.43,43.44
+MLT,Paola,9.39,87.72,2.89,22411,Last 90 days,Dropoff,1547,43.64,43.44
+MLT,Marsaskala,9.08,86.11,4.81,20623,Last 90 days,Dropoff,1128,58.15,43.44
+MLT,Marsaxlokk,9.96,86.11,3.94,18563,Last 90 days,Dropoff,1079,53.25,43.44
+MLT,Qormi,8.67,86.39,4.94,12723,Last 90 days,Dropoff,776,49.91,43.44
+MLT,Rabat,8.77,86.59,4.63,12058,Last 90 days,Dropoff,635,59.91,43.44
+MLT,Marsa,7.71,89.3,2.99,6559,Last 90 days,Dropoff,541,36.92,43.44
+MLT,Mdina,8.65,88.91,2.44,2128,Last 90 days,Dropoff,145,43.92,43.44
+MLT,Burmarrad,12.61,84.31,3.08,1039,Last 90 days,Dropoff,81,36.87,43.44
+SWE,Örebro,7.41,88.47,4.11,149802,Last 90 days,Dropoff,11641,414.58,434.86
+SWE,Sundbyberg,8.69,86.22,5.07,138115,Last 90 days,Dropoff,10158,453.86,434.86
+SWE,Söderort,7.87,86.35,5.76,125061,Last 90 days,Dropoff,9529,432.15,434.86
+SWE,Kungsholmen,7.5,86.78,5.7,77267,Last 90 days,Dropoff,5667,447.82,434.86
+SWE,Vasastan,7.29,87.13,5.52,64945,Last 90 days,Dropoff,4715,464.61,434.86
+SWE,Solna,7.84,86.31,5.84,62729,Last 90 days,Dropoff,4608,453.34,434.86
+SWE,Möllevången,8.47,87.38,4.08,61630,Last 90 days,Dropoff,4771,419.41,434.86
+SWE,Östermalm,7.03,86.89,6.01,61614,Last 90 days,Dropoff,4448,472.81,434.86
+SWE,Hammarby,8.23,85.65,6.07,40706,Last 90 days,Dropoff,2820,472.56,434.86
+SWE,Malmö,7.43,87.08,5.46,32759,Last 90 days,Dropoff,2458,435.59,434.86
+SWE,Södermalm,7.74,85.57,6.63,30397,Last 90 days,Dropoff,2294,449.04,434.86
+SWE,Stockholm,5.48,89.97,4.53,22792,Last 90 days,Dropoff,1402,526.96,434.86
+SWE,Västra Hamnen,7.44,87.3,5.26,16050,Last 90 days,Dropoff,1296,397.75,434.86
+SWE,Limhamn,8.38,86.81,4.76,15100,Last 90 days,Dropoff,1061,477.34,434.86
+SWE,Nacka,8.69,84.93,6.35,8469,Last 90 days,Dropoff,563,517.54,434.86
+CYP,Paralimni,,,,0,Last 90 days,Dropoff,6064,32.57,39.37

@@ -1638,13 +1638,39 @@ def load_price_architecture_mix() -> pd.DataFrame:
     return df
 
 
-def _price_mix_from_row(row, grain: str, matched_name: str) -> dict | None:
-    def _pct(col):
-        return pd.to_numeric(pd.Series([row.get(col)]), errors="coerce").iloc[0]
+MIN_DROPOFF_UNITS = 100
+MIN_AOV_ORDERS = 20
+MAX_NEAREST_STORE_KM = 12.0
+STORE_MIX_GRAINS = {"store city", "store-city"}
+DROPOFF_MIX_GRAINS = {"dropoff", "delivery", "inbound"}
+COUNTRY_CURRENCY = {
+    "AZE": "AZN",
+    "CYP": "EUR",
+    "DEU": "EUR",
+    "GRC": "EUR",
+    "HUN": "HUF",
+    "MLT": "EUR",
+    "SWE": "SEK",
+}
 
-    entry = _pct("Price Entry %")
-    core = _pct("Core %")
-    premium = _pct("Premium %")
+
+def _mix_number(value):
+    return pd.to_numeric(pd.Series([value]), errors="coerce").iloc[0]
+
+
+def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    radius = 6371.0
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dphi = math.radians(lat2 - lat1)
+    dlmb = math.radians(lon2 - lon1)
+    a = math.sin(dphi / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dlmb / 2) ** 2
+    return 2 * radius * math.asin(math.sqrt(min(1.0, a)))
+
+
+def _price_mix_from_row(row, grain: str, matched_name: str) -> dict | None:
+    entry = _mix_number(row.get("Price Entry %"))
+    core = _mix_number(row.get("Core %"))
+    premium = _mix_number(row.get("Premium %"))
     if pd.isna(entry) and pd.isna(core) and pd.isna(premium):
         return None
     return {
@@ -1658,110 +1684,316 @@ def _price_mix_from_row(row, grain: str, matched_name: str) -> dict | None:
     }
 
 
+def _country_mix_frame(mix_df: pd.DataFrame, country: str) -> pd.DataFrame:
+    if mix_df is None or mix_df.empty or "Neighbourhood" not in mix_df.columns:
+        return pd.DataFrame()
+    work = mix_df.copy()
+    work["_nb"] = work["Neighbourhood"].astype(str).str.strip()
+    work["_grain"] = (
+        work["Grain"].astype(str).str.strip().str.lower()
+        if "Grain" in work.columns
+        else "store city"
+    )
+    if "Country" in work.columns and country:
+        work = work.loc[work["Country"].astype(str).str.strip() == str(country).strip()]
+    return work
+
+
+def _named_mix_rows(work: pd.DataFrame, name: str) -> pd.DataFrame:
+    key = str(name or "").strip().lower()
+    if work.empty or not key or key in {"n/a", "-", "all"}:
+        return work.iloc[0:0]
+    return work.loc[work["_nb"].str.lower() == key]
+
+
+def _first_mix_row(work: pd.DataFrame, name: str, grains: set[str], min_units: int = 0) -> dict | None:
+    hit = _named_mix_rows(work, name)
+    if hit.empty:
+        return None
+    hit = hit.loc[hit["_grain"].isin(grains)]
+    if hit.empty:
+        return None
+    row = hit.iloc[0]
+    units = _mix_number(row.get("Orders"))
+    if min_units and (pd.isna(units) or float(units) < min_units):
+        mix = None
+    else:
+        grain = display_value(row.get("Grain", next(iter(grains))))
+        mix = _price_mix_from_row(row, grain, str(row["Neighbourhood"]))
+    inbound = _mix_number(row.get("Inbound Orders"))
+    area_aov = _mix_number(row.get("Area AOV"))
+    country_aov = _mix_number(row.get("Country AOV"))
+    extra = {
+        "inbound_orders": int(inbound) if pd.notna(inbound) else None,
+        "area_aov": float(area_aov) if pd.notna(area_aov) else None,
+        "country_aov": float(country_aov) if pd.notna(country_aov) else None,
+        "window": display_value(row.get("Window", "Last 90 days")),
+        "matched_name": str(row["Neighbourhood"]),
+    }
+    if mix:
+        mix.update(extra)
+        return mix
+    if extra["inbound_orders"] or extra["area_aov"] is not None:
+        extra.update({"entry": None, "core": None, "premium": None, "orders": display_value(row.get("Orders", "")), "grain": "Dropoff"})
+        return extra
+    return None
+
+
+def nearest_live_wm_store(
+    country: str,
+    neighbourhood: str,
+    city: str | None,
+    cities_df: pd.DataFrame | None,
+) -> dict | None:
+    if cities_df is None or cities_df.empty:
+        return None
+    work = cities_df.copy()
+    if "Country" in work.columns and country:
+        work = work.loc[work["Country"].astype(str).str.strip() == str(country).strip()]
+    if work.empty or "Store status" not in work.columns:
+        return None
+    live = work.loc[work["Store status"].astype(str).str.strip().str.lower() == "live store"]
+    if live.empty:
+        return None
+
+    def _coords(name: str):
+        key = str(name or "").strip().lower()
+        if not key or key in {"n/a", "-", "all"}:
+            return None
+        hit = work.loc[work["City"].astype(str).str.strip().str.lower() == key]
+        if hit.empty:
+            return None
+        lat = _mix_number(hit.iloc[0].get("Latitude"))
+        lon = _mix_number(hit.iloc[0].get("Longitude"))
+        if pd.isna(lat) or pd.isna(lon):
+            return None
+        return float(lat), float(lon)
+
+    point = _coords(neighbourhood) or _coords(city or "")
+    if point is None:
+        return None
+    lat, lon = point
+    best = None
+    here = str(neighbourhood or "").strip().lower()
+    for _, row in live.iterrows():
+        name = str(row.get("City") or "").strip()
+        if not name:
+            continue
+        slat = _mix_number(row.get("Latitude"))
+        slon = _mix_number(row.get("Longitude"))
+        if pd.isna(slat) or pd.isna(slon):
+            continue
+        km = _haversine_km(lat, lon, float(slat), float(slon))
+        if best is None or km < best["km"]:
+            best = {"name": name, "km": km}
+    if best is None:
+        return None
+    if best["name"].strip().lower() == here and best["km"] < 0.75:
+        return None
+    if best["km"] > MAX_NEAREST_STORE_KM:
+        return None
+    return best
+
+
 def lookup_price_architecture_mix(
     mix_df: pd.DataFrame,
     country: str,
     neighbourhood: str,
     city: str | None = None,
+    cities_df: pd.DataFrame | None = None,
 ) -> dict | None:
-    if mix_df is None or mix_df.empty or not neighbourhood:
+    """Live-store mix only. No-store towns use lookup_spend_view."""
+    return lookup_spend_view(mix_df, country, neighbourhood, city=city, cities_df=cities_df)
+
+
+def lookup_spend_view(
+    mix_df: pd.DataFrame,
+    country: str,
+    neighbourhood: str,
+    city: str | None = None,
+    cities_df: pd.DataFrame | None = None,
+) -> dict | None:
+    if not neighbourhood:
         return None
-    if "Neighbourhood" not in mix_df.columns:
+    work = _country_mix_frame(mix_df, country)
+    store = _first_mix_row(work, neighbourhood, STORE_MIX_GRAINS)
+    if store is None:
+        store = _first_mix_row(work, city or "", STORE_MIX_GRAINS)
+    if store and store.get("entry") is not None:
+        store["mode"] = "store"
+        store["country"] = country
+        return store
+
+    dropoff = _first_mix_row(work, neighbourhood, DROPOFF_MIX_GRAINS, min_units=MIN_DROPOFF_UNITS)
+    if dropoff is None:
+        dropoff = _first_mix_row(work, city or "", DROPOFF_MIX_GRAINS, min_units=MIN_DROPOFF_UNITS)
+
+    nearest_meta = nearest_live_wm_store(country, neighbourhood, city, cities_df)
+    nearest = None
+    if nearest_meta:
+        nearest_mix = _first_mix_row(work, nearest_meta["name"], STORE_MIX_GRAINS)
+        if nearest_mix and nearest_mix.get("entry") is not None:
+            nearest = {
+                **nearest_mix,
+                "name": nearest_meta["name"],
+                "km": nearest_meta["km"],
+            }
+
+    inbound_orders = dropoff.get("inbound_orders") if dropoff else None
+    area_aov = dropoff.get("area_aov") if dropoff else None
+    country_aov = dropoff.get("country_aov") if dropoff else None
+    window = (dropoff or {}).get("window") or "Last 90 days"
+    dropoff_bars = dropoff if dropoff and dropoff.get("entry") is not None else None
+
+    if dropoff_bars is None and nearest is None and not inbound_orders:
         return None
-    work = mix_df.copy()
-    work["_nb"] = work["Neighbourhood"].astype(str).str.strip()
-    if "Country" in work.columns and country:
-        work = work.loc[work["Country"].astype(str).str.strip() == str(country).strip()]
-    if work.empty:
-        return None
 
-    def _named(name: str):
-        key = str(name or "").strip().lower()
-        if not key or key in {"n/a", "-"}:
-            return work.iloc[0:0]
-        return work.loc[work["_nb"].str.lower() == key]
-
-    hit = _named(neighbourhood)
-    if not hit.empty:
-        grain = display_value(hit.iloc[0].get("Grain", "Store city"))
-        if grain in {"-", "N/A"}:
-            grain = "Store city"
-        return _price_mix_from_row(hit.iloc[0], grain, str(hit.iloc[0]["Neighbourhood"]))
-
-    city_key = str(city or "").strip()
-    if city_key.lower() not in {"", "all", "n/a", "-"}:
-        hit = _named(city_key)
-        if not hit.empty:
-            return _price_mix_from_row(hit.iloc[0], "Store city", str(hit.iloc[0]["Neighbourhood"]))
-
-    if "Grain" in work.columns:
-        country_rows = work.loc[work["Grain"].astype(str).str.strip().str.lower() == "country"]
-        if not country_rows.empty:
-            row = country_rows.iloc[0]
-            return _price_mix_from_row(row, "Country", "all stores")
-    hit = _named("ALL")
-    if not hit.empty:
-        return _price_mix_from_row(hit.iloc[0], "Country", "all stores")
-    return None
+    primary = dropoff_bars
+    return {
+        "mode": "estimated" if (dropoff_bars or nearest) else "inbound_only",
+        "entry": None if primary is None else primary["entry"],
+        "core": None if primary is None else primary["core"],
+        "premium": None if primary is None else primary["premium"],
+        "orders": "" if primary is None else primary.get("orders", ""),
+        "window": window,
+        "grain": "Dropoff" if dropoff_bars else ("Nearest store" if nearest else "Inbound"),
+        "matched_name": neighbourhood,
+        "country": country,
+        "dropoff": dropoff_bars,
+        "nearest": nearest,
+        "inbound_orders": inbound_orders,
+        "area_aov": area_aov,
+        "country_aov": country_aov,
+    }
 
 
 def mix_from_neighbourhood_row(row) -> dict | None:
     if row is None:
         return None
-    entry = pd.to_numeric(pd.Series([row.get("Price Entry %")]), errors="coerce").iloc[0]
-    core = pd.to_numeric(pd.Series([row.get("Core %")]), errors="coerce").iloc[0]
-    premium = pd.to_numeric(pd.Series([row.get("Premium %")]), errors="coerce").iloc[0]
-    if pd.isna(entry) and pd.isna(core) and pd.isna(premium):
-        return None
-    grain = display_value(row.get("Mix Grain", row.get("Grain", "Country")))
+    mode = display_value(row.get("Mix Mode", ""))
+    if mode in {"-", "N/A"}:
+        mode = ""
+    grain = display_value(row.get("Mix Grain", row.get("Grain", "")))
     if grain in {"-", "N/A"}:
-        grain = "Country"
+        grain = ""
+    entry = _mix_number(row.get("Price Entry %"))
+    core = _mix_number(row.get("Core %"))
+    premium = _mix_number(row.get("Premium %"))
+    inbound = _mix_number(row.get("Inbound Orders"))
+    area_aov = _mix_number(row.get("Area AOV"))
+    country_aov = _mix_number(row.get("Country AOV"))
+    nearest_name = display_value(row.get("Nearest Store", ""))
+    nearest_km = _mix_number(row.get("Nearest km"))
+    nearest_entry = _mix_number(row.get("Nearest Entry %"))
+    nearest_core = _mix_number(row.get("Nearest Core %"))
+    nearest_premium = _mix_number(row.get("Nearest Premium %"))
+    has_primary = not (pd.isna(entry) and pd.isna(core) and pd.isna(premium))
+    has_nearest = nearest_name not in {"", "-", "N/A"} and not (
+        pd.isna(nearest_entry) and pd.isna(nearest_core) and pd.isna(nearest_premium)
+    )
+    has_inbound = pd.notna(inbound) and float(inbound) > 0
+    if not has_primary and not has_nearest and not has_inbound:
+        return None
+    if not mode:
+        if grain.lower() in STORE_MIX_GRAINS or (has_primary and not has_nearest and not has_inbound):
+            mode = "store"
+        elif has_primary or has_nearest:
+            mode = "estimated"
+        else:
+            mode = "inbound_only"
+    dropoff = None
+    if has_primary and mode != "store":
+        dropoff = {
+            "entry": float(entry),
+            "core": float(core) if pd.notna(core) else 0.0,
+            "premium": float(premium) if pd.notna(premium) else 0.0,
+            "orders": display_value(row.get("Mix Units", row.get("Orders", ""))),
+            "window": display_value(row.get("Mix Window", row.get("Window", "Last 90 days"))),
+            "matched_name": display_value(row.get("Mix Place", row.get("Neighbourhood", ""))),
+        }
+    nearest = None
+    if has_nearest:
+        nearest = {
+            "name": nearest_name,
+            "km": float(nearest_km) if pd.notna(nearest_km) else None,
+            "entry": float(nearest_entry) if pd.notna(nearest_entry) else 0.0,
+            "core": float(nearest_core) if pd.notna(nearest_core) else 0.0,
+            "premium": float(nearest_premium) if pd.notna(nearest_premium) else 0.0,
+            "orders": display_value(row.get("Nearest Units", "")),
+            "window": display_value(row.get("Mix Window", "Last 90 days")),
+            "matched_name": nearest_name,
+        }
     return {
-        "entry": float(entry) if pd.notna(entry) else 0.0,
-        "core": float(core) if pd.notna(core) else 0.0,
-        "premium": float(premium) if pd.notna(premium) else 0.0,
+        "mode": mode,
+        "entry": float(entry) if has_primary else None,
+        "core": float(core) if has_primary and pd.notna(core) else (0.0 if has_primary else None),
+        "premium": float(premium) if has_primary and pd.notna(premium) else (0.0 if has_primary else None),
         "orders": display_value(row.get("Mix Units", row.get("Orders", ""))),
         "window": display_value(row.get("Mix Window", row.get("Window", "Last 90 days"))),
-        "grain": grain,
+        "grain": grain or ("Store city" if mode == "store" else "Dropoff"),
         "matched_name": display_value(row.get("Mix Place", row.get("Neighbourhood", ""))),
+        "country": display_value(row.get("Country", "")),
+        "dropoff": dropoff,
+        "nearest": nearest,
+        "inbound_orders": int(inbound) if pd.notna(inbound) else None,
+        "area_aov": float(area_aov) if pd.notna(area_aov) else None,
+        "country_aov": float(country_aov) if pd.notna(country_aov) else None,
     }
 
 
-def attach_price_mix(neighbourhoods: pd.DataFrame, mix_df: pd.DataFrame) -> pd.DataFrame:
+def attach_price_mix(
+    neighbourhoods: pd.DataFrame,
+    mix_df: pd.DataFrame,
+    cities_df: pd.DataFrame | None = None,
+) -> pd.DataFrame:
     if neighbourhoods is None or neighbourhoods.empty:
         return neighbourhoods
     out = neighbourhoods.copy()
-    entries, cores, premiums, units, windows, grains, places = [], [], [], [], [], [], []
+    records = []
     for _, row in out.iterrows():
-        mix = lookup_price_architecture_mix(
+        mix = lookup_spend_view(
             mix_df,
             str(row.get("Country", "") or ""),
             str(row.get("Neighbourhood", "") or ""),
             city=str(row.get("City", "") or ""),
+            cities_df=cities_df,
         )
-        if not mix:
-            entries.append(None)
-            cores.append(None)
-            premiums.append(None)
-            units.append("")
-            windows.append("")
-            grains.append("")
-            places.append("")
-            continue
-        entries.append(mix["entry"])
-        cores.append(mix["core"])
-        premiums.append(mix["premium"])
-        units.append(mix.get("orders", ""))
-        windows.append(mix.get("window", ""))
-        grains.append(mix.get("grain", ""))
-        places.append(mix.get("matched_name", ""))
-    out["Price Entry %"] = entries
-    out["Core %"] = cores
-    out["Premium %"] = premiums
-    out["Mix Units"] = units
-    out["Mix Window"] = windows
-    out["Mix Grain"] = grains
-    out["Mix Place"] = places
+        records.append(mix)
+    out["Price Entry %"] = [None if m is None else m.get("entry") for m in records]
+    out["Core %"] = [None if m is None else m.get("core") for m in records]
+    out["Premium %"] = [None if m is None else m.get("premium") for m in records]
+    out["Mix Units"] = ["" if m is None else m.get("orders", "") for m in records]
+    out["Mix Window"] = ["" if m is None else m.get("window", "") for m in records]
+    out["Mix Grain"] = ["" if m is None else m.get("grain", "") for m in records]
+    out["Mix Place"] = ["" if m is None else m.get("matched_name", "") for m in records]
+    out["Mix Mode"] = ["" if m is None else m.get("mode", "") for m in records]
+    out["Inbound Orders"] = [None if m is None else m.get("inbound_orders") for m in records]
+    out["Area AOV"] = [None if m is None else m.get("area_aov") for m in records]
+    out["Country AOV"] = [None if m is None else m.get("country_aov") for m in records]
+    out["Nearest Store"] = [
+        "" if m is None or not m.get("nearest") else m["nearest"].get("name", "")
+        for m in records
+    ]
+    out["Nearest km"] = [
+        None if m is None or not m.get("nearest") else m["nearest"].get("km")
+        for m in records
+    ]
+    out["Nearest Entry %"] = [
+        None if m is None or not m.get("nearest") else m["nearest"].get("entry")
+        for m in records
+    ]
+    out["Nearest Core %"] = [
+        None if m is None or not m.get("nearest") else m["nearest"].get("core")
+        for m in records
+    ]
+    out["Nearest Premium %"] = [
+        None if m is None or not m.get("nearest") else m["nearest"].get("premium")
+        for m in records
+    ]
+    out["Nearest Units"] = [
+        "" if m is None or not m.get("nearest") else m["nearest"].get("orders", "")
+        for m in records
+    ]
     return out
 
 
@@ -1773,25 +2005,33 @@ def _format_sold_units(orders) -> str:
         return ""
 
 
-def render_price_architecture_mix(mix: dict | None, spending_profile: str, neighbourhood: str = "") -> str:
-    profile = display_value(spending_profile)
-    if not mix:
-        return f"""
-        <div style="margin:12px 0 16px 0; padding:12px 14px; background:#f6f0e9; border:1px solid #d6ba97; border-radius:12px;">
-            <div style="font-size:12px; font-weight:700; color:#0f3310; margin-bottom:6px;">WOLT MARKET PRICE MIX</div>
-            <div style="font-size:13px; color:#0f3310; line-height:1.5;">
-                Catchment read: {html.escape(profile)}. Live Price Entry / Core / Premium purchase mix
-                is not loaded yet — this comes from Wolt Market Snowflake sales only
-                (never Wolt production), written to data/neighbourhood_price_mix.csv.
-            </div>
-        </div>
-        """
+def _format_orders(count) -> str:
+    try:
+        return f"{int(float(count)):,}"
+    except (TypeError, ValueError):
+        return ""
+
+
+def _format_aov(value, country: str = "") -> str:
+    try:
+        amount = float(value)
+    except (TypeError, ValueError):
+        return ""
+    currency = COUNTRY_CURRENCY.get(str(country or "").strip().upper(), "")
+    if currency == "HUF":
+        body = f"{amount:,.0f}"
+    else:
+        body = f"{amount:,.2f}"
+    return f"{currency} {body}".strip()
+
+
+def _mix_bars_html(entry, core, premium) -> str:
     bars = [
-        ("Price Entry", mix["entry"], "#d6ba97"),
-        ("Core", mix["core"], "#a1ce47"),
-        ("Premium", mix["premium"], "#0f3310"),
+        ("Price Entry", float(entry or 0), "#d6ba97"),
+        ("Core", float(core or 0), "#a1ce47"),
+        ("Premium", float(premium or 0), "#0f3310"),
     ]
-    bars_html = "".join(
+    return "".join(
         f"""
         <div style="margin-bottom:8px;">
             <div style="display:flex; justify-content:space-between; font-size:12px; color:#0f3310; font-weight:600;">
@@ -1804,45 +2044,164 @@ def render_price_architecture_mix(mix: dict | None, spending_profile: str, neigh
         """
         for label, pct, color in bars
     )
-    units = _format_sold_units(mix.get("orders"))
-    extra = f" · {html.escape(units)}" if units else ""
-    grain = str(mix.get("grain") or "Store city")
-    matched = display_value(mix.get("matched_name"))
-    place = html.escape(display_value(neighbourhood) if neighbourhood else "this area")
-    if grain.lower() == "country":
-        grain_copy = (
-            f"No dedicated WM store in {place}. Showing all WM stores in this country "
-            f"({html.escape(str(mix.get('window') or 'Last 90 days'))}{extra}). "
-            "Country mix, not dropoff neighbourhood — towns without a store cannot "
-            "be split from the live dark-store cities on this grain."
+
+
+def _corroboration_copy(spending_profile: str, entry, core, premium) -> str:
+    profile = display_value(spending_profile)
+    profile_l = str(spending_profile or "").lower()
+    try:
+        entry_n, core_n, premium_n = float(entry), float(core), float(premium)
+    except (TypeError, ValueError):
+        return ""
+    if "premium" in profile_l and premium_n < 12:
+        return (
+            f" Catchment read ({html.escape(profile)}) is richer than current WM sold-unit mix "
+            f"({premium_n:.0f}% Premium / {core_n:.0f}% Core)."
         )
+    if any(token in profile_l for token in ("budget", "value")) and entry_n < 8:
+        return (
+            f" Catchment read ({html.escape(profile)}) is more value-led than the live mix, "
+            f"which is still Core-heavy ({core_n:.0f}% Core / {entry_n:.0f}% Price Entry)."
+        )
+    return ""
+
+
+def _inbound_spend_copy(mix: dict, place: str) -> str:
+    window = html.escape(str(mix.get("window") or "Last 90 days"))
+    orders = _format_orders(mix.get("inbound_orders"))
+    country = str(mix.get("country") or "")
+    area = _format_aov(mix.get("area_aov"), country)
+    country_aov = _format_aov(mix.get("country_aov"), country)
+    bits = []
+    if orders:
+        bits.append(f"{orders} WM orders delivered into {place}")
     else:
+        bits.append(f"No WM orders found delivered into {place}")
+    inbound = _mix_number(mix.get("inbound_orders"))
+    if area and country_aov and pd.notna(inbound) and float(inbound) >= MIN_AOV_ORDERS:
+        try:
+            delta = 100.0 * (float(mix["area_aov"]) - float(mix["country_aov"])) / float(mix["country_aov"])
+            vs = f"{delta:+.0f}% vs country"
+        except (TypeError, ValueError, ZeroDivisionError):
+            vs = "vs country"
+        bits.append(f"area AOV {area} vs country {country_aov} ({vs})")
+    elif area and pd.notna(inbound) and float(inbound) >= MIN_AOV_ORDERS:
+        bits.append(f"area AOV {area}")
+    return (
+        f"{window}: {'; '.join(bits)}. "
+        "This is delivery location, not a dark store in that town."
+    )
+
+
+def render_price_architecture_mix(mix: dict | None, spending_profile: str, neighbourhood: str = "") -> str:
+    profile = display_value(spending_profile)
+    if not mix:
+        return f"""
+        <div style="margin:12px 0 16px 0; padding:12px 14px; background:#f6f0e9; border:1px solid #d6ba97; border-radius:12px;">
+            <div style="font-size:12px; font-weight:700; color:#0f3310; margin-bottom:6px;">WOLT MARKET PRICE MIX</div>
+            <div style="font-size:13px; color:#0f3310; line-height:1.5;">
+                Catchment read: {html.escape(profile)}. No Wolt Market store mix, inbound dropoff mix,
+                or nearest-store mix is available for this town. Country PE / Core / Premium is not
+                used as a proxy. Not restaurant demand — Wolt Market deliveries only.
+            </div>
+        </div>
+        """
+    mode = str(mix.get("mode") or "").lower()
+    grain = str(mix.get("grain") or "").lower()
+    if not mode:
+        if grain == "country":
+            mode = "inbound_only"
+        elif grain in STORE_MIX_GRAINS:
+            mode = "store"
+        else:
+            mode = "estimated" if mix.get("nearest") or mix.get("dropoff") else "store"
+    place = html.escape(display_value(neighbourhood) if neighbourhood else "this area")
+    window = html.escape(str(mix.get("window") or "Last 90 days"))
+    if mode == "store" and mix.get("entry") is not None:
+        units = _format_sold_units(mix.get("orders"))
+        extra = f" · {html.escape(units)}" if units else ""
+        matched = html.escape(display_value(mix.get("matched_name")))
         grain_copy = (
-            f"Live WM sold units at stores in {html.escape(matched)} "
-            f"({html.escape(str(mix.get('window') or 'Last 90 days'))}{extra}). "
+            f"Live WM sold units at stores in {matched} "
+            f"({window}{extra}). "
             "Store-city grain, not dropoff neighbourhood. Untagged SKUs mean the three bars may not sum to 100%."
         )
-    profile_l = str(spending_profile or "").lower()
+        corroboration = _corroboration_copy(spending_profile, mix.get("entry"), mix.get("core"), mix.get("premium"))
+        return f"""
+        <div style="margin:12px 0 16px 0; padding:12px 14px; background:#eef6d8; border:1px solid #a1ce47; border-radius:12px;">
+            <div style="font-size:12px; font-weight:700; color:#0f3310; margin-bottom:6px;">WOLT MARKET PRICE MIX</div>
+            <div style="font-size:13px; color:#0f3310; margin-bottom:10px;">
+                Catchment read: {html.escape(profile)}. {grain_copy}{corroboration}
+            </div>
+            {_mix_bars_html(mix.get("entry"), mix.get("core"), mix.get("premium"))}
+        </div>
+        """
+
+    sections = []
+    dropoff = mix.get("dropoff")
+    if dropoff and dropoff.get("entry") is not None:
+        units = _format_sold_units(dropoff.get("orders"))
+        extra = f" · {html.escape(units)}" if units else ""
+        sections.append(
+            f"""
+            <div style="font-size:12px; font-weight:700; color:#0f3310; margin:10px 0 6px 0;">DELIVERED INTO {place.upper()}</div>
+            <div style="font-size:13px; color:#0f3310; margin-bottom:8px;">
+                WM sold units on orders delivered into this town ({window}{extra}).
+                Delivery location, not a dark store in that town. Wolt Market only — not restaurant.
+            </div>
+            {_mix_bars_html(dropoff.get("entry"), dropoff.get("core"), dropoff.get("premium"))}
+            """
+        )
+    else:
+        sections.append(
+            f"""
+            <div style="font-size:12px; font-weight:700; color:#0f3310; margin:10px 0 6px 0;">INBOUND WM SPEND</div>
+            <div style="font-size:13px; color:#0f3310; margin-bottom:8px;">
+                {_inbound_spend_copy(mix, place)} Wolt Market only — not restaurant.
+            </div>
+            """
+        )
+
+    nearest = mix.get("nearest")
+    if nearest and nearest.get("entry") is not None:
+        units = _format_sold_units(nearest.get("orders"))
+        extra = f" · {html.escape(units)}" if units else ""
+        km = nearest.get("km")
+        km_bit = f" · {km:.1f} km" if isinstance(km, (int, float)) else ""
+        nname = html.escape(display_value(nearest.get("name") or nearest.get("matched_name")))
+        sections.append(
+            f"""
+            <div style="font-size:12px; font-weight:700; color:#0f3310; margin:12px 0 6px 0;">NEAREST LIVE WM STORE · {nname.upper()}</div>
+            <div style="font-size:13px; color:#0f3310; margin-bottom:8px;">
+                Sold-unit mix at the nearest live dark store ({window}{extra}{km_bit}).
+            </div>
+            {_mix_bars_html(nearest.get("entry"), nearest.get("core"), nearest.get("premium"))}
+            """
+        )
+
+    corroboration_src = dropoff if dropoff and dropoff.get("entry") is not None else nearest
     corroboration = ""
-    if "premium" in profile_l and mix["premium"] < 12:
-        corroboration = (
-            f" Catchment read ({html.escape(profile)}) is richer than current WM sold-unit mix "
-            f"({mix['premium']:.0f}% Premium / {mix['core']:.0f}% Core)."
+    if corroboration_src and corroboration_src.get("entry") is not None:
+        corroboration = _corroboration_copy(
+            spending_profile,
+            corroboration_src.get("entry"),
+            corroboration_src.get("core"),
+            corroboration_src.get("premium"),
         )
-    elif any(token in profile_l for token in ("budget", "value")) and mix["entry"] < 8:
-        corroboration = (
-            f" Catchment read ({html.escape(profile)}) is more value-led than the live mix, "
-            f"which is still Core-heavy ({mix['core']:.0f}% Core / {mix['entry']:.0f}% Price Entry)."
-        )
+    intro = (
+        f"No dedicated WM dark store in {place}. Estimate uses orders delivered into the town "
+        "plus the nearest live store — never the country PE / Core / Premium mix."
+    )
     return f"""
     <div style="margin:12px 0 16px 0; padding:12px 14px; background:#eef6d8; border:1px solid #a1ce47; border-radius:12px;">
         <div style="font-size:12px; font-weight:700; color:#0f3310; margin-bottom:6px;">WOLT MARKET PRICE MIX</div>
-        <div style="font-size:13px; color:#0f3310; margin-bottom:10px;">
-            Catchment read: {html.escape(profile)}. {grain_copy}{corroboration}
+        <div style="font-size:13px; color:#0f3310; margin-bottom:6px;">
+            Catchment read: {html.escape(profile)}. {intro}{corroboration}
         </div>
-        {bars_html}
+        {''.join(sections)}
     </div>
     """
+
 
 
 def render_spend_bracket_legend() -> str:
@@ -2955,7 +3314,11 @@ def load_all_market_data(fingerprint: str = ""):
         else:
             producers_out["Email"] = "N/A"
     producers_out = annotate_producer_listing(producers_out, vendors_out)
-    neighbourhoods_out = attach_price_mix(_concat(neighbourhoods), load_price_architecture_mix())
+    neighbourhoods_out = attach_price_mix(
+        _concat(neighbourhoods),
+        load_price_architecture_mix(),
+        load_cities_registry(),
+    )
     return (
         registry,
         producers_out,
@@ -4029,21 +4392,30 @@ with tab_demo:
             detail_row = demo_work[demo_work["Neighbourhood"] == selected_demo_neighbourhood].iloc[0]
             price_mix = mix_from_neighbourhood_row(detail_row)
             if not price_mix:
-                price_mix = lookup_price_architecture_mix(
+                price_mix = lookup_spend_view(
                     price_mix_df,
                     selected_country_code,
                     selected_demo_neighbourhood,
                     city=detail_row.get("City") or selected_city,
+                    cities_df=cities_df,
                 )
             st.markdown(
                 clean_html(render_neighbourhood_full_card(detail_row, price_mix=price_mix)),
                 unsafe_allow_html=True,
             )
-            if price_mix:
+            if price_mix and price_mix.get("entry") is not None:
                 m1, m2, m3 = st.columns(3)
                 m1.metric("Price Entry", f"{price_mix['entry']:.0f}%")
                 m2.metric("Core", f"{price_mix['core']:.0f}%")
                 m3.metric("Premium", f"{price_mix['premium']:.0f}%")
+            elif price_mix:
+                m1, m2, m3 = st.columns(3)
+                inbound = _format_orders(price_mix.get("inbound_orders")) or "0"
+                m1.metric("Inbound WM orders", inbound)
+                area = _format_aov(price_mix.get("area_aov"), selected_country_code)
+                country_aov = _format_aov(price_mix.get("country_aov"), selected_country_code)
+                m2.metric("Area AOV", area or "—")
+                m3.metric("Country AOV", country_aov or "—")
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
