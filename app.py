@@ -1610,13 +1610,30 @@ SPENDING_BUCKET_BRACKETS = {
 }
 
 
-PRICE_MIX_PATH = Path(__file__).resolve().parent / "data" / "neighbourhood_price_mix.csv"
+def _price_mix_file() -> Optional[Path]:
+    """GitHub/Streamlit Cloud keeps CSVs at repo root; local layout uses data/."""
+    root = Path(__file__).resolve().parent
+    for path in (
+        root / "data" / "neighbourhood_price_mix.csv",
+        root / "neighbourhood_price_mix.csv",
+        Path("data") / "neighbourhood_price_mix.csv",
+        Path("neighbourhood_price_mix.csv"),
+    ):
+        if path.exists():
+            return path
+    return None
+
+
+PRICE_MIX_PATH = _price_mix_file() or (
+    Path(__file__).resolve().parent / "neighbourhood_price_mix.csv"
+)
 
 
 def load_price_architecture_mix() -> pd.DataFrame:
-    if not PRICE_MIX_PATH.exists():
+    path = _price_mix_file()
+    if path is None:
         return pd.DataFrame()
-    df = pd.read_csv(PRICE_MIX_PATH)
+    df = pd.read_csv(path)
     df.columns = [str(c).replace("\ufeff", "").strip() for c in df.columns]
     return df
 
@@ -2847,6 +2864,8 @@ def _data_fingerprint() -> str:
         DATA_DIR / "cities.csv",
         Path("cities.csv"),
         DATA_DIR / "neighbourhood_price_mix.csv",
+        Path("neighbourhood_price_mix.csv"),
+        Path(__file__).resolve().parent / "neighbourhood_price_mix.csv",
     ):
         if extra.exists():
             info = extra.stat()
@@ -4025,12 +4044,6 @@ with tab_demo:
                 m1.metric("Price Entry", f"{price_mix['entry']:.0f}%")
                 m2.metric("Core", f"{price_mix['core']:.0f}%")
                 m3.metric("Premium", f"{price_mix['premium']:.0f}%")
-            elif price_mix_df is None or price_mix_df.empty:
-                st.warning(
-                    f"Price mix file not read ({PRICE_MIX_PATH.name} — "
-                    f"{'missing' if not PRICE_MIX_PATH.exists() else 'empty'}). "
-                    "Stop this app and start it from the Hyperlocal tool folder with: streamlit run app.py"
-                )
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
