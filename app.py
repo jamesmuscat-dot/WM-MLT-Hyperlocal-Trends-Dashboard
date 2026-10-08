@@ -1611,13 +1611,12 @@ SPENDING_BUCKET_BRACKETS = {
 
 
 def load_price_architecture_mix() -> pd.DataFrame:
-    path = DATA_DIR / "neighbourhood_price_mix.csv"
+    path = Path(__file__).resolve().parent / "data" / "neighbourhood_price_mix.csv"
     if not path.exists():
         return pd.DataFrame()
-    try:
-        return _read_csv(path)
-    except Exception:
-        return pd.DataFrame()
+    df = pd.read_csv(path)
+    df.columns = [str(c).replace("\ufeff", "").strip() for c in df.columns]
+    return df
 
 
 def _price_mix_from_row(row, grain: str, matched_name: str) -> dict | None:
@@ -1659,7 +1658,7 @@ def lookup_price_architecture_mix(
 
     def _named(name: str):
         key = str(name or "").strip().lower()
-        if not key or key in {"all", "n/a", "-"}:
+        if not key or key in {"n/a", "-"}:
             return work.iloc[0:0]
         return work.loc[work["_nb"].str.lower() == key]
 
@@ -2785,6 +2784,7 @@ def _data_fingerprint() -> str:
         Path("countries.csv"),
         DATA_DIR / "cities.csv",
         Path("cities.csv"),
+        DATA_DIR / "neighbourhood_price_mix.csv",
     ):
         if extra.exists():
             info = extra.stat()
