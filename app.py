@@ -1610,11 +1610,13 @@ SPENDING_BUCKET_BRACKETS = {
 }
 
 
+PRICE_MIX_PATH = Path(__file__).resolve().parent / "data" / "neighbourhood_price_mix.csv"
+
+
 def load_price_architecture_mix() -> pd.DataFrame:
-    path = Path(__file__).resolve().parent / "data" / "neighbourhood_price_mix.csv"
-    if not path.exists():
+    if not PRICE_MIX_PATH.exists():
         return pd.DataFrame()
-    df = pd.read_csv(path)
+    df = pd.read_csv(PRICE_MIX_PATH)
     df.columns = [str(c).replace("\ufeff", "").strip() for c in df.columns]
     return df
 
@@ -1684,6 +1686,66 @@ def lookup_price_architecture_mix(
     if not hit.empty:
         return _price_mix_from_row(hit.iloc[0], "Country", "all stores")
     return None
+
+
+def mix_from_neighbourhood_row(row) -> dict | None:
+    if row is None:
+        return None
+    entry = pd.to_numeric(pd.Series([row.get("Price Entry %")]), errors="coerce").iloc[0]
+    core = pd.to_numeric(pd.Series([row.get("Core %")]), errors="coerce").iloc[0]
+    premium = pd.to_numeric(pd.Series([row.get("Premium %")]), errors="coerce").iloc[0]
+    if pd.isna(entry) and pd.isna(core) and pd.isna(premium):
+        return None
+    grain = display_value(row.get("Mix Grain", row.get("Grain", "Country")))
+    if grain in {"-", "N/A"}:
+        grain = "Country"
+    return {
+        "entry": float(entry) if pd.notna(entry) else 0.0,
+        "core": float(core) if pd.notna(core) else 0.0,
+        "premium": float(premium) if pd.notna(premium) else 0.0,
+        "orders": display_value(row.get("Mix Units", row.get("Orders", ""))),
+        "window": display_value(row.get("Mix Window", row.get("Window", "Last 90 days"))),
+        "grain": grain,
+        "matched_name": display_value(row.get("Mix Place", row.get("Neighbourhood", ""))),
+    }
+
+
+def attach_price_mix(neighbourhoods: pd.DataFrame, mix_df: pd.DataFrame) -> pd.DataFrame:
+    if neighbourhoods is None or neighbourhoods.empty:
+        return neighbourhoods
+    out = neighbourhoods.copy()
+    entries, cores, premiums, units, windows, grains, places = [], [], [], [], [], [], []
+    for _, row in out.iterrows():
+        mix = lookup_price_architecture_mix(
+            mix_df,
+            str(row.get("Country", "") or ""),
+            str(row.get("Neighbourhood", "") or ""),
+            city=str(row.get("City", "") or ""),
+        )
+        if not mix:
+            entries.append(None)
+            cores.append(None)
+            premiums.append(None)
+            units.append("")
+            windows.append("")
+            grains.append("")
+            places.append("")
+            continue
+        entries.append(mix["entry"])
+        cores.append(mix["core"])
+        premiums.append(mix["premium"])
+        units.append(mix.get("orders", ""))
+        windows.append(mix.get("window", ""))
+        grains.append(mix.get("grain", ""))
+        places.append(mix.get("matched_name", ""))
+    out["Price Entry %"] = entries
+    out["Core %"] = cores
+    out["Premium %"] = premiums
+    out["Mix Units"] = units
+    out["Mix Window"] = windows
+    out["Mix Grain"] = grains
+    out["Mix Place"] = places
+    return out
 
 
 def _format_sold_units(orders) -> str:
@@ -2874,12 +2936,13 @@ def load_all_market_data(fingerprint: str = ""):
         else:
             producers_out["Email"] = "N/A"
     producers_out = annotate_producer_listing(producers_out, vendors_out)
+    neighbourhoods_out = attach_price_mix(_concat(neighbourhoods), load_price_architecture_mix())
     return (
         registry,
         producers_out,
         _concat(creators),
         trends_out,
-        _concat(neighbourhoods),
+        neighbourhoods_out,
         search_out,
         vendors_out,
     )
@@ -3945,16 +4008,29 @@ with tab_demo:
                 key=f"demo_detail_select_{selected_country_code}_{selected_city}",
             )
             detail_row = demo_work[demo_work["Neighbourhood"] == selected_demo_neighbourhood].iloc[0]
-            price_mix = lookup_price_architecture_mix(
-                price_mix_df,
-                selected_country_code,
-                selected_demo_neighbourhood,
-                city=detail_row.get("City") or selected_city,
-            )
+            price_mix = mix_from_neighbourhood_row(detail_row)
+            if not price_mix:
+                price_mix = lookup_price_architecture_mix(
+                    price_mix_df,
+                    selected_country_code,
+                    selected_demo_neighbourhood,
+                    city=detail_row.get("City") or selected_city,
+                )
             st.markdown(
                 clean_html(render_neighbourhood_full_card(detail_row, price_mix=price_mix)),
                 unsafe_allow_html=True,
             )
+            if price_mix:
+                m1, m2, m3 = st.columns(3)
+                m1.metric("Price Entry", f"{price_mix['entry']:.0f}%")
+                m2.metric("Core", f"{price_mix['core']:.0f}%")
+                m3.metric("Premium", f"{price_mix['premium']:.0f}%")
+            elif price_mix_df is None or price_mix_df.empty:
+                st.warning(
+                    f"Price mix file not read ({PRICE_MIX_PATH.name} — "
+                    f"{'missing' if not PRICE_MIX_PATH.exists() else 'empty'}). "
+                    "Stop this app and start it from the Hyperlocal tool folder with: streamlit run app.py"
+                )
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
