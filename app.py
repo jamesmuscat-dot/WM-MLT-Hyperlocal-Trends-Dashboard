@@ -2775,14 +2775,14 @@ def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int 
 
 
 def render_listed_products(trend_row, assortment_df: pd.DataFrame, widget_key: str) -> None:
-    hits, total = matching_listed_products(trend_row, assortment_df)
+    hits, _total = matching_listed_products(trend_row, assortment_df)
     count = len(hits)
     if count == 0:
-        label = "Similar products · none listed in current assortment"
-    elif total > count:
-        label = f"Similar products · {count} listed (of {total})"
+        label = "No similar listed SKUs"
+    elif count == 1:
+        label = "1 similar listed SKU"
     else:
-        label = f"Similar products · {count} listed"
+        label = f"{count} similar listed SKUs"
     with st.expander(label, expanded=False, key=widget_key):
         if count == 0:
             st.caption(
@@ -4540,7 +4540,7 @@ with tab_trends:
             "The first chip is the creator/press read (Strong, Medium-strong, Medium). "
             "The second chip is in-venue app search: Validated (200+ matching searches), "
             "Weak signal (30–199), or Not in search. "
-            "Open Similar products to see listed WM SKUs (GTIN and name) already in this country's assortment."
+            "Open the listed SKUs dropdown to see items already in this country's assortment (GTIN and name)."
         )
         for i, (_, row) in enumerate(trends_to_show.iterrows()):
             rank_raw = pd.to_numeric(row.get("Rank", 0), errors="coerce")
