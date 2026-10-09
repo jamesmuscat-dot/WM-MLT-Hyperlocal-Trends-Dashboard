@@ -131,6 +131,26 @@ st.markdown(
             font-family: {FONT_BODY} !important;
             letter-spacing: 0 !important;
         }}
+        [data-testid="stIconMaterial"],
+        [data-testid="stExpanderToggleIcon"],
+        [data-testid="stExpander"] [data-testid="stIconMaterial"],
+        span.material-icons,
+        span.material-symbols-outlined,
+        span.material-symbols-rounded {{
+            font-family: "Material Symbols Rounded", "Material Symbols Outlined", "Material Icons" !important;
+            font-style: normal !important;
+            font-weight: 400 !important;
+            letter-spacing: normal !important;
+            line-height: 1 !important;
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            width: 1.35rem;
+            height: 1.35rem;
+            overflow: hidden;
+            flex-shrink: 0;
+            font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        }}
         .stApp {{
             background: {WM_CREAM} !important;
             color: {WM_GREEN} !important;
@@ -231,6 +251,42 @@ st.markdown(
             background: {WM_WHITE};
             border: 1px solid {WM_BORDER};
             border-radius: 16px;
+        }}
+        [data-testid="stExpander"] details,
+        [data-testid="stExpander"] summary {{
+            display: flex !important;
+            align-items: center;
+            gap: 10px;
+        }}
+        [data-testid="stExpander"] summary {{
+            list-style: none;
+            overflow: hidden;
+        }}
+        [data-testid="stExpander"] summary [data-testid="stIconMaterial"],
+        [data-testid="stExpander"] summary [data-testid="stExpanderToggleIcon"] {{
+            display: none !important;
+        }}
+        [data-testid="stExpander"] summary::before {{
+            content: "";
+            width: 0.42rem;
+            height: 0.42rem;
+            border-right: 2px solid {WM_GREEN};
+            border-bottom: 2px solid {WM_GREEN};
+            transform: rotate(-45deg);
+            flex-shrink: 0;
+            margin: 0 2px 1px 4px;
+        }}
+        [data-testid="stExpander"] details[open] summary::before {{
+            transform: rotate(45deg);
+            margin-bottom: 0;
+        }}
+        [data-testid="stExpander"] summary p,
+        [data-testid="stExpander"] summary span:not([data-testid="stIconMaterial"]) {{
+            font-family: {FONT_SEMI} !important;
+            color: {WM_GREEN} !important;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }}
         [data-baseweb="select"] > div,
         [data-baseweb="input"] {{
