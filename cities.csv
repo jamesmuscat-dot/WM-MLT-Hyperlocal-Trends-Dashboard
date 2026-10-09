@@ -11,20 +11,66 @@ CYP,Larnaca,34.9167,33.6292,12,Live store
 CYP,Limassol,34.7071,33.0226,12,Live store
 CYP,Nicosia,35.1856,33.3823,12,Live store
 CYP,Paphos,34.772,32.4297,12,Live store
+CYP,Paralimni,35.0375,33.9833,13,Live store
+CYP,Aglantzia,35.154,33.396,13,In range
+CYP,Aradippou,34.9514,33.5919,13,In range
+CYP,Engomi,35.162,33.315,13,In range
+CYP,Germasogeia,34.7183,33.0856,13,In range
+CYP,Geroskipou,34.7606,32.4547,13,In range
+CYP,Kato Paphos,34.7558,32.4165,13,In range
+CYP,Lakatamia,35.117,33.309,13,In range
+CYP,Livadia,34.951,33.627,13,In range
+CYP,Mesa Geitonia,34.7022,33.045,13,In range
+CYP,Protaras,35.0122,34.0581,13,In range
+CYP,Strovolos,35.1435,33.3433,13,In range
+CYP,Ypsonas,34.6881,32.9617,13,In range
 CYP,Ayia Napa,34.9826,34.0018,12,Expansion
 CZE,Brno,49.82,15.47,7,Live store
 CZE,Pilsen,49.82,15.47,7,Live store
 CZE,Prague,49.82,15.47,7,Live store
 CZE,Olomouc,49.5938,17.2509,12,Expansion
 CZE,Ostrava,49.8209,18.2625,12,Expansion
-DEU,Berlin,51.16,10.45,6,Live store
-DEU,Cologne,51.16,10.45,6,Live store
-DEU,Düsseldorf,51.16,10.45,6,Live store
-DEU,Frankfurt,51.16,10.45,6,Live store
-DEU,Hamburg,51.16,10.45,6,Live store
-DEU,Hanover,51.16,10.45,6,Live store
-DEU,Munich,51.16,10.45,6,Live store
-DEU,Nuremberg,51.16,10.45,6,Live store
+DEU,Berlin,52.52,13.405,11,Live store
+DEU,Cologne,50.9375,6.9603,12,Live store
+DEU,Düsseldorf,51.2277,6.7735,12,Live store
+DEU,Frankfurt,50.1109,8.6821,12,Live store
+DEU,Hamburg,53.5511,9.9937,11,Live store
+DEU,Hanover,52.3759,9.732,12,Live store
+DEU,Munich,48.1351,11.582,11,Live store
+DEU,Nuremberg,49.4521,11.0767,12,Live store
+DEU,Altona,53.55,9.935,13,In range
+DEU,Barmbek,53.587,10.044,13,Live store
+DEU,Bornheim,50.124,8.71,13,In range
+DEU,Charlottenburg,52.4965,13.291,13,Live store
+DEU,Checkpoint Charlie,52.5074,13.3904,13,Live store
+DEU,Ehrenfeld,50.947,6.921,13,Live store
+DEU,Eimsbüttel,53.576,9.95,13,Live store
+DEU,Gesundbrunnen,52.5486,13.3895,13,Live store
+DEU,Eppendorf,53.592,9.988,13,In range
+DEU,Flingern,51.225,6.81,13,In range
+DEU,Friedrichshain,52.5158,13.454,13,In range
+DEU,Gibitzenhof,49.439,11.068,13,Live store
+DEU,Gostenhof,49.448,11.056,13,In range
+DEU,Haidhausen,48.133,11.595,13,In range
+DEU,Kreuzberg,52.497,13.418,13,In range
+DEU,Lierenfeld,51.22,6.831,13,Live store
+DEU,Lindenthal,50.926,6.909,13,In range
+DEU,List,52.389,9.747,13,In range
+DEU,Maxvorstadt,48.15,11.568,13,In range
+DEU,Moabit,52.527,13.342,13,In range
+DEU,Neukölln,52.4735,13.452,13,Live store
+DEU,Nippes,50.965,6.958,13,In range
+DEU,Ostend,50.112,8.702,13,Live store
+DEU,Prenzlauer Berg,52.531,13.455,13,Live store
+DEU,Sachsenhausen,50.106,8.687,13,In range
+DEU,Schwabing,48.177,11.588,13,Live store
+DEU,Schöneberg,52.486,13.355,13,In range
+DEU,Sendling,48.133,11.536,13,Live store
+DEU,St. Pauli,53.557,9.964,13,In range
+DEU,Steglitz,52.456,13.322,13,In range
+DEU,Vahrenwald,52.395,9.735,13,Live store
+DEU,Wedding,52.55,13.365,13,In range
+DEU,Winterhude,53.59,10.0,13,In range
 DEU,Dortmund,51.5136,7.4653,12,Expansion
 DEU,Leipzig,51.3397,12.3731,12,Expansion
 DEU,Stuttgart,48.7758,9.1829,12,Expansion
@@ -54,11 +100,31 @@ FIN,Rovaniemi,66.5039,25.7294,12,Expansion
 GEO,Batumi,41.98,43.5,7,Live store
 GEO,Tbilisi,41.98,43.5,7,Live store
 GEO,Kutaisi,42.2679,42.6946,12,Expansion
-GRC,Athens,38.5,23.7,6,Live store
-GRC,Chania,38.5,23.7,6,Live store
-GRC,Heraklion,38.5,23.7,6,Live store
-GRC,Patra,38.5,23.7,6,Live store
-GRC,Thessaloniki,38.5,23.7,6,Live store
+GRC,Athens,37.9838,23.7275,11,Live store
+GRC,Chania,35.5138,24.018,12,Live store
+GRC,Heraklion,35.3387,25.1443,12,Live store
+GRC,Patra,38.2466,21.7346,12,Live store
+GRC,Thessaloniki,40.6401,22.9444,12,Live store
+GRC,Agia Paraskevi,38.0111,23.82,13,In range
+GRC,Alimos,37.9103,23.7236,13,In range
+GRC,Chalandri,38.0214,23.7981,13,Live store
+GRC,Evosmos,40.6689,22.9086,13,In range
+GRC,Glyfada,37.8676,23.7544,13,Live store
+GRC,Ilioupoli,37.9314,23.7556,13,In range
+GRC,Kalamaria,40.5826,22.9503,13,In range
+GRC,Kallithea,37.9503,23.6975,13,In range
+GRC,Keratsini,37.9625,23.6194,13,In range
+GRC,Kifisia,38.0741,23.8111,13,In range
+GRC,Marousi,38.0548,23.8077,13,Live store
+GRC,Nea Smyrni,37.945,23.7142,13,In range
+GRC,Nikaia,37.9667,23.6467,13,In range
+GRC,Palaio Faliro,37.9282,23.7005,13,In range
+GRC,Peristeri,38.0167,23.6914,13,Live store
+GRC,Piraeus,37.9421,23.6461,13,Live store
+GRC,Platanias,35.5167,23.9,13,In range
+GRC,Rio,38.3014,21.7847,13,In range
+GRC,Toumba,40.615,22.97,13,In range
+GRC,Voula,37.8422,23.7767,13,In range
 GRC,Rhodes,36.4349,28.2173,12,Expansion
 GRC,Volos,39.3666,22.9507,12,Expansion
 HRV,Rijeka,45.1,15.2,7,Live store
@@ -66,18 +132,33 @@ HRV,Split,45.1,15.2,7,Live store
 HRV,Zagreb,45.1,15.2,7,Live store
 HRV,Osijek,45.555,18.6955,12,Expansion
 HRV,Zadar,44.1194,15.2314,12,Expansion
-HUN,Budapest,47.16,19.5,7,Live store
-HUN,Debrecen,47.16,19.5,7,Live store
-HUN,Győr,47.16,19.5,7,Live store
-HUN,Pécs,47.16,19.5,7,Live store
-HUN,Szeged,47.16,19.5,7,Live store
+HUN,Budapest,47.4979,19.0402,11,Live store
+HUN,Debrecen,47.5316,21.6273,12,Live store
+HUN,Győr,47.6875,17.6504,12,Live store
+HUN,Pécs,46.0727,18.2323,12,Live store
+HUN,Szeged,46.253,20.1414,12,Live store
+HUN,Angyalföld,47.528,19.069,13,In range
+HUN,Buda,47.4785,19.0415,13,Live store
+HUN,Csepel,47.42,19.07,13,In range
+HUN,Dél-Pest,47.455,19.147,13,Live store
+HUN,Ferencváros,47.476,19.07,13,In range
+HUN,Józsefváros,47.49,19.072,13,In range
+HUN,Keleti,47.5005,19.0835,13,Live store
+HUN,Kispest,47.45,19.14,13,In range
+HUN,Lehel,47.5175,19.0605,13,Live store
+HUN,Nagyerdő,47.555,21.623,13,In range
+HUN,Zugló,47.517,19.0895,13,Live store
+HUN,Óbuda,47.541,19.046,13,Live store
+HUN,Újbuda,47.473,19.04,13,Live store
+HUN,Újlipótváros,47.514,19.05,13,In range
+HUN,Újszeged,46.25,20.16,13,In range
 HUN,Miskolc,48.1034,20.7784,12,Expansion
 ISR,Afula & Emek Yizrael area,31.8,35.0,8,Live store
 ISR,Ashdod and Lachish Area,31.8,35.0,8,Live store
 ISR,Ashkelon,31.8,35.0,8,Live store
 ISR,Beer Sheva,31.8,35.0,8,Live store
-ISR,HaSharon,31.8,35.0,8,Live store
 ISR,Haifa,31.8,35.0,8,Live store
+ISR,HaSharon,31.8,35.0,8,Live store
 ISR,Jerusalem,31.8,35.0,8,Live store
 ISR,Modi'in,31.8,35.0,8,Live store
 ISR,Ness Ziona - Rehovot,31.8,35.0,8,Live store
@@ -104,14 +185,14 @@ MLT,Birkirkara,35.8972,14.4611,12,In range
 MLT,Hamrun,35.8861,14.4897,12,In range
 MLT,Marsalforn (Gozo),36.0719,14.2606,12,In range
 MLT,Marsaskala,35.8622,14.5678,12,In range
-MLT,Marsaxlokk,35.8417,14.543299999999999,12,In range
+MLT,Marsaxlokk,35.8417,14.5433,12,In range
 MLT,Mellieha,35.9564,14.362199999999998,12,In range
 MLT,Mosta,35.9092,14.4258,12,In range
-MLT,Msida,35.8997,14.482800000000001,12,In range
-MLT,Paola,35.8728,14.507499999999999,12,In range
-MLT,Qormi,35.88440000000001,14.359399999999999,12,In range
+MLT,Msida,35.8997,14.4828,12,In range
+MLT,Paola,35.8728,14.5075,12,In range
+MLT,Qormi,35.88440000000001,14.3594,12,Live store
 MLT,Rabat,35.8817,14.3986,12,In range
-MLT,Sliema,35.91219999999999,14.501900000000001,12,In range
+MLT,Sliema,35.91219999999999,14.5019,12,In range
 MLT,St Julian's,35.9197,14.489599999999998,12,In range
 MLT,St Paul's Bay,35.948100000000004,14.400800000000002,12,In range
 MLT,Valletta,35.89890000000001,14.5146,12,In range
@@ -145,8 +226,24 @@ SVK,Žilina,49.2231,18.7394,12,Expansion
 SVN,Ljubljana,46.15,14.8,8,Live store
 SVN,Maribor,46.15,14.8,8,Live store
 SVN,Koper,45.5481,13.7302,12,Expansion
-SWE,Malmö,59.33,15.0,5,Live store
-SWE,Stockholm,59.33,15.0,5,Live store
-SWE,Örebro,59.33,15.0,5,Live store
+SWE,Malmö,55.605,13.0038,12,Live store
+SWE,Stockholm,59.3293,18.0686,11,Live store
+SWE,Örebro,59.2741,15.2066,12,Live store
+SWE,Haga,57.699,11.952,13,In range
+SWE,Hammarby,59.304,18.103,13,In range
+SWE,Kungsholmen,59.331,18.041,13,In range
+SWE,Limhamn,55.5833,12.9356,13,In range
+SWE,Linné,57.696,11.951,13,In range
+SWE,Lund,55.7047,13.191,13,In range
+SWE,Majorna,57.696,11.926,13,In range
+SWE,Möllevången,55.592,13.01,13,In range
+SWE,Nacka,59.31,18.164,13,In range
+SWE,Solna,59.3615,17.998,13,Live store
+SWE,Sundbyberg,59.361,17.9711,13,In range
+SWE,Södermalm,59.3128,18.0752,13,In range
+SWE,Söderort,59.2978,18.051,13,Live store
+SWE,Vasastan,59.345,18.05,13,In range
+SWE,Västra Hamnen,55.611,12.979,13,In range
+SWE,Östermalm,59.337,18.089,13,In range
 SWE,Gothenburg,57.7089,11.9746,12,Expansion
 SWE,Uppsala,59.8586,17.6389,12,Expansion

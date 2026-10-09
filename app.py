@@ -1641,7 +1641,7 @@ def load_price_architecture_mix() -> pd.DataFrame:
 MIN_DROPOFF_UNITS = 100
 MIN_AOV_ORDERS = 20
 MAX_NEAREST_STORE_KM = 20.0
-STORE_MIX_GRAINS = {"store city", "store-city"}
+STORE_MIX_GRAINS = {"store city", "store-city", "store"}
 DROPOFF_MIX_GRAINS = {"dropoff", "delivery", "inbound"}
 COUNTRY_CURRENCY = {
     "AZE": "AZN",
@@ -1669,6 +1669,64 @@ COUNTRY_CURRENCY = {
     "SWE": "SEK",
 }
 ZERO_DECIMAL_CURRENCIES = {"HUF", "JPY", "KZT"}
+GREEK_FOLD = str.maketrans(
+    {
+        "α": "a", "ά": "a", "β": "v", "γ": "g", "δ": "d", "ε": "e", "έ": "e",
+        "ζ": "z", "η": "i", "ή": "i", "θ": "th", "ι": "i", "ί": "i", "ϊ": "i",
+        "ΐ": "i", "κ": "k", "λ": "l", "μ": "m", "ν": "n", "ξ": "x", "ο": "o",
+        "ό": "o", "π": "p", "ρ": "r", "σ": "s", "ς": "s", "τ": "t", "υ": "y",
+        "ύ": "y", "ϋ": "y", "φ": "f", "χ": "ch", "ψ": "ps", "ω": "o", "ώ": "o",
+    }
+)
+CYRILLIC_FOLD = str.maketrans(
+    {
+        "а": "a", "б": "b", "в": "v", "г": "g", "д": "d", "е": "e", "ё": "e",
+        "ж": "zh", "з": "z", "и": "i", "й": "y", "к": "k", "л": "l", "м": "m",
+        "н": "n", "о": "o", "п": "p", "р": "r", "с": "s", "т": "t", "у": "u",
+        "ф": "f", "х": "kh", "ц": "ts", "ч": "ch", "ш": "sh", "щ": "shch",
+        "ъ": "", "ы": "y", "ь": "", "э": "e", "ю": "yu", "я": "ya",
+    }
+)
+PLACE_SYNONYMS = {
+    "athina": "athens",
+    "peiraias": "piraeus",
+    "pireas": "piraeus",
+    "piraeas": "piraeus",
+    "irakleio": "heraklion",
+    "iraklion": "heraklion",
+    "heraklio": "heraklion",
+    "patra": "patras",
+    "hania": "chania",
+    "salonica": "thessaloniki",
+    "thessalonike": "thessaloniki",
+    "be er sheva": "beer sheva",
+    "beersheva": "beer sheva",
+}
+
+
+def _canonical_place(name: str) -> str:
+    text = str(name or "").strip().lower().lstrip("|").strip(" -–|")
+    if not text or text in {"n/a", "-", "all"}:
+        return ""
+    for src, dst in (("ου", "ou"), ("ού", "ou"), ("μπ", "mp"), ("ντ", "nt"), ("γκ", "gk"), ("γγ", "ng")):
+        text = text.replace(src, dst)
+    text = text.translate(GREEK_FOLD).translate(CYRILLIC_FOLD)
+    text = "".join(ch for ch in unicodedata.normalize("NFKD", text) if not unicodedata.combining(ch))
+    text = re.sub(r"[^a-z0-9]+", " ", text)
+    text = " ".join(text.split())
+    return PLACE_SYNONYMS.get(text, text)
+
+
+def _place_keys(name: str) -> set[str]:
+    base = _canonical_place(name)
+    if not base:
+        return set()
+    keys = {base, base.replace(" ", "")}
+    keys.add(base.replace("mp", "b"))
+    keys.add(base.replace("nt", "d"))
+    keys.add(base.replace("gk", "g"))
+    keys.add(base.replace("y", "i"))
+    return {key for key in keys if key}
 
 
 def _mix_number(value):
@@ -1717,10 +1775,17 @@ def _country_mix_frame(mix_df: pd.DataFrame, country: str) -> pd.DataFrame:
 
 
 def _named_mix_rows(work: pd.DataFrame, name: str) -> pd.DataFrame:
-    key = str(name or "").strip().lower()
+    key = str(name or "").strip().lower().lstrip("|").strip()
     if work.empty or not key or key in {"n/a", "-", "all"}:
         return work.iloc[0:0]
-    return work.loc[work["_nb"].str.lower() == key]
+    exact = work.loc[work["_nb"].str.lower() == key]
+    if not exact.empty:
+        return exact
+    want = _place_keys(name)
+    if not want:
+        return work.iloc[0:0]
+    mask = work["_nb"].map(lambda label: bool(_place_keys(label) & want))
+    return work.loc[mask]
 
 
 def _first_mix_row(work: pd.DataFrame, name: str, grains: set[str], min_units: int = 0) -> dict | None:
@@ -1864,42 +1929,42 @@ def _same_coord_city_names(cities_df: pd.DataFrame | None, country: str, name: s
     return names
 
 
-def _inherit_parent_city_store(
-    country: str,
-    neighbourhood: str,
-    city: str | None,
-    cities_df: pd.DataFrame | None,
-) -> bool:
-    """Parent-city store mix only when this neighbourhood is the store, or a named catchment of it."""
-    nb = str(neighbourhood or "").strip()
-    ct = str(city or "").strip()
-    if not ct:
-        return False
-    if nb.lower() == ct.lower():
-        return True
-    nb_status = _city_status(cities_df, country, nb)
-    city_status = _city_status(cities_df, country, ct)
-    if nb_status == "live store":
-        return True
-    if not nb_status and city_status == "live store":
-        return True
-    return False
-
-
 def nearest_live_wm_store(
     country: str,
     neighbourhood: str,
     city: str | None,
     cities_df: pd.DataFrame | None,
+    mix_df: pd.DataFrame | None = None,
 ) -> dict | None:
     if cities_df is None or cities_df.empty:
         return None
     work = cities_df.copy()
     if "Country" in work.columns and country:
         work = work.loc[work["Country"].astype(str).str.strip() == str(country).strip()]
-    if work.empty or "Store status" not in work.columns:
+    if work.empty:
         return None
-    live = work.loc[work["Store status"].astype(str).str.strip().str.lower() == "live store"]
+    store_names = set()
+    if mix_df is not None and not mix_df.empty:
+        mix_work = _country_mix_frame(mix_df, country)
+        if not mix_work.empty:
+            store_names = set(
+                mix_work.loc[mix_work["_grain"].isin(STORE_MIX_GRAINS), "_nb"].str.lower()
+            )
+    if store_names:
+        store_keys = set()
+        for store_name in store_names:
+            store_keys.add(str(store_name).strip().lower())
+            store_keys |= _place_keys(store_name)
+
+        def _is_store_city(label) -> bool:
+            text = str(label or "").strip()
+            return text.lower() in store_keys or bool(_place_keys(text) & store_keys)
+
+        live = work.loc[work["City"].map(_is_store_city)]
+    elif "Store status" in work.columns:
+        live = work.loc[work["Store status"].astype(str).str.strip().str.lower() == "live store"]
+    else:
+        live = work.iloc[0:0]
     if live.empty:
         return None
 
@@ -1970,25 +2035,20 @@ def lookup_spend_view(
             store = _first_mix_row(work, alias, STORE_MIX_GRAINS)
             if store and store.get("entry") is not None:
                 break
-    if store is None and _inherit_parent_city_store(country, neighbourhood, city, cities_df):
+    same_place = str(neighbourhood).strip().lower() == str(city or "").strip().lower()
+    if store is None and same_place:
         store = _first_mix_row(work, city or "", STORE_MIX_GRAINS)
-        if store is None:
-            for alias in _same_coord_city_names(cities_df, country, city or ""):
-                store = _first_mix_row(work, alias, STORE_MIX_GRAINS)
-                if store and store.get("entry") is not None:
-                    break
     if store and store.get("entry") is not None:
         store["mode"] = "store"
         store["country"] = country
         return store
 
     dropoff = _first_mix_row(work, neighbourhood, DROPOFF_MIX_GRAINS, min_units=MIN_DROPOFF_UNITS)
-    same_place = str(neighbourhood).strip().lower() == str(city or "").strip().lower()
     nb_status = _city_status(cities_df, country, neighbourhood)
     if dropoff is None and (same_place or not nb_status):
         dropoff = _first_mix_row(work, city or "", DROPOFF_MIX_GRAINS, min_units=MIN_DROPOFF_UNITS)
 
-    nearest_meta = nearest_live_wm_store(country, neighbourhood, city, cities_df)
+    nearest_meta = nearest_live_wm_store(country, neighbourhood, city, cities_df, mix_df=mix_df)
     nearest = None
     if nearest_meta:
         candidates = [nearest_meta["name"]] + _same_coord_city_names(
@@ -2292,9 +2352,9 @@ def render_price_architecture_mix(mix: dict | None, spending_profile: str, neigh
         extra = f" · {html.escape(units)}" if units else ""
         matched = html.escape(display_value(mix.get("matched_name")))
         grain_copy = (
-            f"Live WM sold units at stores in {matched} "
+            f"Live WM sold units at the {matched} store "
             f"({window}{extra}). "
-            "Store-city grain, not dropoff neighbourhood. Untagged SKUs mean the three bars may not sum to 100%."
+            "This warehouse, not the whole city. Untagged SKUs mean the three bars may not sum to 100%."
         )
         corroboration = _corroboration_copy(spending_profile, mix.get("entry"), mix.get("core"), mix.get("premium"))
         return f"""
