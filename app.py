@@ -1640,18 +1640,35 @@ def load_price_architecture_mix() -> pd.DataFrame:
 
 MIN_DROPOFF_UNITS = 100
 MIN_AOV_ORDERS = 20
-MAX_NEAREST_STORE_KM = 12.0
+MAX_NEAREST_STORE_KM = 20.0
 STORE_MIX_GRAINS = {"store city", "store-city"}
 DROPOFF_MIX_GRAINS = {"dropoff", "delivery", "inbound"}
 COUNTRY_CURRENCY = {
     "AZE": "AZN",
     "CYP": "EUR",
+    "CZE": "CZK",
     "DEU": "EUR",
+    "DNK": "DKK",
+    "EST": "EUR",
+    "FIN": "EUR",
+    "GEO": "GEL",
     "GRC": "EUR",
+    "HRV": "EUR",
     "HUN": "HUF",
+    "ISR": "ILS",
+    "JPN": "JPY",
+    "KAZ": "KZT",
+    "LTU": "EUR",
+    "LVA": "EUR",
     "MLT": "EUR",
+    "NOR": "NOK",
+    "ROU": "RON",
+    "SRB": "RSD",
+    "SVK": "EUR",
+    "SVN": "EUR",
     "SWE": "SEK",
 }
+ZERO_DECIMAL_CURRENCIES = {"HUF", "JPY", "KZT"}
 
 
 def _mix_number(value):
@@ -1739,6 +1756,136 @@ def _first_mix_row(work: pd.DataFrame, name: str, grains: set[str], min_units: i
     return None
 
 
+def _city_row(cities_df: pd.DataFrame | None, country: str, name: str):
+    if cities_df is None or cities_df.empty:
+        return None
+    key = str(name or "").strip().lower()
+    if not key or key in {"n/a", "-", "all"}:
+        return None
+    work = cities_df
+    if "Country" in work.columns and country:
+        work = work.loc[work["Country"].astype(str).str.strip() == str(country).strip()]
+    if work.empty or "City" not in work.columns:
+        return None
+    hit = work.loc[work["City"].astype(str).str.strip().str.lower() == key]
+    if hit.empty:
+        return None
+    return hit.iloc[0]
+
+
+def _city_status(cities_df: pd.DataFrame | None, country: str, name: str) -> str:
+    row = _city_row(cities_df, country, name)
+    if row is None or "Store status" not in row.index:
+        return ""
+    return str(row.get("Store status") or "").strip().lower()
+
+
+def _coord_key(lat: float, lon: float) -> tuple[float, float]:
+    return (round(float(lat), 4), round(float(lon), 4))
+
+
+_COUNTRY_CENTROIDS: dict[str, tuple[float, float]] | None = None
+
+
+def _country_centroid_map() -> dict[str, tuple[float, float]]:
+    global _COUNTRY_CENTROIDS
+    if _COUNTRY_CENTROIDS is not None:
+        return _COUNTRY_CENTROIDS
+    out: dict[str, tuple[float, float]] = {}
+    registry = load_country_registry()
+    if registry is not None and not registry.empty:
+        for _, row in registry.iterrows():
+            code = str(row.get("code") or "").strip().upper()
+            lat = _mix_number(row.get("latitude"))
+            lon = _mix_number(row.get("longitude"))
+            if code and pd.notna(lat) and pd.notna(lon):
+                out[code] = (float(lat), float(lon))
+    _COUNTRY_CENTROIDS = out
+    return out
+
+
+def _is_placeholder_coord(cities_df: pd.DataFrame | None, country: str, lat: float, lon: float) -> bool:
+    """True when several differently named cities share the country-centroid pin."""
+    if cities_df is None or cities_df.empty:
+        return False
+    work = cities_df
+    if "Country" in work.columns and country:
+        work = work.loc[work["Country"].astype(str).str.strip() == str(country).strip()]
+    if work.empty:
+        return False
+    key = _coord_key(lat, lon)
+    names = set()
+    for _, row in work.iterrows():
+        slat = _mix_number(row.get("Latitude"))
+        slon = _mix_number(row.get("Longitude"))
+        if pd.isna(slat) or pd.isna(slon):
+            continue
+        if _coord_key(float(slat), float(slon)) != key:
+            continue
+        names.add(str(row.get("City") or "").strip().lower())
+    names.discard("")
+    if len(names) <= 1:
+        return False
+    if len(names) >= 3:
+        return True
+    centroid = _country_centroid_map().get(str(country).strip().upper())
+    if centroid is None:
+        return False
+    return abs(float(lat) - centroid[0]) < 0.08 and abs(float(lon) - centroid[1]) < 0.08
+
+
+def _same_coord_city_names(cities_df: pd.DataFrame | None, country: str, name: str) -> list[str]:
+    row = _city_row(cities_df, country, name)
+    if row is None:
+        return []
+    lat = _mix_number(row.get("Latitude"))
+    lon = _mix_number(row.get("Longitude"))
+    if pd.isna(lat) or pd.isna(lon):
+        return []
+    work = cities_df
+    if "Country" in work.columns and country:
+        work = work.loc[work["Country"].astype(str).str.strip() == str(country).strip()]
+    key = _coord_key(float(lat), float(lon))
+    names = []
+    seen = set()
+    for _, item in work.iterrows():
+        label = str(item.get("City") or "").strip()
+        low = label.lower()
+        if not label or low in seen:
+            continue
+        slat = _mix_number(item.get("Latitude"))
+        slon = _mix_number(item.get("Longitude"))
+        if pd.isna(slat) or pd.isna(slon):
+            continue
+        if _coord_key(float(slat), float(slon)) != key:
+            continue
+        seen.add(low)
+        names.append(label)
+    return names
+
+
+def _inherit_parent_city_store(
+    country: str,
+    neighbourhood: str,
+    city: str | None,
+    cities_df: pd.DataFrame | None,
+) -> bool:
+    """Parent-city store mix only when this neighbourhood is the store, or a named catchment of it."""
+    nb = str(neighbourhood or "").strip()
+    ct = str(city or "").strip()
+    if not ct:
+        return False
+    if nb.lower() == ct.lower():
+        return True
+    nb_status = _city_status(cities_df, country, nb)
+    city_status = _city_status(cities_df, country, ct)
+    if nb_status == "live store":
+        return True
+    if not nb_status and city_status == "live store":
+        return True
+    return False
+
+
 def nearest_live_wm_store(
     country: str,
     neighbourhood: str,
@@ -1757,15 +1904,14 @@ def nearest_live_wm_store(
         return None
 
     def _coords(name: str):
-        key = str(name or "").strip().lower()
-        if not key or key in {"n/a", "-", "all"}:
+        row = _city_row(work, country, name)
+        if row is None:
             return None
-        hit = work.loc[work["City"].astype(str).str.strip().str.lower() == key]
-        if hit.empty:
-            return None
-        lat = _mix_number(hit.iloc[0].get("Latitude"))
-        lon = _mix_number(hit.iloc[0].get("Longitude"))
+        lat = _mix_number(row.get("Latitude"))
+        lon = _mix_number(row.get("Longitude"))
         if pd.isna(lat) or pd.isna(lon):
+            return None
+        if _is_placeholder_coord(work, country, float(lat), float(lon)):
             return None
         return float(lat), float(lon)
 
@@ -1782,6 +1928,8 @@ def nearest_live_wm_store(
         slat = _mix_number(row.get("Latitude"))
         slon = _mix_number(row.get("Longitude"))
         if pd.isna(slat) or pd.isna(slon):
+            continue
+        if _is_placeholder_coord(work, country, float(slat), float(slon)):
             continue
         km = _haversine_km(lat, lon, float(slat), float(slon))
         if best is None or km < best["km"]:
@@ -1818,26 +1966,48 @@ def lookup_spend_view(
     work = _country_mix_frame(mix_df, country)
     store = _first_mix_row(work, neighbourhood, STORE_MIX_GRAINS)
     if store is None:
+        for alias in _same_coord_city_names(cities_df, country, neighbourhood):
+            store = _first_mix_row(work, alias, STORE_MIX_GRAINS)
+            if store and store.get("entry") is not None:
+                break
+    if store is None and _inherit_parent_city_store(country, neighbourhood, city, cities_df):
         store = _first_mix_row(work, city or "", STORE_MIX_GRAINS)
+        if store is None:
+            for alias in _same_coord_city_names(cities_df, country, city or ""):
+                store = _first_mix_row(work, alias, STORE_MIX_GRAINS)
+                if store and store.get("entry") is not None:
+                    break
     if store and store.get("entry") is not None:
         store["mode"] = "store"
         store["country"] = country
         return store
 
     dropoff = _first_mix_row(work, neighbourhood, DROPOFF_MIX_GRAINS, min_units=MIN_DROPOFF_UNITS)
-    if dropoff is None:
+    same_place = str(neighbourhood).strip().lower() == str(city or "").strip().lower()
+    nb_status = _city_status(cities_df, country, neighbourhood)
+    if dropoff is None and (same_place or not nb_status):
         dropoff = _first_mix_row(work, city or "", DROPOFF_MIX_GRAINS, min_units=MIN_DROPOFF_UNITS)
 
     nearest_meta = nearest_live_wm_store(country, neighbourhood, city, cities_df)
     nearest = None
     if nearest_meta:
-        nearest_mix = _first_mix_row(work, nearest_meta["name"], STORE_MIX_GRAINS)
-        if nearest_mix and nearest_mix.get("entry") is not None:
-            nearest = {
-                **nearest_mix,
-                "name": nearest_meta["name"],
-                "km": nearest_meta["km"],
-            }
+        candidates = [nearest_meta["name"]] + _same_coord_city_names(
+            cities_df, country, nearest_meta["name"]
+        )
+        seen = set()
+        for cand in candidates:
+            key = str(cand or "").strip().lower()
+            if not key or key in seen:
+                continue
+            seen.add(key)
+            nearest_mix = _first_mix_row(work, cand, STORE_MIX_GRAINS)
+            if nearest_mix and nearest_mix.get("entry") is not None:
+                nearest = {
+                    **nearest_mix,
+                    "name": nearest_meta["name"],
+                    "km": nearest_meta["km"],
+                }
+                break
 
     inbound_orders = dropoff.get("inbound_orders") if dropoff else None
     area_aov = dropoff.get("area_aov") if dropoff else None
@@ -2018,7 +2188,7 @@ def _format_aov(value, country: str = "") -> str:
     except (TypeError, ValueError):
         return ""
     currency = COUNTRY_CURRENCY.get(str(country or "").strip().upper(), "")
-    if currency == "HUF":
+    if currency in ZERO_DECIMAL_CURRENCIES:
         body = f"{amount:,.0f}"
     else:
         body = f"{amount:,.2f}"
