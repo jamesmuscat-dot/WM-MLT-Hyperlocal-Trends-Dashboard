@@ -1638,6 +1638,32 @@ def load_price_architecture_mix() -> pd.DataFrame:
     return df
 
 
+def _assortment_file() -> Optional[Path]:
+    root = Path(__file__).resolve().parent
+    for path in (
+        root / "data" / "assortment_products.csv",
+        root / "assortment_products.csv",
+        Path("data") / "assortment_products.csv",
+        Path("assortment_products.csv"),
+    ):
+        if path.exists():
+            return path
+    return None
+
+
+def load_assortment_products() -> pd.DataFrame:
+    path = _assortment_file()
+    if path is None:
+        return pd.DataFrame(columns=["Country", "GTIN", "Product Name", "Brand"])
+    df = pd.read_csv(path, dtype=str, keep_default_na=False)
+    df.columns = [str(c).replace("\ufeff", "").strip() for c in df.columns]
+    hay = df.get("Product Name", pd.Series("", index=df.index)).map(_norm_assortment_text)
+    if "Brand" in df.columns:
+        hay = hay + " " + df["Brand"].map(_norm_assortment_text)
+    df["_hay"] = hay
+    return df
+
+
 MIN_DROPOFF_UNITS = 100
 MIN_AOV_ORDERS = 20
 MAX_NEAREST_STORE_KM = 20.0
@@ -2574,6 +2600,7 @@ def trend_keyword_list(row) -> list:
     return [k for k in dict.fromkeys(keys) if k not in skip]
 
 
+MAX_LISTED_PRODUCTS = 40
 _ASSORTMENT_SKIP_QUERIES = {
     "water",
     "milk",
@@ -2607,63 +2634,119 @@ _ASSORTMENT_SKIP_QUERIES = {
     "yogurt",
     "vape",
     "coffee",
+    "wine",
+    "espresso",
+    "cappuccino",
+    "latte",
 }
 
 
-def matching_assortment_products(trend_row, search_df: pd.DataFrame) -> list:
-    """Product-like in-app queries that already fire for this trend."""
-    keys = trend_keyword_list(trend_row)
-    if search_df is None or search_df.empty or not keys or "Query" not in search_df.columns:
-        return []
-    work = search_df.copy()
-    work["_q"] = work["Query"].astype(str).str.strip()
-    work["_ql"] = work["_q"].str.lower()
-    work["_n"] = pd.to_numeric(work["Searches"], errors="coerce") if "Searches" in work.columns else 0
-    work["_n"] = pd.to_numeric(work["_n"], errors="coerce").fillna(0)
-    hits = []
-    for _, srow in work.sort_values("_n", ascending=False).iterrows():
-        query = str(srow["_ql"])
-        if query in _ASSORTMENT_SKIP_QUERIES or len(query) < 3:
+def _norm_assortment_text(value) -> str:
+    text = str(value or "").lower().replace("-", " ").replace("'", " ")
+    text = re.sub(r"[^a-z0-9à-öø-ÿα-ωάέήίόύώ]+", " ", text)
+    return " ".join(text.split())
+
+
+_KEYWORD_ALIASES = {
+    "oat milk": ("oat drink",),
+    "almond milk": ("almond drink",),
+    "soy milk": ("soy drink", "soya drink", "soya milk"),
+}
+
+
+def assortment_match_keywords(row) -> list[str]:
+    keys = []
+    for key in parse_search_keywords(row):
+        norm = _norm_assortment_text(key)
+        if not norm or len(norm) < 4 or norm in _ASSORTMENT_SKIP_QUERIES:
             continue
-        if any(key == query or (len(key) >= 4 and (key in query or query in key)) for key in keys):
-            hits.append(str(srow["_q"]))
-        if len(hits) >= 6:
-            break
-    return [h for h in dict.fromkeys(hits) if h]
+        keys.append(norm)
+        keys.extend(_KEYWORD_ALIASES.get(norm, ()))
+    return list(dict.fromkeys(keys))
 
 
-def build_trend_assortment_excerpt(trend_row, producers_df: pd.DataFrame, search_df: pd.DataFrame | None = None) -> str:
-    products = matching_assortment_products(trend_row, search_df)
-    listed = producers_df
-    if listed is not None and not listed.empty and "Listing kind" in listed.columns:
-        listed = listed[listed["Listing kind"] == "existing_supplier"]
-    maker_hits = []
-    keys = trend_keyword_list(trend_row)
-    if listed is not None and not listed.empty:
-        for _, prow in listed.iterrows():
-            hay = " ".join(
-                [
-                    str(prow.get("Producer", "")),
-                    str(prow.get("Category", "")),
-                    str(prow.get("Key Products/Specialties", "")),
-                ]
-            ).lower()
-            if any(k in hay for k in keys if len(k) >= 4):
-                maker_hits.append(str(prow.get("Producer", "")).split("/")[0].strip())
-            if len(maker_hits) >= 5:
-                break
-    maker_hits = [h for h in dict.fromkeys(maker_hits) if h]
-    bits = []
-    if products:
-        bits.append("Similar products already in WM (customers search these): " + " · ".join(products[:5]))
-    if maker_hits:
-        bits.append("Local makers already listed: " + " · ".join(maker_hits[:4]))
-    if bits:
-        return " | ".join(bits)
-    return "No close match in current WM search or supplier list — treat as a ranging gap."
+def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int = MAX_LISTED_PRODUCTS) -> tuple[pd.DataFrame, int]:
+    """Return listed WM SKUs for this trend: GTIN + product name. Not search queries."""
+    empty = pd.DataFrame(columns=["GTIN", "Product Name"])
+    if assortment_df is None or assortment_df.empty:
+        return empty, 0
+    keys = assortment_match_keywords(trend_row)
+    if not keys:
+        return empty, 0
+    work = assortment_df
+    country = str(trend_row.get("Country", "") or "").strip()
+    if country and "Country" in work.columns:
+        work = work.loc[work["Country"].astype(str).str.strip() == country]
+    if work.empty:
+        return empty, 0
+    name_col = "Product Name" if "Product Name" in work.columns else work.columns[min(2, len(work.columns) - 1)]
+    gtin_col = "GTIN" if "GTIN" in work.columns else work.columns[min(1, len(work.columns) - 1)]
+    if "_hay" in work.columns:
+        hay = work["_hay"].astype(str)
+    else:
+        hay = work[name_col].map(_norm_assortment_text)
+        if "Brand" in work.columns:
+            hay = hay + " " + work["Brand"].map(_norm_assortment_text)
+    scores = []
+    hit_counts = []
+    compiled = []
+    for key in keys:
+        if " " in key:
+            compiled.append((key, None))
+        else:
+            compiled.append((key, re.compile(rf"(?<![a-z0-9]){re.escape(key)}(?![a-z0-9])")))
+    for text in hay:
+        score = 0
+        hits = 0
+        blob = str(text)
+        for key, pattern in compiled:
+            matched = key in blob if pattern is None else bool(pattern.search(blob))
+            if matched:
+                hits += 1
+                score += len(key)
+        scores.append(score)
+        hit_counts.append(hits)
+    picked = work.assign(_score=scores, _hits=hit_counts)
+    picked = picked.loc[picked["_score"] > 0]
+    total = len(picked)
+    if picked.empty:
+        return empty, 0
+    picked = picked.sort_values(["_score", "_hits", name_col], ascending=[False, False, True])
+    shown = picked.head(limit).copy()
+    gtins = shown[gtin_col].astype(str).str.strip().replace({"": "—"})
+    names = shown[name_col].astype(str).str.strip()
+    return pd.DataFrame({"GTIN": gtins.to_list(), "Product Name": names.to_list()}), total
 
 
-def render_trend_card(rank, trend, strength, description, image_path=None, validation=None, search_message="", assortment_excerpt=""):
+def render_listed_products(trend_row, assortment_df: pd.DataFrame, widget_key: str) -> None:
+    hits, total = matching_listed_products(trend_row, assortment_df)
+    count = len(hits)
+    if count == 0:
+        label = "Similar products · none listed in current assortment"
+    elif total > count:
+        label = f"Similar products · {count} listed (of {total})"
+    else:
+        label = f"Similar products · {count} listed"
+    with st.expander(label, expanded=False, key=widget_key):
+        if count == 0:
+            st.caption(
+                "No matching items in the current Wolt Market assortment for this country. "
+                "Treat as a ranging gap — this is listed stock, not app search."
+            )
+            return
+        st.caption("Currently listed in Wolt Market stores in this country (AVAILABLE offerings). GTIN and product name.")
+        st.dataframe(
+            hits,
+            hide_index=True,
+            use_container_width=True,
+            column_config={
+                "GTIN": st.column_config.TextColumn("GTIN"),
+                "Product Name": st.column_config.TextColumn("Product name"),
+            },
+        )
+
+
+def render_trend_card(rank, trend, strength, description, image_path=None, validation=None, search_message=""):
     image_html = """
         <div style="
             width:96px;
@@ -2707,13 +2790,6 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
         search_html = f"""
             <div style="margin-top:10px; font-size:13px; line-height:1.5; color:#0f3310; background:#f6f0e9; border:1px solid #d6ba97; border-radius:10px; padding:8px 12px;">
                 {html.escape(display_value(search_message))}
-            </div>
-        """
-    assortment_html = ""
-    if assortment_excerpt:
-        assortment_html = f"""
-            <div style="margin-top:8px; font-size:13px; line-height:1.5; color:#0f3310; background:#eef6d8; border:1px solid #a1ce47; border-radius:10px; padding:8px 12px;">
-                {html.escape(display_value(assortment_excerpt))}
             </div>
         """
     return f"""
@@ -2762,7 +2838,6 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
                 {html.escape(display_value(description))}
             </div>
             {search_html}
-            {assortment_html}
         </div>
     </div>
     """
@@ -3455,6 +3530,9 @@ def _data_fingerprint() -> str:
         DATA_DIR / "neighbourhood_price_mix.csv",
         Path("neighbourhood_price_mix.csv"),
         Path(__file__).resolve().parent / "neighbourhood_price_mix.csv",
+        DATA_DIR / "assortment_products.csv",
+        Path("assortment_products.csv"),
+        Path(__file__).resolve().parent / "assortment_products.csv",
     ):
         if extra.exists():
             info = extra.stat()
@@ -3602,6 +3680,7 @@ def map_view_for(df: pd.DataFrame, registry_row=None):
 ) = load_all_market_data(_data_fingerprint())
 cities_df = load_cities_registry()
 price_mix_df = load_price_architecture_mix()
+all_assortment_df = load_assortment_products()
 
 if all_producers_df.empty:
     st.error(
@@ -3641,6 +3720,7 @@ creators_df = all_creators_df.copy()
 trends_df = all_trends_df.copy()
 demographics_df = all_demographics_df.copy()
 search_df = all_search_df.copy()
+assortment_df = all_assortment_df.copy()
 
 if selected_country_code:
     df = df[df["Country"].astype(str) == selected_country_code]
@@ -3652,6 +3732,8 @@ if selected_country_code:
         demographics_df = demographics_df[demographics_df["Country"].astype(str) == selected_country_code]
     if not search_df.empty and "Country" in search_df.columns:
         search_df = search_df[search_df["Country"].astype(str) == selected_country_code]
+    if not assortment_df.empty and "Country" in assortment_df.columns:
+        assortment_df = assortment_df[assortment_df["Country"].astype(str) == selected_country_code]
     MARKET_NAME = selected_country_label
     registry_row = None
     if not registry_df.empty:
@@ -4401,7 +4483,8 @@ with tab_trends:
         st.caption(
             "The first chip is the creator/press read (Strong, Medium-strong, Medium). "
             "The second chip is in-venue app search: Validated (200+ matching searches), "
-            "Weak signal (30–199), or Not in search."
+            "Weak signal (30–199), or Not in search. "
+            "Open Similar products to see listed WM SKUs (GTIN and name) already in this country's assortment."
         )
         for i, (_, row) in enumerate(trends_to_show.iterrows()):
             rank_raw = pd.to_numeric(row.get("Rank", 0), errors="coerce")
@@ -4411,7 +4494,6 @@ with tab_trends:
             description = display_value(row.get("Description", ""))
             image_path = resolve_trend_image(row.get("Image", ""), trend_row=row)
             validation = trend_validations[i] if i < len(trend_validations) else {}
-            assortment_excerpt = build_trend_assortment_excerpt(row, df, search_df=search_df)
 
             st.markdown(
                 clean_html(
@@ -4423,11 +4505,11 @@ with tab_trends:
                         image_path=image_path,
                         validation=validation.get("status", ""),
                         search_message=validation.get("message", ""),
-                        assortment_excerpt=assortment_excerpt,
                     )
                 ),
                 unsafe_allow_html=True,
             )
+            render_listed_products(row, assortment_df, widget_key=f"listed-skus-{i}-{rank}")
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
