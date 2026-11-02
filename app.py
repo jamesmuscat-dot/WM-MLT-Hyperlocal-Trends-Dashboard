@@ -1141,6 +1141,85 @@ def validation_chip_style(status: str) -> str:
     return "background:#f6f0e9;color:#0f3310;"
 
 
+def coverage_chip_style(label: str) -> str:
+    s = str(label).strip().lower()
+    if s == "ranging gap":
+        return "background:#fff1e6;color:#c2410c;"
+    if s in {"thin range", "token listing"}:
+        return "background:#fff1e6;color:#9a3412;"
+    if s == "building":
+        return "background:#f6f0e9;color:#0f3310;"
+    if s == "covered as a set":
+        return "background:#d1f694;color:#0f3310;"
+    return "background:#f6f0e9;color:#0f3310;"
+
+
+def ranging_coverage(sku_count: int, search_status: str) -> dict:
+    """What good looks like: a set a customer can choose from, not a token line.
+
+    8–15 matching SKUs is the typical set on the same kind of theme in other
+    Wolt Market countries that actually range it (e.g. specialty coffee bags).
+    """
+    validated = str(search_status).strip().lower() == "validated"
+    n = int(sku_count or 0)
+    if n <= 0:
+        if validated:
+            return {
+                "label": "Ranging gap",
+                "why": (
+                    "Customers already search this, and there are no matching listed SKUs. "
+                    "Good looks like a small set they can choose from — typically 8–15 similar "
+                    "items in other Wolt Market countries on this kind of theme — not a blank shelf."
+                ),
+            }
+        return {
+            "label": "No listed SKUs",
+            "why": (
+                "Nothing listed that matches this theme yet. Search is still thin, so treat this "
+                "as a watchlist rather than a must-range. If demand later validates, good still "
+                "means a set (about 8–15 SKUs), not a single line."
+            ),
+        }
+    unit = "SKU" if n == 1 else "SKUs"
+    if n <= 2:
+        if validated:
+            return {
+                "label": "Thin range",
+                "why": (
+                    f"{n} matching listed {unit} is a token listing, not a set. "
+                    "Customers already search this in the app, so they need a choice of named "
+                    "products — typically 8–15 similar SKUs in other Wolt Market countries on "
+                    "this kind of theme. One line is not enough."
+                ),
+            }
+        return {
+            "label": "Token listing",
+            "why": (
+                f"{n} matching listed {unit}. Demand is not validated yet, so a short listing "
+                "can be enough for now. If search later validates, grow it into a set "
+                "(about 8–15 SKUs) a customer can choose from."
+            ),
+        }
+    if n < 8:
+        return {
+            "label": "Building",
+            "why": (
+                f"{n} similar listed SKUs is a start — more than a token, not yet a full set. "
+                "Good looks like a customer can choose: about 8–15 matching SKUs in other "
+                "Wolt Market countries on this kind of theme. Check these are the right products, "
+                "not only supermarket staples."
+            ),
+        }
+    return {
+        "label": "Covered as a set",
+        "why": (
+            f"{n} similar listed SKUs is a set a customer can choose from, in line with other "
+            "Wolt Market countries on a live theme. Still sense-check the names: good is the "
+            "right products for this theme (named local producers), not only national supermarket lines."
+        ),
+    }
+
+
 def validate_trend_against_search(trend_row, search_df: pd.DataFrame) -> dict:
     keywords = parse_search_keywords(trend_row)
     country = str(trend_row.get("Country", "")).strip()
@@ -2699,6 +2778,9 @@ _ASSORTMENT_SKIP_QUERIES = {
     "yogurt",
     "vape",
     "coffee",
+    "coffee beans",
+    "filter coffee",
+    "specialty coffee",
     "wine",
     "espresso",
     "cappuccino",
@@ -2708,7 +2790,7 @@ _ASSORTMENT_SKIP_QUERIES = {
 
 def _norm_assortment_text(value) -> str:
     text = str(value or "").lower().replace("-", " ").replace("'", " ")
-    text = re.sub(r"[^a-z0-9à-öø-ÿα-ωάέήίόύώ]+", " ", text)
+    text = re.sub(r"[^\w]+", " ", text, flags=re.UNICODE)
     return " ".join(text.split())
 
 
@@ -2759,7 +2841,7 @@ def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int 
         if " " in key:
             compiled.append((key, None))
         else:
-            compiled.append((key, re.compile(rf"(?<![a-z0-9]){re.escape(key)}(?![a-z0-9])")))
+            compiled.append((key, re.compile(rf"(?<!\w){re.escape(key)}(?!\w)", re.UNICODE)))
     for text in hay:
         score = 0
         hits = 0
@@ -2783,21 +2865,31 @@ def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int 
     return pd.DataFrame({"GTIN": gtins.to_list(), "Product Name": names.to_list()}), total
 
 
-def render_listed_products(trend_row, assortment_df: pd.DataFrame, widget_key: str) -> None:
-    hits, _total = matching_listed_products(trend_row, assortment_df)
-    count = len(hits)
-    if count == 0:
+def render_listed_products(
+    trend_row,
+    assortment_df: pd.DataFrame,
+    widget_key: str,
+    search_status: str = "",
+    hits: pd.DataFrame | None = None,
+    total: int | None = None,
+    coverage: dict | None = None,
+) -> None:
+    if hits is None or total is None:
+        hits, total = matching_listed_products(trend_row, assortment_df)
+    if coverage is None:
+        coverage = ranging_coverage(total, search_status)
+    shown = len(hits)
+    if total == 0:
         label = "No similar listed SKUs"
-    elif count == 1:
+    elif total == 1:
         label = "1 similar listed SKU"
     else:
-        label = f"{count} similar listed SKUs"
+        label = f"{total} similar listed SKUs"
+        if shown < total:
+            label = f"{shown} similar listed SKUs"
     with st.expander(label, expanded=False, key=widget_key):
-        if count == 0:
-            st.caption(
-                "No matching items in the current Wolt Market assortment for this country. "
-                "Treat as a ranging gap — this is listed stock, not app search."
-            )
+        st.caption(coverage["why"])
+        if total == 0:
             return
         st.caption("Currently listed in Wolt Market stores in this country (AVAILABLE offerings). GTIN and product name.")
         st.dataframe(
@@ -2811,7 +2903,16 @@ def render_listed_products(trend_row, assortment_df: pd.DataFrame, widget_key: s
         )
 
 
-def render_trend_card(rank, trend, strength, description, image_path=None, validation=None, search_message=""):
+def render_trend_card(
+    rank,
+    trend,
+    strength,
+    description,
+    image_path=None,
+    validation=None,
+    search_message="",
+    coverage=None,
+):
     image_html = """
         <div style="
             width:96px;
@@ -2851,6 +2952,18 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
                 ">{html.escape(display_value(validation))}</div>
         """
     search_html = ""
+    coverage_html = ""
+    if coverage and coverage.get("label"):
+        coverage_html = f"""
+                <div style="
+                    display:inline-block;
+                    padding:6px 14px;
+                    border-radius:999px;
+                    font-size:14px;
+                    font-weight:700;
+                    {coverage_chip_style(coverage.get("label", ""))}
+                ">{html.escape(display_value(coverage.get("label", "")))}</div>
+        """
     if search_message:
         search_html = f"""
             <div style="margin-top:10px; font-size:13px; line-height:1.5; color:#0f3310; background:#f6f0e9; border:1px solid #d6ba97; border-radius:10px; padding:8px 12px;">
@@ -2898,6 +3011,7 @@ def render_trend_card(rank, trend, strength, description, image_path=None, valid
                     {strength_style}
                 ">{html.escape(display_value(strength))}</div>
                 {validation_html}
+                {coverage_html}
             </div>
             <div style="margin-top:8px; font-size:14px; line-height:1.55; color:#0f3310;">
                 {html.escape(display_value(description))}
@@ -4580,10 +4694,10 @@ with tab_trends:
         # ---- 2) Top 5 Trends (full width, one card per row) ----
         st.markdown(f"### Top 5 {MARKET_NAME} Trends")
         st.caption(
-            "The first chip is the creator/press read (Strong, Medium-strong, Medium). "
-            "The second chip is in-venue app search: Validated (200+ matching searches), "
-            "Weak signal (30–199), or Not in search. "
-            "Open the listed SKUs dropdown to see items already in this country's assortment (GTIN and name)."
+            "Three chips: creator/press strength; in-app search (Validated = 200+ searches); "
+            "and range coverage — whether listed SKUs are a gap, a token, or a set a customer can choose from. "
+            "Good on a validated theme is typically 8–15 similar SKUs, not one line. "
+            "Open the dropdown for the names (GTIN and product)."
         )
         for i, (_, row) in enumerate(trends_to_show.iterrows()):
             rank_raw = pd.to_numeric(row.get("Rank", 0), errors="coerce")
@@ -4593,6 +4707,8 @@ with tab_trends:
             description = display_value(row.get("Description", ""))
             image_path = resolve_trend_image(row.get("Image", ""), trend_row=row)
             validation = trend_validations[i] if i < len(trend_validations) else {}
+            hits, total = matching_listed_products(row, assortment_df)
+            coverage = ranging_coverage(total, validation.get("status", ""))
 
             st.markdown(
                 clean_html(
@@ -4604,11 +4720,20 @@ with tab_trends:
                         image_path=image_path,
                         validation=validation.get("status", ""),
                         search_message=validation.get("message", ""),
+                        coverage=coverage,
                     )
                 ),
                 unsafe_allow_html=True,
             )
-            render_listed_products(row, assortment_df, widget_key=f"listed-skus-{i}-{rank}")
+            render_listed_products(
+                row,
+                assortment_df,
+                widget_key=f"listed-skus-{i}-{rank}",
+                search_status=validation.get("status", ""),
+                hits=hits,
+                total=total,
+                coverage=coverage,
+            )
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
