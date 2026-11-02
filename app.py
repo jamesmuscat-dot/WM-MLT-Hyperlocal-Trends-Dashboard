@@ -3568,12 +3568,6 @@ def _load_folder_pack(folder: Path, code: str):
     demo = _first_existing(folder, NEIGHBOURHOOD_FILES)
     if demo:
         pack["neighbourhoods"] = _ensure_country(_read_csv(demo), code)
-    sear = _first_existing(folder, SEARCH_FILES)
-    search_df = pd.DataFrame()
-    if sear:
-        search_df = _ensure_country(_read_search_csv(sear), code)
-    if pack["trends"] is not None:
-        pack["trends"] = _attach_search_validation(pack["trends"], search_df)
     vend = _first_existing(folder, VENDOR_FILES)
     if vend:
         pack["vendors"] = _ensure_country(_read_csv(vend), code)
@@ -3594,7 +3588,6 @@ def _data_fingerprint() -> str:
             CREATOR_FILES,
             TREND_FILES,
             NEIGHBOURHOOD_FILES,
-            SEARCH_FILES,
             VENDOR_FILES,
         ):
             path = _first_existing(folder, names)
@@ -3613,6 +3606,8 @@ def _data_fingerprint() -> str:
         DATA_DIR / "assortment_products.csv",
         Path("assortment_products.csv"),
         Path(__file__).resolve().parent / "assortment_products.csv",
+        DATA_DIR / "trend_search_status.csv",
+        Path("trend_search_status.csv"),
     ):
         if extra.exists():
             info = extra.stat()
@@ -3634,6 +3629,36 @@ def _attach_search_validation(trends: pd.DataFrame, search: pd.DataFrame) -> pd.
     out["Search Message"] = messages
     out["Search Count"] = counts
     return out
+
+
+def _apply_cached_search_status(trends: pd.DataFrame) -> pd.DataFrame:
+    """Attach Validated / Weak / Not-in-search chips from a tiny precomputed file.
+
+    Cloud cannot load the raw search.csv extracts (about 1.9 million rows).
+    Rebuild data/trend_search_status.csv with _build_trend_search_status.py
+    after a search pull.
+    """
+    if trends is None or trends.empty:
+        return trends
+    path = None
+    for candidate in (DATA_DIR / "trend_search_status.csv", Path("trend_search_status.csv")):
+        if candidate.exists():
+            path = candidate
+            break
+    if path is None:
+        return trends
+    cached = pd.read_csv(path, keep_default_na=False)
+    cached.columns = [str(c).replace("\ufeff", "").strip() for c in cached.columns]
+    if cached.empty:
+        return trends
+    out = trends.copy()
+    keys = [c for c in ("Country", "Trend") if c in out.columns and c in cached.columns]
+    if not keys:
+        return trends
+    keep = keys + [c for c in ("Search Status", "Search Message", "Search Count") if c in cached.columns]
+    cached = cached[keep].drop_duplicates(subset=keys, keep="first")
+    out = out.drop(columns=[c for c in ("Search Status", "Search Message", "Search Count") if c in out.columns], errors="ignore")
+    return out.merge(cached, on=keys, how="left")
 
 
 @st.cache_data(show_spinner=False)
@@ -3686,7 +3711,7 @@ def load_all_market_data(fingerprint: str = ""):
             )
             registry = pd.concat([registry, extra], ignore_index=True)
 
-    trends_out = _concat(trends)
+    trends_out = _apply_cached_search_status(_concat(trends))
     vendors_out = _concat(vendors)
     producers_out = _concat(producers)
     if not producers_out.empty and "Email" not in producers_out.columns:
