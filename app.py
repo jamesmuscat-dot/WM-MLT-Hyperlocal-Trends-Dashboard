@@ -2855,6 +2855,7 @@ INTERNATIONAL_ASSORTMENT_BRANDS = {
     "barilla", "heinz", "knorr", "maggi", "dr oetker", "bonduelle",
     "ben jerrys", "magnum", "nivea", "dove", "colgate", "gillette",
     "pampers", "loreal", "garnier", "palmolive",
+    "oatly", "valsoia", "natrue", "innocent", "provamel", "alpro",
 }
 PRIVATE_LABEL_BRANDS = {
     "first price", "garant", "eldorado", "wolt", "wolt market",
