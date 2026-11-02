@@ -1688,6 +1688,7 @@ PRICE_MIX_PATH = _price_mix_file() or (
 )
 
 
+@st.cache_data(show_spinner=False)
 def load_price_architecture_mix() -> pd.DataFrame:
     path = _price_mix_file()
     if path is None:
@@ -1712,6 +1713,7 @@ def _assortment_file() -> Optional[Path]:
     return None
 
 
+@st.cache_data(show_spinner=False)
 def load_assortment_products() -> pd.DataFrame:
     path = _assortment_file()
     if path is None:
@@ -3457,6 +3459,14 @@ def _read_csv(path: Path) -> pd.DataFrame:
     return df.replace({"": "N/A"}).fillna("N/A")
 
 
+def _read_search_csv(path: Path) -> pd.DataFrame:
+    """Load in-venue search without the N/A fill used on qualitative CSVs."""
+    df = pd.read_csv(path, keep_default_na=False, low_memory=True)
+    df.columns = [str(c).replace("\ufeff", "").strip() for c in df.columns]
+    keep = [c for c in ("Country", "Query", "Searches") if c in df.columns]
+    return df[keep] if keep else df
+
+
 def _ensure_country(df: pd.DataFrame, code: str) -> pd.DataFrame:
     if df is None or df.empty:
         return df
@@ -3559,8 +3569,11 @@ def _load_folder_pack(folder: Path, code: str):
     if demo:
         pack["neighbourhoods"] = _ensure_country(_read_csv(demo), code)
     sear = _first_existing(folder, SEARCH_FILES)
+    search_df = pd.DataFrame()
     if sear:
-        pack["search"] = _ensure_country(_read_csv(sear), code)
+        search_df = _ensure_country(_read_search_csv(sear), code)
+    if pack["trends"] is not None:
+        pack["trends"] = _attach_search_validation(pack["trends"], search_df)
     vend = _first_existing(folder, VENDOR_FILES)
     if vend:
         pack["vendors"] = _ensure_country(_read_csv(vend), code)
@@ -3627,7 +3640,7 @@ def _attach_search_validation(trends: pd.DataFrame, search: pd.DataFrame) -> pd.
 def load_all_market_data(fingerprint: str = ""):
     _ = fingerprint  # cache key: country CSV paths, sizes, and mtimes
     registry = load_country_registry()
-    producers, creators, trends, neighbourhoods, searches, vendors = [], [], [], [], [], []
+    producers, creators, trends, neighbourhoods, vendors = [], [], [], [], []
 
     folders = _country_folders()
     loaded_codes = set()
@@ -3642,8 +3655,6 @@ def load_all_market_data(fingerprint: str = ""):
             trends.append(pack["trends"])
         if pack["neighbourhoods"] is not None:
             neighbourhoods.append(pack["neighbourhoods"])
-        if pack["search"] is not None:
-            searches.append(pack["search"])
         if pack["vendors"] is not None:
             vendors.append(pack["vendors"])
         loaded_codes.add(code)
@@ -3665,8 +3676,6 @@ def load_all_market_data(fingerprint: str = ""):
             trends.append(pack["trends"])
         if pack["neighbourhoods"] is not None:
             neighbourhoods.append(pack["neighbourhoods"])
-        if pack["search"] is not None:
-            searches.append(pack["search"])
         if pack["vendors"] is not None:
             vendors.append(pack["vendors"])
         if pack["producers"] is not None and (
@@ -3678,9 +3687,7 @@ def load_all_market_data(fingerprint: str = ""):
             registry = pd.concat([registry, extra], ignore_index=True)
 
     trends_out = _concat(trends)
-    search_out = _concat(searches)
     vendors_out = _concat(vendors)
-    trends_out = _attach_search_validation(trends_out, search_out)
     producers_out = _concat(producers)
     if not producers_out.empty and "Email" not in producers_out.columns:
         if "Website / IG" in producers_out.columns:
@@ -3700,7 +3707,7 @@ def load_all_market_data(fingerprint: str = ""):
         _concat(creators),
         trends_out,
         neighbourhoods_out,
-        search_out,
+        pd.DataFrame(),
         vendors_out,
     )
 
