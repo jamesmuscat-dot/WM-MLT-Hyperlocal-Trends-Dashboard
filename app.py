@@ -291,6 +291,39 @@ st.markdown(
             text-overflow: ellipsis;
             white-space: nowrap;
         }}
+        [data-testid="stElementToolbar"],
+        [data-testid="StyledFullScreenButton"] {{
+            display: none !important;
+        }}
+        [data-testid="stFullScreenFrame"] [data-testid="stElementToolbar"],
+        [data-testid="stFullScreenFrame"] [data-testid="StyledFullScreenButton"] {{
+            display: flex !important;
+        }}
+        .wm-sku-table {{
+            width: 100%;
+            border-collapse: collapse;
+            font-family: {FONT_BODY};
+            color: {WM_GREEN};
+            background: {WM_WHITE};
+        }}
+        .wm-sku-table th {{
+            text-align: left;
+            font-family: {FONT_SEMI};
+            font-size: 13px;
+            padding: 8px 10px;
+            border-bottom: 1px solid {WM_BORDER};
+        }}
+        .wm-sku-table td {{
+            padding: 8px 10px;
+            border-bottom: 1px solid {WM_BORDER};
+            vertical-align: top;
+            word-break: break-word;
+        }}
+        .wm-sku-table .wm-sku-gtin {{
+            width: 12rem;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }}
         [data-baseweb="select"] > div,
         [data-baseweb="input"] {{
             background-color: {WM_WHITE} !important;
@@ -2800,6 +2833,65 @@ _KEYWORD_ALIASES = {
     "soy milk": ("soy drink", "soya drink", "soya milk"),
 }
 
+# Never count these as hyperlocal / niche coverage.
+INTERNATIONAL_ASSORTMENT_BRANDS = {
+    "lavazza", "nescafe", "nestle", "nespresso", "dolce gusto",
+    "jacobs", "tchibo", "illy", "segafredo", "starbucks",
+    "douwe egberts", "kenco", "dallmayr", "eduscho", "melitta",
+    "paulig", "gevalia", "zoegas", "lofbergs", "davidoff",
+    "senseo", "tassimo", "l or", "egoiste", "jockey", "ambassador",
+    "jardin", "danone", "activia", "actimel", "alpro", "arla",
+    "muller", "president", "philadelphia", "hochland", "meggle", "valio",
+    "coca cola", "pepsi", "fanta", "sprite", "red bull", "monster",
+    "lipton", "nestea", "schweppes",
+    "heineken", "carlsberg", "budweiser", "corona", "stella artois",
+    "guinness", "tuborg", "becks",
+    "milka", "nutella", "ferrero", "kinder", "haribo", "oreo", "pringles",
+    "lays", "mars", "snickers", "twix", "kitkat", "toblerone", "lindt",
+    "barilla", "heinz", "knorr", "maggi", "dr oetker", "bonduelle",
+    "ben jerrys", "magnum", "nivea", "dove", "colgate", "gillette",
+    "pampers", "loreal", "garnier", "palmolive",
+}
+PRIVATE_LABEL_BRANDS = {
+    "first price", "garant", "eldorado", "wolt", "wolt market",
+}
+_COFFEE_THEME_NEEDLES = (
+    "coffee", "espresso", "kahvi", "kava", "кофе", "ყავა", "cafea",
+    "kafa", "kafija", "filterkaffe", "kaffe", "kahve",
+)
+_ALCOHOL_NEEDLES = (
+    "beer", "lager", "ale", "ipa", "cider", "wine", "vodka", "whisky",
+    "ლუდი", "пиво", "olut", "pivo",
+)
+
+
+def _text_has_needle(text: str, needles) -> bool:
+    blob = _norm_assortment_text(text)
+    padded = f" {blob} "
+    for needle in needles:
+        if len(needle) <= 3:
+            if f" {needle} " in padded:
+                return True
+        elif needle in blob:
+            return True
+    return False
+
+
+def is_staple_assortment_brand(brand: str, name: str, country: str) -> bool:
+    """True for international factory brands, private label, and country nationals."""
+    brand_key = producer_identity(brand) if str(brand or "").strip() else ""
+    staples = INTERNATIONAL_ASSORTMENT_BRANDS | PRIVATE_LABEL_BRANDS
+    staples = staples | NATIONAL_PRODUCER_KEYS.get(str(country or "").strip(), set())
+    if brand_key and brand_key in staples:
+        return True
+    padded = f" {normalize_supplier_name(f'{brand} {name}')} "
+    for key in staples:
+        if len(key) <= 3:
+            continue
+        if f" {key} " in padded:
+            return True
+    return False
+
 
 def assortment_match_keywords(row) -> list[str]:
     keys = []
@@ -2812,20 +2904,25 @@ def assortment_match_keywords(row) -> list[str]:
     return list(dict.fromkeys(keys))
 
 
-def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int = MAX_LISTED_PRODUCTS) -> tuple[pd.DataFrame, int]:
-    """Return listed WM SKUs for this trend: GTIN + product name. Not search queries."""
+def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int = MAX_LISTED_PRODUCTS) -> tuple[pd.DataFrame, int, dict]:
+    """Return hyperlocal / niche listed SKUs for this trend. Not search queries.
+
+    International and national factory brands (Lavazza, Nescafé, …) are excluded
+    from the list and from coverage counts.
+    """
     empty = pd.DataFrame(columns=["GTIN", "Product Name"])
+    meta = {"excluded": 0, "excluded_brands": []}
     if assortment_df is None or assortment_df.empty:
-        return empty, 0
+        return empty, 0, meta
     keys = assortment_match_keywords(trend_row)
     if not keys:
-        return empty, 0
+        return empty, 0, meta
     work = assortment_df
     country = str(trend_row.get("Country", "") or "").strip()
     if country and "Country" in work.columns:
         work = work.loc[work["Country"].astype(str).str.strip() == country]
     if work.empty:
-        return empty, 0
+        return empty, 0, meta
     name_col = "Product Name" if "Product Name" in work.columns else work.columns[min(2, len(work.columns) - 1)]
     gtin_col = "GTIN" if "GTIN" in work.columns else work.columns[min(1, len(work.columns) - 1)]
     if "_hay" in work.columns:
@@ -2855,14 +2952,36 @@ def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int 
         hit_counts.append(hits)
     picked = work.assign(_score=scores, _hits=hit_counts)
     picked = picked.loc[picked["_score"] > 0]
-    total = len(picked)
     if picked.empty:
-        return empty, 0
-    picked = picked.sort_values(["_score", "_hits", name_col], ascending=[False, False, True])
-    shown = picked.head(limit).copy()
+        return empty, 0, meta
+    coffee_theme = _text_has_needle(
+        f"{trend_row.get('Trend', '')} {trend_row.get('Search Keywords', '')}",
+        _COFFEE_THEME_NEEDLES,
+    )
+    keep_rows = []
+    excluded_brands = []
+    for _, row in picked.iterrows():
+        pname = str(row.get(name_col, ""))
+        brand = str(row["Brand"]) if "Brand" in picked.columns else ""
+        if coffee_theme and _text_has_needle(f"{pname} {brand}", _ALCOHOL_NEEDLES):
+            continue
+        if is_staple_assortment_brand(brand, pname, country):
+            label = brand.strip() or pname.strip()
+            if label:
+                excluded_brands.append(label)
+            continue
+        keep_rows.append(row)
+    meta["excluded"] = len(excluded_brands)
+    meta["excluded_brands"] = list(dict.fromkeys(excluded_brands))[:6]
+    if not keep_rows:
+        return empty, 0, meta
+    kept = pd.DataFrame(keep_rows)
+    kept = kept.sort_values(["_score", "_hits", name_col], ascending=[False, False, True])
+    total = len(kept)
+    shown = kept.head(limit)
     gtins = shown[gtin_col].astype(str).str.strip().replace({"": "—"})
     names = shown[name_col].astype(str).str.strip()
-    return pd.DataFrame({"GTIN": gtins.to_list(), "Product Name": names.to_list()}), total
+    return pd.DataFrame({"GTIN": gtins.to_list(), "Product Name": names.to_list()}), total, meta
 
 
 def render_listed_products(
@@ -2873,33 +2992,51 @@ def render_listed_products(
     hits: pd.DataFrame | None = None,
     total: int | None = None,
     coverage: dict | None = None,
+    sku_meta: dict | None = None,
 ) -> None:
     if hits is None or total is None:
-        hits, total = matching_listed_products(trend_row, assortment_df)
+        hits, total, sku_meta = matching_listed_products(trend_row, assortment_df)
+    sku_meta = sku_meta or {}
     if coverage is None:
         coverage = ranging_coverage(total, search_status)
-    shown = len(hits)
     if total == 0:
         label = "No similar listed SKUs"
     elif total == 1:
         label = "1 similar listed SKU"
     else:
         label = f"{total} similar listed SKUs"
-        if shown < total:
-            label = f"{shown} similar listed SKUs"
     with st.expander(label, expanded=False, key=widget_key):
         st.caption(coverage["why"])
+        st.caption(
+            "Hyperlocal and niche listed SKUs only. Lavazza, Nescafé and other "
+            "international or national factory brands are not counted."
+        )
+        excluded_n = int(sku_meta.get("excluded") or 0)
+        brands = sku_meta.get("excluded_brands") or []
+        if excluded_n:
+            brand_bit = f" ({', '.join(brands)})" if brands else ""
+            st.caption(
+                f"{excluded_n} supermarket / international line(s) are listed in this "
+                f"country and were excluded{brand_bit}."
+            )
         if total == 0:
             return
-        st.caption("Currently listed in Wolt Market stores in this country (AVAILABLE offerings). GTIN and product name.")
-        st.dataframe(
-            hits,
-            hide_index=True,
-            use_container_width=True,
-            column_config={
-                "GTIN": st.column_config.TextColumn("GTIN"),
-                "Product Name": st.column_config.TextColumn("Product name"),
-            },
+        st.caption("Click this heading again to close the list.")
+        rows = []
+        for _, sku in hits.iterrows():
+            gtin = html.escape(str(sku.get("GTIN", "")))
+            name = html.escape(str(sku.get("Product Name", "")))
+            rows.append(
+                f"<tr><td class='wm-sku-gtin'>{gtin}</td>"
+                f"<td class='wm-sku-name'>{name}</td></tr>"
+            )
+        st.markdown(
+            clean_html(
+                "<table class='wm-sku-table'><thead><tr>"
+                "<th>GTIN</th><th>Product name</th></tr></thead>"
+                f"<tbody>{''.join(rows)}</tbody></table>"
+            ),
+            unsafe_allow_html=True,
         )
 
 
@@ -4707,7 +4844,7 @@ with tab_trends:
             description = display_value(row.get("Description", ""))
             image_path = resolve_trend_image(row.get("Image", ""), trend_row=row)
             validation = trend_validations[i] if i < len(trend_validations) else {}
-            hits, total = matching_listed_products(row, assortment_df)
+            hits, total, sku_meta = matching_listed_products(row, assortment_df)
             coverage = ranging_coverage(total, validation.get("status", ""))
 
             st.markdown(
@@ -4733,6 +4870,7 @@ with tab_trends:
                 hits=hits,
                 total=total,
                 coverage=coverage,
+                sku_meta=sku_meta,
             )
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
