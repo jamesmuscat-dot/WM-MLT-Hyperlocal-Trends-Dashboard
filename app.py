@@ -1841,6 +1841,9 @@ def load_assortment_products() -> pd.DataFrame:
     hay = df.get("Product Name", pd.Series("", index=df.index)).map(_norm_assortment_text)
     if "Brand" in df.columns:
         hay = hay + " " + df["Brand"].map(_norm_assortment_text)
+        df["_brand_key"] = df["Brand"].map(producer_identity)
+    else:
+        df["_brand_key"] = ""
     df["_hay"] = hay
     return df
 
@@ -2882,11 +2885,49 @@ def _text_has_needle(text: str, needles) -> bool:
     return False
 
 
+def _staple_keys(country: str) -> set[str]:
+    return (
+        INTERNATIONAL_ASSORTMENT_BRANDS
+        | PRIVATE_LABEL_BRANDS
+        | NATIONAL_PRODUCER_KEYS.get(str(country or "").strip(), set())
+    )
+
+
+def _needle_regex(needles) -> str:
+    parts = []
+    for needle in needles:
+        if len(needle) <= 3:
+            parts.append(rf"(?<!\w){re.escape(needle)}(?!\w)")
+        else:
+            parts.append(re.escape(needle))
+    return "|".join(parts)
+
+
+def staple_mask(work: pd.DataFrame, country: str) -> pd.Series:
+    """True for international factory brands, private label, and country nationals."""
+    staples = _staple_keys(country)
+    if work.empty:
+        return pd.Series(dtype=bool)
+    if "_brand_key" in work.columns:
+        brand_key = work["_brand_key"].astype(str)
+    elif "Brand" in work.columns:
+        brand_key = work["Brand"].map(producer_identity)
+    else:
+        brand_key = pd.Series("", index=work.index)
+    mask = brand_key.isin(staples)
+    hay = work["_hay"].astype(str) if "_hay" in work.columns else pd.Series("", index=work.index)
+    padded = " " + hay + " "
+    long_keys = [key for key in staples if len(key) > 3]
+    if long_keys:
+        pat = "|".join(re.escape(f" {key} ") for key in long_keys)
+        mask = mask | padded.str.contains(pat, regex=True, na=False)
+    return mask
+
+
 def is_staple_assortment_brand(brand: str, name: str, country: str) -> bool:
     """True for international factory brands, private label, and country nationals."""
     brand_key = producer_identity(brand) if str(brand or "").strip() else ""
-    staples = INTERNATIONAL_ASSORTMENT_BRANDS | PRIVATE_LABEL_BRANDS
-    staples = staples | NATIONAL_PRODUCER_KEYS.get(str(country or "").strip(), set())
+    staples = _staple_keys(country)
     if brand_key and brand_key in staples:
         return True
     padded = f" {normalize_supplier_name(f'{brand} {name}')} "
@@ -2936,51 +2977,43 @@ def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int 
         hay = work[name_col].map(_norm_assortment_text)
         if "Brand" in work.columns:
             hay = hay + " " + work["Brand"].map(_norm_assortment_text)
-    scores = []
-    hit_counts = []
-    compiled = []
+    score = np.zeros(len(work), dtype=np.int32)
+    hit_counts = np.zeros(len(work), dtype=np.int32)
     for key in keys:
         if " " in key:
-            compiled.append((key, None))
+            matched = hay.str.contains(key, regex=False, na=False).to_numpy()
         else:
-            compiled.append((key, re.compile(rf"(?<!\w){re.escape(key)}(?!\w)", re.UNICODE)))
-    for text in hay:
-        score = 0
-        hits = 0
-        blob = str(text)
-        for key, pattern in compiled:
-            matched = key in blob if pattern is None else bool(pattern.search(blob))
-            if matched:
-                hits += 1
-                score += len(key)
-        scores.append(score)
-        hit_counts.append(hits)
-    picked = work.assign(_score=scores, _hits=hit_counts)
-    picked = picked.loc[picked["_score"] > 0]
-    if picked.empty:
+            matched = hay.str.contains(
+                rf"(?<!\w){re.escape(key)}(?!\w)", regex=True, na=False
+            ).to_numpy()
+        hit_counts += matched.astype(np.int32)
+        score += matched.astype(np.int32) * len(key)
+    match_mask = score > 0
+    if not match_mask.any():
         return empty, 0, meta
-    coffee_theme = _text_has_needle(
+    picked = work.loc[match_mask]
+    staple = staple_mask(picked, country).reindex(picked.index).fillna(False)
+    keep = ~staple
+    if _text_has_needle(
         f"{trend_row.get('Trend', '')} {trend_row.get('Search Keywords', '')}",
         _COFFEE_THEME_NEEDLES,
-    )
-    keep_rows = []
-    excluded_brands = []
-    for _, row in picked.iterrows():
-        pname = str(row.get(name_col, ""))
-        brand = str(row["Brand"]) if "Brand" in picked.columns else ""
-        if coffee_theme and _text_has_needle(f"{pname} {brand}", _ALCOHOL_NEEDLES):
-            continue
-        if is_staple_assortment_brand(brand, pname, country):
-            label = brand.strip() or pname.strip()
-            if label:
-                excluded_brands.append(label)
-            continue
-        keep_rows.append(row)
-    meta["excluded"] = len(excluded_brands)
-    meta["excluded_brands"] = list(dict.fromkeys(excluded_brands))[:6]
-    if not keep_rows:
+    ) and "_hay" in picked.columns:
+        alcohol = picked["_hay"].astype(str).str.contains(
+            _needle_regex(_ALCOHOL_NEEDLES), regex=True, na=False
+        )
+        keep = keep & ~alcohol
+    meta["excluded"] = int(staple.sum())
+    if "Brand" in picked.columns and bool(staple.any()):
+        brands = picked.loc[staple, "Brand"].astype(str).str.strip()
+        brands = brands[brands != ""]
+        meta["excluded_brands"] = list(dict.fromkeys(brands.tolist()))[:6]
+    if not bool(keep.any()):
         return empty, 0, meta
-    kept = pd.DataFrame(keep_rows)
+    kept = picked.loc[keep].copy()
+    score_s = pd.Series(score, index=work.index)
+    hits_s = pd.Series(hit_counts, index=work.index)
+    kept["_score"] = score_s.loc[kept.index]
+    kept["_hits"] = hits_s.loc[kept.index]
     kept = kept.sort_values(["_score", "_hits", name_col], ascending=[False, False, True])
     total = len(kept)
     shown = kept.head(limit)
@@ -4074,8 +4107,8 @@ df = all_producers_df.copy()
 creators_df = all_creators_df.copy()
 trends_df = all_trends_df.copy()
 demographics_df = all_demographics_df.copy()
-search_df = all_search_df.copy()
-assortment_df = all_assortment_df.copy()
+search_df = all_search_df
+assortment_df = all_assortment_df
 
 if selected_country_code:
     df = df[df["Country"].astype(str) == selected_country_code]
