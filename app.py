@@ -255,7 +255,11 @@ st.markdown(
             border: 1px solid {WM_BORDER};
             border-radius: 16px;
         }}
-        [data-testid="stExpander"] details,
+        [data-testid="stExpander"] details {{
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+        }}
         [data-testid="stExpander"] summary {{
             display: flex !important;
             align-items: center;
