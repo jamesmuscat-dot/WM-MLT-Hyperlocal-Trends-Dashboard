@@ -1,0 +1,650 @@
+venue_country,wolt_venue_city,venue_city,venue_city_id,retail_platform_venue_id,retail_platform_venue_name,retail_platform_venue_status,is_test_venue,venue_address
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,90395d3f-7ae0-4377-a140-d5611cc4cff2,Match Day Super Store Binagadi,ACTIVE,False,"Binagadi district, Ajami Nakhchivani street 103"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,ab710c43-a42f-4214-b161-19c32a4b4b44,Match Day Super Store Khalglar,ACTIVE,False,Mahammad Hadi street 2341-2343
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,1306c325-e34a-4b98-9ef0-5d742a46ac0a,Match Day Super Store Landmark,ACTIVE,False,"Sabayil district, Nizami street 92"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,c2d066e4-180b-4a36-b929-2ef61b47120c,Match Day Super Store Nasimi,ACTIVE,False,"Nasimi district, Imran Qasimov street 32B"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,ef88d77e-7201-4df9-83f4-71383be14cbe,Match Day Super Store Yasamal,ACTIVE,False,"Yasamal district, Zahid Khalilov 35"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,1a3423a8-36c3-443a-bc9d-99c55f99980c,VapeBox Binagadi,ARCHIVED,False,"Sabayil district, Nizami street 92"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,24903cc7-0d78-4dee-b7b2-f553c367b2e9,VapeBox Khalqlar,ARCHIVED,False,This is a virtual venue
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,a25d1291-76b8-43bf-ba29-06c1f77afb69,Wolt Market Baku,ACTIVE,False,"Nasimi district, Xan Shusinskiy street 12"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,87841743-eebc-4f03-ae0f-3769aaca9b0f,Wolt Market Baku 2,ACTIVE,False,Mahammad Hadi street 2341-2343
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,e2f5b465-015d-4f42-a837-8cab6f674720,Wolt Market Binagadi,ACTIVE,False,Naxçivani 103
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,26489b0e-0152-43ad-970d-e5eb5a2c9d66,Wolt Market F&V Binagadi,ACTIVE,False,"Binagadi district, Ajami Nakhchivani street 103"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,46fa2ff2-577e-4404-80af-f3d0b6bbdde3,Wolt Market F&V Khalglar,ACTIVE,False,"Khatai district, Mahammad Hadi street 2341-2343"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,8c76f8ce-a615-4d1d-a912-2456d1e737c5,Wolt Market F&V Landmark,ACTIVE,False,"Sabayil district, Nizami street 92"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,8ede8c15-afe8-455a-9ed8-ad0db22e7632,Wolt Market F&V Nasimi,ACTIVE,False,"Nasimi district, Xan Shusinskiy street 12"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,94b4021b-da35-44b9-b701-22272ede74a3,Wolt Market F&V Yasamal,ACTIVE,False,"Yasamal district, Zahid Khalilov 35"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,4400e45d-899b-402f-85b9-caf49525dd28,Wolt Market Khalglar,ACTIVE,False,Mahammad Hadi street 2341-2343
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,77b6f069-1564-493c-b744-170b0813a400,Wolt Market Landmark,ACTIVE,False,Nizami street 92
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,1be9470c-2bcc-440f-a232-128bffed64c5,Wolt Market Nasimi,ACTIVE,False,"Nasimi district, Imran Qasimov street 32B"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,b7f60b0a-0355-4b94-9ee6-cbb7ce84df3b,Wolt Market Premium Binagadi,ACTIVE,False,"Binagadi district, Ajami Nakhchivani street 103"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,5213cd64-15cf-406c-a5a0-49d46e204d72,Wolt Market Premium Khalglar,ACTIVE,False,"Khatai district, Mahammad Hadi street 2341-2343"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,07330455-533a-44e2-8322-e4bc189f61ad,Wolt Market Premium Landmark,ACTIVE,False,"Sabayil district, Nizami street 92"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,7a00ab73-962a-4f17-8e91-d33febb09d49,Wolt Market Premium Nasimi,ACTIVE,False,"Nasimi district, Xan Shusinskiy street 12"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,87eb348d-29d9-4952-8ce2-16c852faae89,Wolt Market Premium Yasamal,ACTIVE,False,"Yasamal district, Zahid Khalilov 35"
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,ae6682b2-5726-470d-b3d2-ad0b941640de,Wolt Market Yasamal,ACTIVE,False,Ahmad Jamil 23A
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,cdae6d4a-e036-46ee-8bdc-0c847370d6ea,Xırdalan Beer Boutique,ACTIVE,False,"Nasimi district, Xan Shusinskiy street 12"
+CYP,Ammochostos,Ammochostos,85e4fe0b-b858-444a-9254-7d5ede6c4ded,ea26008a-3f45-4747-b86a-366b1a536f59,Match Day Super Store Ammochostos ,ACTIVE,False,"1st April 49, Paralimni "
+CYP,Ammochostos,Ammochostos,85e4fe0b-b858-444a-9254-7d5ede6c4ded,694f4e1b-95fd-4b04-a3db-93571908a088,Wolt Market Ammochostos,ACTIVE,False,"1st April 49, Paralimni"
+CYP,Larnaca,Larnaca,1d096e52-8945-463b-b8b7-6cb8a3f2dc72,6e2e91cc-b8d5-453f-b320-6aa26894178d,Match Day super Store Larnaca,ACTIVE,False,Thesallonikis Avenue 28 
+CYP,Larnaca,Larnaca,1d096e52-8945-463b-b8b7-6cb8a3f2dc72,0c8008ec-16bc-4793-b950-b3128ae2222e,Wolt Market Larnaca Central,ACTIVE,False,Thesallonikis Avenue 28
+CYP,Limassol,Limassol,890aca5d-d252-4233-90ba-9782954dad89,7625341e-00d5-46e2-a5d8-9652493368d8,Match Day Super Store Limassol West ,ACTIVE,False,7 Dilou Street 
+CYP,Limassol,Limassol,890aca5d-d252-4233-90ba-9782954dad89,29c957ad-f766-4bb6-a59a-00d2b5c3faca,Match Day super Store Limassol Central ,ACTIVE,False,"Archiepiskopou Leontiou I, 169 "
+CYP,Limassol,Limassol,890aca5d-d252-4233-90ba-9782954dad89,3efff4a9-0e2c-4e35-b3bd-fa5779999fbe,Wolt Market Agios Athanasios,ACTIVE,False,38 Iapetou Street. Industrial Area
+CYP,Limassol,Limassol,890aca5d-d252-4233-90ba-9782954dad89,dbf78e05-419c-49d4-936e-f89dfeb077ee,Wolt Market Limassol Central,ACTIVE,False,"Archiepiskopou Leontiou I, 169"
+CYP,Limassol,Limassol,890aca5d-d252-4233-90ba-9782954dad89,2dbe812b-6f23-43af-baa7-a844c3974dd6,Wolt Market Limassol West,ACTIVE,False,7 Dilou street
+CYP,Nicosia,Nicosia,09a832f7-ebf5-4c2d-8c18-c0946ddd7d97,53dad217-79eb-4b8b-b722-808dc1d90e10,Match Day Super Store Nicosia ,ACTIVE,False,Digeni Akrita 26-Meletiou Metaxaki 4 
+CYP,Nicosia,Nicosia,09a832f7-ebf5-4c2d-8c18-c0946ddd7d97,d2c33caa-4df2-4411-89d2-702e01031fe5,Wolt Market Dali,ACTIVE,False,Digeni Akrita 26-Meletiou Metaxaki 4
+CYP,Nicosia,Nicosia,09a832f7-ebf5-4c2d-8c18-c0946ddd7d97,3d0a12fe-43bb-4161-b0ad-255d0b6c1ab8,Wolt Market Nicosia Central,ACTIVE,False,Digeni Akrita 26-Meletiou Metaxaki 4
+CYP,Nicosia,Nicosia,09a832f7-ebf5-4c2d-8c18-c0946ddd7d97,3f9e6327-2f76-4be9-a047-78b32d0344aa,Wolt Market Parissinos,ACTIVE,False,Archangelou Avenue 49K
+CYP,Paphos,Paphos,9c0ba44c-302d-4505-9293-4aa69d7bee68,43048c10-691f-4bcb-85b4-82f18371b7ee,Match Day Super Store Paphos,ACTIVE,False,17 Ellados Avenue and Corner of Olga Xynaridou 
+CYP,Paphos,Paphos,9c0ba44c-302d-4505-9293-4aa69d7bee68,2cb0b141-2f6c-45fb-a5d6-83543d58ffd5,Wolt Market Paphos,ACTIVE,False,Ellados
+CZE,Brno,Brno,a911f164-90e5-4225-9996-2281040d668a,b2e44f0f-9a5a-42fa-82c8-e984a50b5be8,Wolt Market Brno-střed,ACTIVE,False,Špitálka 15
+CZE,Pilsen,Pilsen,e2960992-ca32-4a23-9612-cd362039571c,1bf598de-75a2-4681-ae52-e2bfd505fbbc,Wolt Market Plzeň (MIGRATED),ARCHIVED,False,Plovární 1455/18
+CZE,Prague,Prague,82dd653a-9bb5-4e80-bd78-b774575f1eb1,d5e68beb-1375-4b73-ba9e-2dc04755dae7,Match Day Super Store (closed),ARCHIVED,False,Hartigova 139
+CZE,Prague,Prague,82dd653a-9bb5-4e80-bd78-b774575f1eb1,ac076a0b-e3ea-4e88-b772-85898831be75,Match Day Super Store Žižkov,ACTIVE,False,Hartigova 139 
+CZE,Prague,Prague,82dd653a-9bb5-4e80-bd78-b774575f1eb1,2f0e000b-21bb-4013-b104-38632970d89a,Wolt Market CZE Test,ARCHIVED,False,Svornosti 2
+CZE,Prague,Prague,82dd653a-9bb5-4e80-bd78-b774575f1eb1,c34b66ab-992c-4563-a994-8c9c0cd080ba,Wolt Market Holešovice,ACTIVE,False,Na Zátorách 1625/1
+CZE,Prague,Prague,82dd653a-9bb5-4e80-bd78-b774575f1eb1,9c2385d0-b546-4f86-bea8-eccd7e42d09d,Wolt Market Michle,ACTIVE,False,Ohradní 61 
+CZE,Prague,Prague,82dd653a-9bb5-4e80-bd78-b774575f1eb1,5d175b03-551f-480b-8a8d-02845812776b,Wolt Market Smíchov (MIGRATED),ARCHIVED,False,Nádražní 762/32
+CZE,Prague,Prague,82dd653a-9bb5-4e80-bd78-b774575f1eb1,30b27e73-3e7e-434e-b252-6d492597d7ef,Wolt Market Žižkov,ACTIVE,False,Hartigova 139
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,ccbf5fee-b6ea-4cab-93e1-e7d7256baa98,AMORELIE CC,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,1f5194dc-1e9c-4a20-a670-fbc85184d123,AMORELIE Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,197130d8-74f1-4675-8570-6e44909de5dd,Alnatura Berlin,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,05e72bcd-c34c-4e19-8a02-af985f23fced,Ben & Jerry's CC,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,c15cef53-2024-45a3-841a-d6622ac13daa,Ben & Jerry's Charlottenburg,ACTIVE,False,Seesener Straße 10-13
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,f332a8b3-dc99-494d-b7be-602406f930d0,Ben & Jerry's Charlottenburg,ACTIVE,False,Seesener Straße 13
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,6ba3bb9a-464c-4158-b016-5cc05b53b067,Ben & Jerry's Checkpoint Charlie,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,d835d40e-0c08-4955-9903-8e233a97a4ab,Ben & Jerry's Gesundbrunnen,ACTIVE,False,Badstraße 12
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,93bf4870-0f0b-48e1-97a0-35d8d4fdbff4,Ben & Jerry's Gesundbrunnen,ACTIVE,False,Badstraße 12
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,67d41c69-2367-4a6a-bafb-d8e9b1f857b3,Ben & Jerry's Neukoelln,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,903a6d56-ac5c-4ce4-8067-8ab062ef785c,Ben & Jerry's Neukölln,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,6819faa4-5521-4063-985e-4e7d243c3159,Ben & Jerry's Prenzlauer Berg,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,b60ba8d1-7c4f-432c-8dd9-70de3151eb7d,Ben & Jerry's Prenzlauer Berg,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,8b8c1b5f-9784-405e-ae3a-a9e2c0ad7e50,Ben & Jerry's Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,7318db95-c684-4589-b741-4f378427c6ca,Ben & Jerry's Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,086c6f43-838e-4f21-acb3-2967e6c65a7e,Fanshop Charlottenburg,ACTIVE,False,Seesener straße 10-13
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,2c770d20-e258-4a61-ba4a-a8b6650d40d2,Fanshop Checkpoint Charlie,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,e570580c-7870-4b4a-8de5-11a8b7105939,Fanshop Gesundbrunnen,ACTIVE,False,Badstraße 12
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,21f5b34d-588f-4a21-b13a-738b1485e153,Fanshop Neukölln,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,70c93697-8d5b-4164-92dd-4d4500ae4b4c,Fanshop Prenzlauer Berg,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,b75dd9b3-1f15-46d1-a5a7-d969ac80816f,Fanshop Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,0c845287-9c19-4124-b083-a642bee277b2,LEGO® Berlin,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,1d405606-511c-4680-bfae-8d5139211935,LEGO® Neukölln,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,e4d49b4b-e10a-49b3-aa06-4a450ad4240e,LEGO® PBerg,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,6ed5e796-a210-48c6-b625-99c42d284eca,LEGO® Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,9ed0125d-fd1c-49d1-8e28-a146ba828af4,Magnum CC,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,8fa54579-d4d0-4c09-9763-71597eaa9928,Magnum Charlottenburg,ACTIVE,False,Seesener Straße 10-13
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,e7f20881-9109-4f67-a82c-72c0647f5558,Magnum Gesundbrunnen,ACTIVE,False,Badstraße 12
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,936591ae-8c6f-4eaa-9a90-fc91811d9b7e,Magnum Ice Cream Charlottenburg,ACTIVE,False,Seesener Straße 13
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,4a83bf6a-34ba-449e-aa34-a56b1c2523cd,Magnum Ice Cream Checkpoint Charlie,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,4ff56394-dc7a-4c77-b820-931e6d4f6bba,Magnum Ice Cream Gesundbrunnen,ACTIVE,False,Badstraße 12
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,6fc5924a-2091-44ca-966d-daf2600162f0,Magnum Ice Cream Neukoelln,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,9c18549c-1e1c-4648-8dc3-592eecb3fb93,Magnum Ice Cream Prenzlauer Berg,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,1f2f49b8-e172-4420-9724-8a29a4b9e1c5,Magnum Ice Cream Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,023d2a80-4d7b-473a-931f-51e940e7fc80,Magnum Neukölln,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,ab5e3f95-e49f-42ce-885e-731e5b3ce4cc,Magnum Prenzlauer Berg,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,07076b42-0b59-4b69-a3d6-458a9b8fbac2,Magnum Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,73c35a00-a55e-4832-9848-b9096a66ce41,Wolt Bio Market Charlottenburg,ACTIVE,False,Seesener Straße 13
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,cc6ada59-c7ef-42ea-a0c3-227ecff9c5bf,Wolt Bio Market Checkpoint Charlie,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,8f68a45a-5b64-488f-809f-f198e2aacff8,Wolt Bio Market Gesundbrunnen,ACTIVE,False,Badstraße 12
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,d103b110-4a7f-4ddf-8988-869c79db2d1a,Wolt Bio Market Neukoelln,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,1f781bf6-8108-4966-909a-2b0aef6e0c52,Wolt Bio Market Prenzlauer Berg,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,945163fe-6c08-470b-83b0-83f417aef228,Wolt Bio Market Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,57b4b203-0cca-4377-89b5-a01b88bc0ca1,Wolt Market Berlin Nord-Ost,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,ee40b973-4f85-49cc-8169-43949478ee3b,Wolt Market Berlin Nord-West,ACTIVE,False,Badstraße 12
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,7838b068-ac11-4694-9928-bd234441d8f3,Wolt Market Berlin Sud-Ost,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,23ad12dd-ec37-428b-a4fb-4101d36a73a5,Wolt Market Berlin Sued,ACTIVE,False,Mariendorfer Damm 5
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,4cb60a15-3a1d-4c3d-b4b5-20476c98bc1b,Wolt Market Berlin West,ACTIVE,False,Seesener straße 10-13
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,22f7657f-5eb1-4fa8-9d85-84c04cf264b5,Wolt Market Charlottenburg,ACTIVE,False,Seesener Straße 10-13
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,7792db32-3c5b-4899-b15b-9e429f72dd79,Wolt Market Checkpoint Charlie,ACTIVE,False,Markgrafenstraße 58
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,f28ae899-5dc1-4009-b18e-f2206b4f55c6,Wolt Market Danziger Strasse,ARCHIVED,False,Danziger Strasse 217
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,4238103c-c0df-4cee-8a97-287234123914,Wolt Market Gesundbrunnen,ACTIVE,False,Badstraße 12
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,275f460b-7b40-48a7-a3d4-2d4e50108816,Wolt Market Kaiser Friedrich Strasse,ARCHIVED,False,This is a virtual venue
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,9d0719a5-3380-4ad3-b53a-a82fd9942265,Wolt Market Leipziger Strasse,ARCHIVED,False,Leipziger Strasse 56
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,47674a61-1deb-4f3d-bf22-cba63c87abf8,Wolt Market Neukölln,ACTIVE,False,Thiemannstraße 10
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,bf59ee09-91dc-41d4-83c5-9bddf0cee65c,Wolt Market Prenzlauer Berg,ACTIVE,False,Storkower Straße 103
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,7b2c0604-9bcd-465a-846c-30390cd3209e,Wolt Market Tempelhof,ACTIVE,False,Mariendorfer Damm 5
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf,5a5c79d9-c005-4c39-abe8-94af36cc86b6,AMORELIE Cologne,ACTIVE,False,Oskar-Jäger-Straße 141
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf,b18e3b2c-8880-4d51-a7e4-c8198dc04751,Alnatura Cologne,ACTIVE,False,Oskar-Jäger-Straße 141
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf,7d44142c-1b85-4f68-92d7-5fee8652fb02,Ben & Jerry's Ehrenfeld,ACTIVE,False,Oskar-Jäger-Straße 141
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf,8294527b-ee0f-4454-92a6-488c46d29800,Fanshop Cologne,ACTIVE,False,Oskar-Jäger-Straße 141
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf,93ef8029-53e8-4b27-9d8f-33da605ada4f,LEGO® Cologne,ACTIVE,False,Oskar-Jäger-Straße 141
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf,dda499a9-5ef8-40b4-912b-c93a96ac6b1f,Wolt Bio Market Ehrenfeld,ACTIVE,False,Oskar-Jäger-Straße 141
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf,b1a7102a-2332-40bf-b23c-b76c7be6dad0,Wolt Market Cologne TSO,ACTIVE,False,Oskar-Jäger-Straße 141
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf,41e0854b-ac8e-4730-970f-1213a539e879,Wolt Market Ehrenfeld,ACTIVE,False,Oskar-Jäger-Straße 141
+DEU,Düsseldorf,Düsseldorf,931f5222-4595-4fd3-aaa3-1d07b6bc0d68,c40c582c-7fa6-4afa-8e77-12b7b7313b2c,AMORELIE Lierenfeld,ACTIVE,False,Erkrather Straße 345-349
+DEU,Düsseldorf,Düsseldorf,931f5222-4595-4fd3-aaa3-1d07b6bc0d68,34d05b05-a755-4674-891e-976b8b013f2e,Fanshop Düsseldorf,ACTIVE,False,Erkrather Straße 345-349
+DEU,Düsseldorf,Düsseldorf,931f5222-4595-4fd3-aaa3-1d07b6bc0d68,4cc54c1c-831b-4e97-b5b4-e59db36534ee,LEGO® Lierenfeld,ACTIVE,False,Erkrather Straße 345-349
+DEU,Düsseldorf,Düsseldorf,931f5222-4595-4fd3-aaa3-1d07b6bc0d68,f0ec86e3-3456-4743-8dd9-4946d7abaaf1,Wolt Bio Market Lierenfeld,ACTIVE,False,Erkrather Straße 345
+DEU,Düsseldorf,Düsseldorf,931f5222-4595-4fd3-aaa3-1d07b6bc0d68,ae519588-46a6-4e7d-8f9f-94b7eb0f9f33,Wolt Market Duesseldorf,ACTIVE,False,Erkrather Straße 345
+DEU,Düsseldorf,Düsseldorf,931f5222-4595-4fd3-aaa3-1d07b6bc0d68,f90be417-5b97-49b3-b8cb-957313e3f5b7,Wolt Market Lierenfeld,ACTIVE,False,"Erkrather Straße 345-349,"
+DEU,Frankfurt,Frankfurt,9fef9a9e-3664-4e71-9e56-83a41a1496be,329c847f-23e3-4979-acc3-73aeab300c15,AMORELIE Frankfurt,ACTIVE,False,Hanauer Landstraße 60
+DEU,Frankfurt,Frankfurt,9fef9a9e-3664-4e71-9e56-83a41a1496be,5d0b7ea3-daa7-4b3c-8f92-8b5e6f161239,Fanshop Frankfurt,ACTIVE,False,Hanauer Landstraße 60
+DEU,Frankfurt,Frankfurt,9fef9a9e-3664-4e71-9e56-83a41a1496be,c8bffcfb-86a6-4f2c-931e-30ff9aaa6c54,LEGO® Frankfurt,ACTIVE,False,Hanauer Landstraße 60
+DEU,Frankfurt,Frankfurt,9fef9a9e-3664-4e71-9e56-83a41a1496be,7b949fd6-7f97-44a8-88b0-093e1d33693e,Wolt Bio Market Hanauer,ACTIVE,False,Hanauer Landstraße 60
+DEU,Frankfurt,Frankfurt,9fef9a9e-3664-4e71-9e56-83a41a1496be,b125a5c3-dba1-47e1-99fc-39b4a799416a,Wolt Market Frankfurt,ACTIVE,False,Hanauer Landstraße 60
+DEU,Frankfurt,Frankfurt,9fef9a9e-3664-4e71-9e56-83a41a1496be,4c502e4d-868f-43ab-b8aa-ed5dac007c2b,Wolt Market Hanauer,ACTIVE,False,Hanauer Landstraße 60 
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,1c7b2857-cdfe-4807-b92e-a4f39b07963c,AMORELIE Hamburg,ACTIVE,False,Alter Teichweg 71
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,c564fdf3-325d-4722-a05d-3c45500e9fe3,Ben & Jerry's Barmbek,ACTIVE,False,Alter Teichweg 71
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,559e27dd-46f0-4acb-8770-3f84dba2b54f,Fanshop Barmbek,ACTIVE,False,Alter Teichweg 71
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,07c4c4fc-5b90-4b1f-9d3c-8f06615146db,Fanshop Eimsbüttel,ACTIVE,False,Kieler Straße 209-211
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,99479191-69cf-4164-9bec-e145e3623864,LEGO® Barmbek,ACTIVE,False,Alter Teichweg 71
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,078b81f9-c515-4621-b990-c33cc21220e6,Wolt Bio Market Barmbek,ACTIVE,False,Alter Teichweg 71
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,fd8dd34e-d93f-4637-bca3-630e19a7b48d,Wolt Bio Market Eimsbüttel,ACTIVE,False,Kieler Straße 209-211
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,a742168a-6c20-41a6-8a1c-79a0e0a40e52,Wolt Market Barmbek,ACTIVE,False,Alter Teichweg 71
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,4abf472c-b79b-4f9d-b064-5ede9d3daf2b,Wolt Market Eimsbüttel,ACTIVE,False,Kieler Straße 209-211
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,33b09169-0519-4f61-a95b-3cd842345335,Wolt Market Hamburg Ost,ACTIVE,False,Alter Teichweg 71
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3,21b5c323-727b-497a-957f-d941cbfb6af3,Wolt Market Hamburg West,ACTIVE,False,Kieler Straße 209-211
+DEU,Hanover,Hanover,0a34b989-c3e4-4ea5-abf6-d45af1ed22a6,0b9f2c59-c901-49d1-9a2c-39980eb78eb3,AMORELIE Vahrenwald,ACTIVE,False,Vahrenwalder Straße 209
+DEU,Hanover,Hanover,0a34b989-c3e4-4ea5-abf6-d45af1ed22a6,732c4a8d-2843-495d-aead-271ebe5f99aa,Fanshop Hannover,ACTIVE,False,Vahrenwalder Straße 209
+DEU,Hanover,Hanover,0a34b989-c3e4-4ea5-abf6-d45af1ed22a6,cf607c99-caef-40d5-bdeb-b1ebba0af5a2,LEGO® Hannover,ACTIVE,False,Vahrenwalder Straße 209
+DEU,Hanover,Hanover,0a34b989-c3e4-4ea5-abf6-d45af1ed22a6,8341fa65-d70b-4927-8737-d7a065effbcf,Wolt Bio Market Vahrenwald,ACTIVE,False,Vahrenwalder Straße 209
+DEU,Hanover,Hanover,0a34b989-c3e4-4ea5-abf6-d45af1ed22a6,17075fcd-29a8-46c3-a756-e9777101e560,Wolt Market Hanover,ACTIVE,False,Vahrenwalder Straße 209
+DEU,Hanover,Hanover,0a34b989-c3e4-4ea5-abf6-d45af1ed22a6,3a0be016-462d-4d3d-86c5-9dc33c1fbf84,Wolt Market Vahrenwald,ACTIVE,False,Vahrenwalder Straße 209
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,66d595cb-de43-40cb-886e-c0a6b2bc5e33,AMORELIE Munich,ACTIVE,False,Hansastraße 5
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,df808694-f2e9-423e-919f-7ba08f7fe10b,AMORELIE Schwabing,ACTIVE,False,Frankfurter Ring 168
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,ba45370c-4b86-4172-a068-3324bdbfacf8,Alnatura Brand Store Munich,ACTIVE,False,Hansastraße 5
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,90733de7-b438-4709-8ac9-495bd6496e62,Ben & Jerry's Schwabing,ACTIVE,False,Frankfurter Ring 168
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,4a82d3fd-9161-42f4-aa28-f3c3aefd3b62,Ben & Jerry's Sendling,ACTIVE,False,Hansastraße 5
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,68884554-17f6-447d-8233-5183d4d46368,Fanshop Schwabing,ACTIVE,False,Frankfurter Ring 168
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,370e0de3-2b4a-4cab-b6aa-269700741422,Fanshop Sendling,ACTIVE,False,Hansastraße 5
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,f230c07f-66f0-438c-a0a9-38363b2aa852,LEGO® Munich,ACTIVE,False,Hansastraße 5
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,f0ab5973-9455-4f10-a614-57c2ec42da1a,LEGO® Schwabing,ACTIVE,False,Frankfurter Ring 168
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,e672941a-5c12-4cc0-a2a3-f13ba6db6d94,Wolt Bio Market Schwabing,ACTIVE,False,Frankfurter Ring 168
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,b6298100-1e15-455c-9e66-a58e7d217b97,Wolt Bio Market Sendling,ACTIVE,False,Hansastraße 5
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,38daa9e9-804a-4cba-8520-add0686a8091,Wolt Market Munich Nord-Ost,ACTIVE,False,Frankfurter Ring 168
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,3cbbf149-0703-4cdb-9ac0-82821043f19d,Wolt Market Munich West,ACTIVE,False,Hansastraße 5
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,b98805ff-274f-4ba6-a666-bfb58a0b9d22,Wolt Market Schwabing,ACTIVE,False,Frankfurter Ring 168
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1,92da80ba-cb27-4d3f-8944-43d7cb06eade,Wolt Market Sendling,ACTIVE,False,Hansastraße 5
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e,fb49f4a5-954e-4abb-8c48-9d327ed27926,AMORELIE Nuremberg,ACTIVE,False,Ulmenstraße 52h
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e,83e05c75-adfb-4460-a6b3-8e47fef538cc,Alnatura Nuremberg,ACTIVE,False,Ulmenstraße 52h
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e,9bc41814-df4a-4137-957a-954097dde073,Ben & Jerry's Nuremberg,ACTIVE,False,Ulmenstraße 52h
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e,f2177d49-0d68-4fe2-91f4-31643f7a1e7c,Fanshop Nuremberg,ACTIVE,False,Ulmenstraße 52h
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e,52999623-1f56-41e8-8305-4e2574c0adb4,Lego Gibitzenhof,ARCHIVED,False,Ulmenstraße 52h
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e,ed02855d-8ac7-4587-a3b7-21c3507f0104,Wolt Bio Market Gibitzenhof,ACTIVE,False,Ulmenstraße 52 h
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e,5781be52-528e-4723-b422-7752f69dd519,Wolt Market Gibitzenhof,ACTIVE,False,Ulmenstraße 52 h
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e,2065208e-38b9-4dde-9d5f-7623e792eb19,Wolt Market Nuremberg,ACTIVE,False,Ulmenstraße 52h
+DEU,,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96,1c7a152c-3dd9-4125-9696-297336e2f3e6,LEGO Archived Virtual Store ,ARCHIVED,False,Markgrafenstraße 58
+DNK,Aalborg,Aalborg,4ff1c370-8ba7-4700-927f-00bf72420b37,a30691fa-ff6b-44bb-bdc5-ea3fc0458b72,Wolt Market Aalborg Vesterbro,ACTIVE,False,Vesterbro 62
+DNK,Aarhus,Aarhus,28799f6c-c0c8-497c-8f98-9c889779070a,769c087b-0205-4e32-a51e-3cafd09c892f,Wolt Market Aarhus Karupvej,ACTIVE,False,Karupvej 2D
+DNK,Aarhus,Aarhus,28799f6c-c0c8-497c-8f98-9c889779070a,a5ac1504-ee5e-4283-850c-6ab67f532505,Wolt Market Aarhus Willemoesgade,ACTIVE,False,Willemoesgade 15
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,4c60ce15-203a-4470-b922-13cef05d3418,Match Day Super Store Kbh Bådehavnsgade,ACTIVE,False,Bådehavnsgade 4
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,88112e0d-8d2c-4bc8-8f4d-bd1ba51d0fd0,Wolt Beauty Copenhagen,ACTIVE,False,Bådehavnsgade 4
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,442a6872-123e-4c39-b55b-04c969f59d2e,Wolt Electronics Copenhagen,ACTIVE,False,Bådehavnsgade 4
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,dbd69c1a-d51b-48a2-bd8c-42888d63029d,Wolt Market Kbh Bådehavnsgade,ACTIVE,False,Bådehavnsgade 4
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,d06a80f2-f6c2-468d-a797-f84c37639b50,Wolt Market Kbh Enghavevej,ARCHIVED,False,Enghavevej 8
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,fadb9019-9eee-4a51-a035-b809243d061e,Wolt Market Kbh Glasvej,ACTIVE,False,Glasvej 3
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,9360d9dd-6932-4e00-b02c-88603943ec61,Wolt Market Kbh Holmbladsgade (CLOSED) ,ARCHIVED,False,Holmbladsgade 28
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,6b3b1472-295b-4738-846a-d1add8e8a71f,Wolt Market Kbh Landemærket,ACTIVE,False,Landemærket 29
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,2fffa01c-89ac-42e7-9187-8748e840e659,Wolt Market Kbh Laplandsgade,ACTIVE,False,"Laplandsgade 4A, st."
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,736b050f-3f8d-4e86-b1da-af89e37f0636,Wolt Market Kbh Roskildevej,ACTIVE,False, Roskildevej 250-258
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d,fb881875-9dd3-401b-9f9f-798db8dc7b04,Wolt Market Vanløse (CLOSED),ARCHIVED,False,Skjulhøj Allé 53-55
+DNK,Lyngby-Gentofte,Søborg,a48bc0bb-222a-4ea4-9aed-127be19b2a1c,a86557af-dbfb-4bc5-b1fa-8c2e776cd10d,Wolt Market Søborg Telefonvej,ACTIVE,False,Telefonvej 8A
+DNK,Odense,Odense,8cdff371-de92-4299-9f63-7f443ca2da1f,4fdff3bb-8344-4fe9-bc34-a34304136bae,Wolt Market Odense Vestre Stationsvej,ACTIVE,False,Vestre Stationsvej 25
+EST,Tallinn,Tallinn,0d391e7c-4eea-4fe1-8bd1-b6a1dc1948b8,8901dda1-087f-4d3e-af55-e1f39b71ec7e,Wolt Market Haabersti,ACTIVE,False, Ehitajate tee 114b
+EST,Tallinn,Tallinn,0d391e7c-4eea-4fe1-8bd1-b6a1dc1948b8,e1d9487e-0621-446e-be6f-b3c61c1a1f59,Wolt Market Kristiine (CLOSED) ,ARCHIVED,False,"Artelli 19, store phone number - +37256961903"
+EST,Tallinn,Tallinn,0d391e7c-4eea-4fe1-8bd1-b6a1dc1948b8,2ac9360b-9f46-43d8-90c7-da8b6fd52446,Wolt Market Maakri,ACTIVE,False,"Liivalaia 53, Store phone nr - +37256960528"
+EST,Tallinn,Tallinn,0d391e7c-4eea-4fe1-8bd1-b6a1dc1948b8,20d06b10-c6ac-4823-99db-965e51b27806,Wolt Market Pelgulinn,ACTIVE,False,"Ädala 1a, store phone number - +37256962633"
+EST,Tallinn,Tallinn,0d391e7c-4eea-4fe1-8bd1-b6a1dc1948b8,c1601c75-c867-4d98-b149-de02f34d4995,Wolt Market Tähesaju,ACTIVE,False,"Tähesaju Tee 31, store phone number - +37256960532"
+EST,Tallinn,Tallinn,0d391e7c-4eea-4fe1-8bd1-b6a1dc1948b8,74bd2cae-6b12-43aa-84cf-1c1e15916bfd,Wolt Play (CLOSED) ,ARCHIVED,False,"Ädala 1a, store phone number - +37256962633"
+EST,Tallinn,Tallinn,0d391e7c-4eea-4fe1-8bd1-b6a1dc1948b8,cdeacb3f-10c8-4fb1-ad9d-d7812802266f,Wolt Play Tähesaju (CLOSED) ,ARCHIVED,False,"Tähesaju Tee 31, store phone number - +37256960532"
+EST,Tartu,Tartu,b2fa09c0-6e7f-4a34-8023-b1ad714a1ea3,134e822c-645c-43ac-9c04-c21d1b2827a5,Wolt Market Karlova,ACTIVE,False," Turu 26b, store phone number - +37256960558"
+EST,,Tartu,b2fa09c0-6e7f-4a34-8023-b1ad714a1ea3,56e91f02-7362-4c1a-b306-3c7d4f69d676,Bestwine Tartu,ARCHIVED,False,Turu 26b
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,da6c9ed2-503b-4062-9e18-0dfb5883ba9a,Crazy Days Niittykumpu,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,e3fc3518-8ff4-4fcf-98d5-91cbe9959b9a,Dermosil Lepuski,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,92433597-5cda-4013-83e2-f476c41d06cd,Fazer Store Leppävaara,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,1998c100-5cb6-486c-8d44-c4cc8c05f69a,Fazer Store Niittykumpu,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,e3e21200-255e-4e7d-b958-20ea27ce5971,HartSport Niittykumpu,ACTIVE,False,"Wolt Market Niittari, Niittymäentie 9"
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,e297f15c-1230-45da-a7db-538721599f37,Hyvinvoinnin.fi Leppävaara,ACTIVE,False,Upseerinkatu 3
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,2e57f1bb-95cc-49f7-aeff-ac2a01fe6cb1,Kielletty Hedelmä Niittari,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,e30c2cb0-cfb8-4574-ae6a-01182d3c2d36,Kimpassa-kortit Leppävaara,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,d0e6e1cc-0bf2-45b3-86a3-88585c287827,Last minute gifts Niittari,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,1b34ac57-4b4a-4fe5-b563-88a2c7ff6fcf,Maajoukkueen Verkkokauppa Leppävaara,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,4839b053-d7fc-417e-b40e-cb952fdf3734,Match Day Super Store Lepuski,ACTIVE,False,Upseerinkatu 3
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,65007d09-8501-4ece-962a-6cf1aeec9ef2,Match Day Super Store Niittari,ACTIVE,False,Olarinluoma 11
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,76661304-bd85-4f6e-bdda-b13a8c005e2e,Mjuuk Niittykumpu,ACTIVE,False, Niittymäentie 9
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,60969ce9-76b8-4162-9f63-4f2e96d99e37,Mobiilitukku.fi Espoo,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,75c14938-8239-4be4-8809-fee699036214,Muotikoru Niittykumpu,ACTIVE,False,Niittymäentie 9
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,06cba2fa-3843-47e6-81e7-cb67ec1b63b0,Puhdasplus Niittykumpu,ACTIVE,False,"Wolt Market Niittari, Niittymäentie 9"
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,871cb9d7-adb5-407f-849e-ea29e98a177a,Punainen Kuu Leppävaara,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,f21ed1a2-f3e9-4355-8a3b-3d3ddab864d6,Valco Espoo,ACTIVE,False,Niittymäentie 9
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,2ca1ce14-c0aa-4746-bece-a3c9cb52db90,Viltgården Ravut - Espoo,ACTIVE,False,This is a virtual venue
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,b660a422-4b51-43e2-b243-d3319d38d999,Wolt Air,ACTIVE,False,Niittymäentie 9
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,5d8ce2b9-278c-493e-812f-3401e9819f37,Wolt Electronics Lepuski,ACTIVE,False,Upseerinkatu
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,f5efe5be-4163-4455-962a-5c29c6ba71fc,Wolt Electronics Niittari,ACTIVE,False,Olarinluoma 11
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,5240e2cd-7252-445e-8bc7-a28df959bfb0,Wolt Market Lepuski,ACTIVE,False,Upseerinkatu 3
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,48c128a9-313a-4f8d-9c6b-b5e38a34e920,Wolt Market Niittari,ACTIVE,False,Niittymäentie 9
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,e2abb99f-999f-4578-9311-0bb1372df369,Banaani eyewear,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,267aa001-ee75-402f-b8b6-cf15b961f472,BoneBox,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,c04aa420-314a-4a7d-88fa-0b4a203ec386,Crazy Days Herttoniemi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,d416a861-0968-485b-b109-94212baaff97,Crazy Days Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,d4d1afe0-fe17-413d-8cbf-bbb5abacdf4c,Crazy Days Pitäjänmäki,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,1f94dcd4-1958-4fd8-be90-773d93716fc7,Crazy Days Vallila,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,5ba2d057-f852-4869-a2ed-8aa0924dd380,Dermalogica Kamppi ,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,73b531ef-37ed-421b-8064-f03cd907252e,Dermosil Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,04e65ca4-7a55-4aba-b865-0cb1c4627bdb,Fazer Store Herttoniemi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,02483d82-9627-4a18-a4ea-0b00c5f4346b,Fazer Store Itäkeskus,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,0c13cecc-3e00-4bb0-9155-1b3474d3d837,Fazer Store Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,0b1a69e8-17e8-497c-b31f-a9c2b37ed5b6,Fazer Store Pitäjänmäki,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,93b66f11-9b20-456d-8ad9-6f278fc906f4,Gatta Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,92fc32a8-27c8-4c9e-8f55-0dbd884d3f5a,HartSport Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,8e34891c-5458-4052-bbe8-fc20752cf515,Huippukiva Itis,ARCHIVED,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,9212aa99-fa00-49f6-b949-0bac3c915067,Hyvinvoinnin.fi Kamppi,ACTIVE,False,Köydenpunojankatu 17
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,9e9feb04-98f6-46cb-9cfb-3a2fa3465cb9,ImproGames Myrtsi,ACTIVE,False,Kuninkaantammenkierto 3
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,6bfe2072-17f3-43dd-9976-b8aa702ee869,ImproGames Pitsku,ACTIVE,False,Hiomotie 8
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,80e13912-224b-4890-bea2-491ba4a7661b,Keskustelupakka Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,ede87137-af5e-488c-8c11-0fa77e448141,Kimpassa-Kortit Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,edd80ba9-40d9-4315-99a9-3e240bd34ad3,Last minute gifts,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,a4f4497f-50b3-41c5-9953-f18bdc3b84c3,Last minute gifts Itis,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,03908f6e-8e8f-4548-83e4-ee5943b708e3,Lumoava,ACTIVE,False,"Wolt Market Vallila, Elimäenkatu 30"
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,ae27b0b7-7959-4470-8d36-049a125fdb0c,Luvby Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,71df062f-f800-45af-9f34-0e3c45e4fc30,Maajoukkueen Verkkokauppa Itäkeskus,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,75831157-2b0c-4fc3-ad3c-e5089fc99fa7,Maajoukkueen Verkkokauppa Pitäjänmäki,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,b152fee6-9ce2-4b91-a28a-ba71a0c517f1,Match Day Super Store Hertsi,ACTIVE,False,Sahaajankatu 44
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,96e1807f-5738-42a9-bb6c-3b8aa56274f5,Match Day Super Store Kamppi,ACTIVE,False,Köydenpunojankatu 17
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,76249807-54d1-43b8-ac5a-92bbd7686d55,Match Day Super Store Myrtsi,ACTIVE,False,Kuninkaantammenkierto 3
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,5e87062e-f549-4908-94ee-7277a3a4ccbd,Match Day Super Store Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,b8fa81e3-026a-4393-8ee3-7242ba019746,Melzen Itis,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,04dd8d13-5baa-4a5d-a90a-30674e95b7f7,Melzen Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,cbfab420-8455-43c1-b812-c4c760b60bf1,Mjuuk Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,4f766554-dbee-4c9e-b8a3-f5af3ae9d243,Muotikoru Myyrmäki,ACTIVE,False,Kuninkaantammenkierto 3
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,632dd5a0-747b-4489-8263-9089ae00e6e4,Muotikoru Pitäjänmäki,ACTIVE,False,Hiomotie 8
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,a29f8ff8-7e2e-46a0-94b9-6689767b9d28,Muotikoru Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,2afcb68f-707c-4d84-86ce-fb89a7c3c45d,Mwebstore,ACTIVE,False,"Wolt Market, Köydenpunojankatu 17"
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,f7800d31-eaf9-4456-967f-5c72ace175e1,Mähöne Brothers Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,fb1adf73-25aa-4f0f-a39c-39ff927cb9db,Naku Jewellery Vallila,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,f19ddc52-4fea-4e96-8651-121d1f4588d9,Nuuf,ACTIVE,False,Köydenpunojankatu 17
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,b866decb-a08e-4876-8b97-743290515734,Puhdasplus Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,e25a0826-a6ef-432a-9369-08aba300d01e,Puhdistamo,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,3b9392f0-650f-4127-8a7d-b5ba877ba62d,Punainen Kuu Hertsi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,d09690ad-f4bb-48e8-be87-5fb8efb75af0,Punainen Kuu Pitsku,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,f606e380-f4cf-469e-9f2e-fc3635d2d0df,Punainen Kuu Vallila,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,5b231c50-16c3-43a9-a9e5-7595fad156c2,Raju Skincare Hertsi,ACTIVE,False,Sahaajankatu 44
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,63f2b091-2cee-4420-9228-a3f8260f086c,Raju Skincare Kamppi,ACTIVE,False,Köydenpunojankatu 17
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,43623bfa-b61f-4804-a672-31e9f3d83b68,Red Bull Shop Kamppi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,e1a95689-bbcb-4d57-8d28-849a7309fa9a,Renow Vallila,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,5cb372db-3632-4b79-8855-64529e7cbe63,Scogo Pitsku,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,a23704ca-42d9-4c09-ad47-7117604d3f38,Tactic Games Store Vallila,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,1bd60382-01a1-41a6-80d6-c3fb0715b6d1,Tavarataivas.fi,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,345d2aef-cca9-4491-b53a-c41754eed13e,UPCYCLE WITH JING Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,45b011dd-27c2-48ce-9e1e-3d4a79da649c,Valco Myrtsi,ACTIVE,False,Kuninkaantammenkierto 3
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,1b04bdd2-9757-404f-ad04-167f1513e492,Veloide,ACTIVE,False,Köydenpunojankatu 17
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,d659efe3-d908-457d-b851-e83f1ff68d8c,Viltgården Ravut - Helsinki,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,7a22a4e6-27cf-4f62-a91f-e2037c72296d,WM HQ Kiosk,ACTIVE,False,Pohjoinen Rautatiekatu 21
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,cea21bb7-afd6-4b13-9a2e-593960584708,Wolt Electronics Hertsi,ACTIVE,False,Sahaajankatu 44
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,805fbbeb-37c8-4270-b3f3-c7ed118f866c,Wolt Electronics Kamppi,ACTIVE,False,Köydenpunojankatu 17
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,3207c119-64ac-43ce-af28-9a5a65515039,Wolt Electronics Myrtsi,ACTIVE,False,Kuninkaantammenkierto 3
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,3a087776-5a98-4d86-a788-80b28be95c78,Wolt Electronics Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,5d7c5956-8dda-4707-8a12-52054379f8bd,Wolt Market Deli Kamppi,ACTIVE,False,Köydenpunojankatu 17
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,70ae2aa3-49d4-4c19-9cda-c468ba76bd73,Wolt Market Hertsi,ACTIVE,False,Sahaajankatu 44
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,ac35e342-0df0-40bc-8830-63c2abca1d9d,Wolt Market Itis (CLOSED) ,ARCHIVED,False,Korsholmantie 2
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,eb27e03b-0462-4a3f-b48a-c222bfabc0e1,Wolt Market Kalasatama,ARCHIVED,False,Kalasatamankatu 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,da5736fb-59eb-4b2a-a784-75fe13673177,Wolt Market Kamppi,ACTIVE,False,Köydenpunojankatu 17
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,256572e3-e2b1-4e86-8789-3da3177e5b45,Wolt Market Myrtsi,ACTIVE,False,Kuninkaantammenkierto 3
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,2c6af383-90ad-4dfd-abbe-e76d12af91a7,Wolt Market Pasila (CLOSED),ARCHIVED,False,Ratapihantie 9
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,81d2dedb-f9a9-4bea-a145-0c2c02a66225,Wolt Market Pitäjänmäki (CLOSED),ARCHIVED,False,Hiomotie 8
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,1ee593a5-0c82-4070-8e4c-83218f091773,Wolt Market Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,962be142-d1d7-4b82-b723-a377f0e12031,Wolt Market for Work,ACTIVE,False,Sahaajankatu 44
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,12127a50-9ae9-4193-bb43-9f87330f64ad,Wolt swag shop,ACTIVE,False,This is a virtual venue
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,32d0a8d8-6571-464d-a8c5-4729a952f6be,Yuho’s Game Shop Vallila,ACTIVE,False,Kumpulantie 15
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,c48e4a89-6fae-4d47-8751-39bdd475701c,naaG Living,ACTIVE,False,"Wolt Market Vallila, Elimäenkatu 30"
+FIN,Joensuu,Joensuu,9509f3ba-9c0a-4ab1-860a-635693abefbc,66d8da1a-f77e-424d-b5c2-f26c47f5d5ac,Crazy Days Joensuu,ACTIVE,False,This is a virtual venue
+FIN,Joensuu,Joensuu,9509f3ba-9c0a-4ab1-860a-635693abefbc,a6d03fe4-573c-4b0d-b127-fbee5ff5d7e9,Fazer Store Joensuu,ACTIVE,False,This is a virtual venue
+FIN,Joensuu,Joensuu,9509f3ba-9c0a-4ab1-860a-635693abefbc,5a478d93-19b9-4692-97c2-1b14c5e12174,Wolt Electronics Joensuu,ACTIVE,False,Huvilakatu 10
+FIN,Joensuu,Joensuu,9509f3ba-9c0a-4ab1-860a-635693abefbc,eff67d2b-2a52-4e21-b5e6-256bb8095914,Wolt Market Joensuu,ACTIVE,False,Huvilakatu 10
+FIN,Jyväskylä,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,2cf4fa87-c653-434c-89cd-0d2e6c89045c,Hyvinvoinnin.fi Jyväskylä,ACTIVE,False,Tourulantie 11
+FIN,Jyväskylä,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,ecfbf4c8-a9bd-433e-9ebb-8bcb75740774,ImproGames Jyväskylä,ACTIVE,False,Tourulantie 1
+FIN,Jyväskylä,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,0cdc7699-31d5-4439-b24d-1b49cb9cca35,Kimpassa-kortit Jyväskylä,ACTIVE,False,This is a virtual venue
+FIN,Jyväskylä,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,71500833-45c4-4785-ab78-e2be091950d5,Match Day Super Store Jyväskylä,ACTIVE,False,Tourulantie 11
+FIN,Jyväskylä,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,e370d332-d2c0-4785-8dd9-3ce3abe18563,Muotikoru Jyväskylä,ACTIVE,False,Tourulantie 11
+FIN,Jyväskylä,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,8e7129a7-e961-4d6e-b8ac-ebe22c65f384,Wolt Electronics Jyväskylä,ACTIVE,False,Tourulantie 11
+FIN,Jyväskylä,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,9a81aa35-788a-471c-ab47-32f25eb00ae6,Wolt Market Jyväskylä,ACTIVE,False,Ailakinkatu 5
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,22d015f5-df4c-434f-882f-3375f22efdc2,Crazy Days Lahti,ACTIVE,False,This is a virtual venue
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,6a3915d4-9aa1-4760-a6b3-4f01094396d3,Fazer Store Lahti,ACTIVE,False,This is a virtual venue
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,db2ea667-3910-4b56-b2e9-48e9cb5f2251,Hyvinvoinnin.fi Lahti,ACTIVE,False,Vesijärvenkatu 32
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,cf2d1940-23fa-41c6-afe5-7913b31bfaea,ImproGames Lahti,ACTIVE,False,Vesijärvenkatu 3
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,1deffef3-a871-46e1-8901-67bfe5969d87,Kimpassa-kortit Lahti,ACTIVE,False,This is a virtual venue
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,f339bcd6-1fea-4c9f-a366-59350a07445d,Lempikauppa.fi Lahti,ACTIVE,False,This is a virtual venue
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,8fb2dc88-f271-4679-88f6-546f49fa3222,Match Day Super Store Lahti,ACTIVE,False,Vesijärvenkatu 32
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,84a7d31e-0d7f-4bf4-9721-e5f76d5e8d9d,Muotikoru Lahti,ACTIVE,False,Vesijärvenkatu 32
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,d408d134-99fa-4844-835e-7eb3637b923b,Wolt Electronics Lahti,ACTIVE,False,Vesijärvenkatu 32
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,f46e919a-c4d7-4a41-8439-d791f82221c1,Wolt Market 400 (CLOSED),ARCHIVED,False,Salpausselänkatu 8 / Lahden mäkimonttu 
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,a2eb6a7b-0d41-4a79-9c80-dd13f9ae3a6f,Wolt Market Lahti,ACTIVE,False,Vesijärvenkatu 32
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,09c0bd36-38a6-4d1f-8374-ddcbf99f3457,Crazy Days Oulu,ACTIVE,False,This is a virtual venue
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,19b86d69-3abe-4203-86aa-30f588c07ddb,Fazer Store Oulu,ACTIVE,False,This is a virtual venue
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,70ebb0d9-aca8-4841-82c5-169aeb44e4e8,Kimpassa-kortit Oulu,ACTIVE,False,Kirkkokatu 63-65
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,2f20a6ea-6a0c-49e5-841d-a5fbf11594a0,Luvby Oulu,ACTIVE,False,This is a virtual venue
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,be9df399-80f5-4ccf-830a-5e60f60bcf7c,Match Day Super Store Oulu,ACTIVE,False,Kirkkokatu 63-65
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,17352672-f602-4bbd-9b81-a883433390fa,Punainen Kuu Oulu,ACTIVE,False,This is a virtual venue
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,4bae04ee-4234-4892-9463-433e6bcd9fcf,Valco Oulu,ACTIVE,False,Kirkkokatu 65
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,3f284af8-3534-4f48-8fb2-0cb52f61a308,Wolt Electronics Oulu,ACTIVE,False,Kirkkokatu 63-65
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,c3e096f9-0c58-4209-804f-2e62cca04688,Wolt Market Oulu,ACTIVE,False,Kirkkokatu 63-65
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,be8c0eec-8a21-48cf-ac24-8b6bf2a5431a,Yuho’s Game Shop Oulu,ACTIVE,False,This is a virtual venue
+FIN,Pori,Pori,d5414f22-192f-47a2-842d-d32584ba4b82,e007a795-1e8e-46f3-8884-d8326acb7389,Crazy Days Pori,ACTIVE,False,This is a virtual venue
+FIN,Pori,Pori,d5414f22-192f-47a2-842d-d32584ba4b82,4bdecc5e-a5b8-464c-bbdc-5d49a6623515,Fazer Store Pori,ACTIVE,False,This is a virtual venue
+FIN,Pori,Pori,d5414f22-192f-47a2-842d-d32584ba4b82,e379208b-8c61-49d9-b17f-2db85d2c87ba,Kaalimato Pori (closed),ACTIVE,False,Antinkatu 25
+FIN,Pori,Pori,d5414f22-192f-47a2-842d-d32584ba4b82,01a66862-2ded-4b2e-8345-a1df348bd0ca,Kimpassa-kortit Pori,ACTIVE,False,This is a virtual venue
+FIN,Pori,Pori,d5414f22-192f-47a2-842d-d32584ba4b82,50bdc75f-49a5-43a4-90d7-e7be8f5733e1,Lempikauppa.fi Pori,ACTIVE,False,This is a virtual venue
+FIN,Pori,Pori,d5414f22-192f-47a2-842d-d32584ba4b82,9226fffc-c051-4d0d-97a1-af6b548fc5a0,Tactic Games Store Pori,ACTIVE,False,This is a virtual venue
+FIN,Pori,Pori,d5414f22-192f-47a2-842d-d32584ba4b82,0e90ee34-b0ad-42af-9d6d-1989e5bec906,Wolt Market Pori (CLOSED),ARCHIVED,False,Antinkatu 25
+FIN,Seinäjoki,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958,673b26ed-565b-47d7-9b9d-be509a134d61,Crazy Days Seinäjoki,ACTIVE,False,This is a virtual venue
+FIN,Seinäjoki,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958,d3666f9a-1748-4fc0-9d74-cc2ec9764862,Fazer Store Seinäjoki,ACTIVE,False,This is a virtual venue
+FIN,Seinäjoki,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958,cdfbeee5-7dbe-49ea-a0cd-4660d09c8aea,Hyvinvoinnin.fi Seinäjoki,ACTIVE,False,Kalevankatu 7
+FIN,Seinäjoki,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958,d985299c-d985-4ca7-b80c-2d4e179551f8,ImproGames Seinäjoki,ACTIVE,False,Kalevankatu 7
+FIN,Seinäjoki,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958,9f42f88b-3f43-49cc-926b-8cc4f0e9c142,Lempikauppa.fi Seinäjoki,ACTIVE,False,This is a virtual venue
+FIN,Seinäjoki,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958,a6dce9a0-4efc-4a1a-a5d5-c2443a6878f6,Wolt Market Seinäjoki,ACTIVE,False,Kalevankatu 7
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,636581d3-40e2-424b-8a91-cfbce76a68bc,Crazy Days Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,4952697f-3598-4860-91f6-17ef4139d3a3,Dermosil Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,d98a2162-2a2c-4e60-aea2-4ac2bdbccf6d,Fazer Store Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,37f076bc-1f32-4dd5-99a4-4b2fa2ab691c,HartSport Tampere,ACTIVE,False,"Wolt Market Tampere, Varastokatu 3b"
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,a053ff04-0c8c-40b6-bf1b-937bc15b9418,ImproGames Tampere,ACTIVE,False,Varastokatu 3
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,38dc84af-03fa-4c38-ac13-5e89036bfbcf,Keskustelupakka Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,0fc5ec68-1c34-470c-9464-e25d464f77c3,Kimpassa-kortit Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,4306f962-fded-4f98-83e4-29c03991aa61,Last minute gifts Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,b244c680-5b16-497b-9e45-8f36b681d456,Luvby Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,16392552-a433-4958-b69c-f48b42c0a9d4,Maajoukkueen Verkkokauppa Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,bd766829-7910-4299-b2f9-fd271c302ba7,Match Day Super Store Tampere,ACTIVE,False,Hataanpään valtatie 5-7
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,7e05b177-2bde-4422-9706-081e5cff5bff,Melzen Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,5629bdba-1980-479d-a2a1-502bebc28dce,Mobiilitukku.fi Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,1cd1249b-e6d6-4cf0-a21d-f22e7bb9db03,Mähöne Brothers Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,8c3253c6-3163-47d3-9d5c-030cfba01520,Puhdasplus Tampere,ACTIVE,False,"Wolt Market Tampere, Varastokatu 3b"
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,950aec67-8071-42ad-989b-c7530d74712a,Punainen Kuu Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,577ca2b2-3b1e-4dae-810f-73983366d92c,Red Bull Shop Tampere,ACTIVE,False,This is a virtual venue
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,639b847d-161d-42b0-8d22-b8da49343fb3,Treffiboxi Tampere,ACTIVE,False,Varastokatu 3 
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,e521c3ff-6d76-44d0-9688-8fee48c45307,UPCYCLE WITH JING Tampere,ACTIVE,False,Varastokatu 3
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,dc2e17bd-f913-44eb-94f6-59705b9aaccd,Valco Tampere,ACTIVE,False,Varastokatu 3
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,89e69299-a913-4170-98c2-c2a427ca385d,Wolt Electronics Tampere,ACTIVE,False,Hataanpään valtatie 5-7
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,15f29fa1-cd0e-4f9c-8741-dd18bb6834ce,Wolt Market Tampere,ACTIVE,False,Hatanpään valtatie 5–7
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,874b14cc-a9b8-427d-9405-1334fb15c8a6,Yuho's Game Shop Ratina,ACTIVE,False,Hatanpään valtatie 5–7
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,a134c3ea-db16-4d4b-b8e6-851793ec9017,Crazy Days Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,e4466376-cbe0-450d-ba4a-b45bc95d4b13,Dermosil Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,9ed76466-4b6f-4c9d-a981-5df149d890d2,Fazer Store Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,205d6be5-7e11-491c-8b26-d2e7733245d8,ImproGames Turku,ACTIVE,False,Kristiinankatu 9
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,aadbc5f8-4299-48de-84cf-017006388fe9,Keskustelupakka Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,1665e3bb-a44e-40f3-8149-671c248f2d08,Kimpassa-kortit Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,5f620318-e296-43d7-96b8-c00f36bb8054,Luvby Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,21557320-249a-4d11-bff0-4e706e248e26,Match Day Super Store Turku,ACTIVE,False,Kristiinankatu 9
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,c5825b1a-781d-415a-8499-7e430c2f283e,Melzen Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,f3d742e3-a262-4cc1-811c-befffd2641a3,Mähöne Brothers Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,a199408f-7b0c-46a5-ae0d-6a48e6768e6d,Punainen Kuu Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,a2332c4a-31e8-40f6-80a2-179abd6944e9,Red Bull Shop Turku,ACTIVE,False,This is a virtual venue
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,fab79ab4-717d-4737-aa9b-eb36d5050bd0,Valco Turku,ACTIVE,False,Kristiinankatu 9
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,e3c7c528-d09f-4800-a7fb-046149b2e896,Wolt Electronics Turku,ACTIVE,False,Kristiinankatu 9
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,c68fe536-a657-41dd-9617-3a46a3a2bffc,Wolt Market Kristiinankatu,ACTIVE,False,Kristiinankatu 9
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,54097f91-fbdc-478f-bc99-0628ac0b0570,Wolt Market Turku OLD (CLOSED),ARCHIVED,False,Humalistonkatu 10
+FIN,Vaasa,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,01c2c7d7-e6dd-4c55-81a3-6b86c58de610,Crazy Days Vaasa,ACTIVE,False,This is a virtual venue
+FIN,Vaasa,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,60e74e70-2d65-474b-a725-e61d2810f442,Fazer Store Vaasa,ACTIVE,False,This is a virtual venue
+FIN,Vaasa,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,1c4bd796-74bc-491e-a00a-6edff791e15c,Kimpassa-kortit Vaasa,ACTIVE,False,This is a virtual venue
+FIN,Vaasa,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,e8930182-abe7-49c3-9f9d-e63ecf381811,Lempikauppa.fi Vaasa,ACTIVE,False,This is a virtual venue
+FIN,Vaasa,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,178fff50-2527-4360-8369-a9de81b3bfb2,Luvby Vaasa,ACTIVE,False,This is a virtual venue
+FIN,Vaasa,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,9f76da1a-996a-4607-983d-2364e2b3b18f,Muotikoru Vaasa,ACTIVE,False,Pitkäkatu 28-30
+FIN,Vaasa,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,b9717ab7-575d-40a9-b23b-9971b820ad7f,Wolt Market Vaasa,ACTIVE,False,Pitkäkatu 28-30
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,0c05b854-1bc9-4459-ab7a-4923bf1e1837,BRUX raw dog food Tikkurila,ACTIVE,False,This is a virtual venue
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,f4036057-16ac-4255-b5da-55f2b02927ab,Dermosil Tiksi,ACTIVE,False,This is a virtual venue
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,60ccc422-7ff6-4492-8d9f-dee26cad95cf,Fazer Store Tikkurila,ACTIVE,False,This is a virtual venue
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,5dfedc33-afd3-417a-9c3a-4c91a8b3348b,HartSport Tikkurila,ACTIVE,False,"Wolt Market Tiksi, Vernissakatu 1"
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,f9487826-f6fc-44d1-8b51-b9ca54cb3451,ImproGames Tiksi,ACTIVE,False,Vernissakatu 1
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,2e102311-6517-4ee5-8afe-54c0a2e5e268,Kimpassa-kortit Tikkurila,ACTIVE,False,Vernissakatu 1
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,594eaa77-fb05-40be-95fb-5e86b47095b3,Match Day Super Store Tiksi,ACTIVE,False,Tikkurilantie 41
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,f635dcf4-9f1f-42ea-be66-accb001c8b44,Muotikoru Tikkurila,ACTIVE,False,Vernissakatu 1
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,fb93589d-0ce5-4646-aead-69cff2a0f80e,Puhdasplus Tikkurila,ACTIVE,False,"Wolt Market Tiksi, Vernissakatu 1"
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,eea80049-6f64-48d9-99e4-b72380080d12,Valco Vantaa,ACTIVE,False,Vernissankatu 1
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,2b53b32e-bee1-4f18-9ced-7a79b8d270c3,WMFIN Distribution center,ACTIVE,False,Viinikankaari 8 B
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,286f28dd-b942-4a41-a65b-d259b3b3adab,Wolt Electronics Tiksi,ACTIVE,False,Tikkurilantie 41
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,bbf5069b-ccd7-451d-802d-2af13a62280d,Wolt Market Tiksi,ACTIVE,False,Vernissakatu 1
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,53c098ec-62fb-40f9-8676-a2c473f307a5,Yuho’s Game Shop Tiksi ,ACTIVE,False,Vernissakatu 1
+FIN,,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,31a924e8-d9fc-4232-a290-c82ff9cc004e,Huippukiva Lepuski,ARCHIVED,False,This is a virtual venue
+FIN,,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,2dbb8478-4562-4a46-aa4a-0efeafbebb01,Huippukiva Niittari,ARCHIVED,False,This is a virtual venue
+FIN,,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,c709cebb-3be7-461c-a433-21e9a7f7c5cc,Ihannolla.fi Leppävaara,ARCHIVED,False,Upseerinkatu 3 B
+FIN,,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,4607c6dc-e231-4676-81b6-72a23d959bde,Kaalimato Espoo (old),ACTIVE,False,This is a virtual venue
+FIN,,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,b8179a59-06ac-4d49-8fbd-219023a85c7b,Kaalimato Lepuski (old),ACTIVE,False,Upseerinkatu 3
+FIN,,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7,cd233bd0-c877-498a-b9a3-2a557a51f6ff,S-Shop Niittari (old),ACTIVE,False,"Wolt Market Niittari, Niittymäentie 9"
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,af0192bd-8f92-48d4-9045-bdd6895b919e,Huippukiva Hertsi,ARCHIVED,False,This is a virtual venue
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,40448578-2306-4fff-b936-5ed7bf998a4c,Huippukiva Kamppi ,ARCHIVED,False,This is a virtual venue
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,9c23b238-e33f-442a-9558-1f601daf41c6,Huippukiva Myrtsi,ARCHIVED,False,This is a virtual venue
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,6e08eb73-5aa0-4ea1-87d6-1010b9a68a59,Ihannolla.fi Kamppi,ARCHIVED,False,Köydenpunojankatu 17
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,b620ebe0-ec8f-4e9f-9075-16737ebd5bd1,Ihannolla.fi Vallila,ARCHIVED,False, Elimäenkatu 30
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,96a1e069-a524-44ee-a7d9-7bafdf5fe5aa,JURRI - Juomapeli (old),ACTIVE,False,Kumpulantie 15
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,9a9a1428-bdb7-4a27-beda-2000357be58f,Kaalimato Herttoniemi (old),ACTIVE,False,Sahaajankatu 44
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,e6d4b420-1bcf-4352-9f5f-3eaa4c591791,Kaalimato Kamppi (old),ACTIVE,False,This is a virtual venue
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,92173abc-9b00-437f-8e66-2ffb25e8c2d6,Kaalimato Vallila (old),ACTIVE,False,Kumpulantie 15
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,369649ac-ef41-4f85-b852-256dd2065194,PTV labs,ARCHIVED,False,Köydenpunojankatu 17
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,3a802610-c6a6-4794-a4a5-9b0a7b877ede,S-Shop Kamppi (old),ACTIVE,False,"Wolt Market Kamppi, Köydenpunojankatu 17"
+FIN,,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7,63a449cf-c5d9-4b58-8aa6-44ca7ca06c6c,Wolt Market Jätkäsaari (CLOSED),ARCHIVED,False,Kanariankuja 2
+FIN,,Joensuu,9509f3ba-9c0a-4ab1-860a-635693abefbc,08c26b36-3401-4aaf-9547-af51f9056f81,Huippukiva Joensuu,ARCHIVED,False,This is a virtual venue
+FIN,,Joensuu,9509f3ba-9c0a-4ab1-860a-635693abefbc,0585d63b-42d9-4503-a4d2-79941f8247f0,Ihannolla.fi Joensuu,ARCHIVED,False,Huvilakatu 10
+FIN,,Joensuu,9509f3ba-9c0a-4ab1-860a-635693abefbc,9622ad0c-e866-472b-a16e-fd0efed879e2,Kaalimato Joensuu (old),ACTIVE,False,This is a virtual venue
+FIN,,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,80436819-3491-42c2-882a-f3b67dca02c1,Huippukiva Jyväskylä,ARCHIVED,False,This is a virtual venue
+FIN,,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,c2bda63d-cdac-4fac-8dab-078fd3fe18af,Ihannolla.fi Jyväskylä,ARCHIVED,False,Tourulantie 11
+FIN,,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3,dc44edfa-d3f8-481c-9c25-a16f224f6173,Kaalimato Jyväskylä (old),ACTIVE,False,Tourulantie 11
+FIN,,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,e027893d-abb7-4675-b431-f124e3d2ac2c,Huippukiva Lahti,ARCHIVED,False,This is a virtual venue
+FIN,,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,35bc382e-3fa8-48a0-8be5-67e03600da27,Ihannolla.fi Lahti,ARCHIVED,False,Vesijärvenkatu 32
+FIN,,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b,c39c71cc-ac86-4d63-bb43-745d9403c5af,Kaalimato Lahti (old),ACTIVE,False,Vesijärvenkatu 32
+FIN,,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,cb3e74e4-69f6-4bb4-85f5-4f579c29c43b,Huippukiva Oulu,ARCHIVED,False,This is a virtual venue
+FIN,,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,5bbecf6e-d00a-4bae-aefa-9a808019e37e,Kaalimato Oulu (old),ACTIVE,False,This is a virtual venue
+FIN,,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4,422e31af-64be-4179-b64e-3ad9246cf5cf,Lempikauppa.fi Oulu (old),ACTIVE,False,This is a virtual venue
+FIN,,Pori,d5414f22-192f-47a2-842d-d32584ba4b82,15e175ea-41b5-4b88-9a65-d00f095edb7b,Huippukiva Pori,ARCHIVED,False,This is a virtual venue
+FIN,,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958,889f6e6c-c69f-4abe-b494-5abc429561ba,Huippukiva Seinäjoki,ARCHIVED,False,This is a virtual venue
+FIN,,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958,b887988d-254f-45f6-b616-ddd53370957b,Kaalimato Seinäjoki (old),ACTIVE,False,Kalevankatu 7
+FIN,,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,641e32f1-9e15-46f8-9db2-d96a6eaaab43,Huippukiva Tampere,ARCHIVED,False,This is a virtual venue
+FIN,,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,ee0bc3c4-47db-4ebc-a418-5fceaaec85b2,Ihannolla.fi Tampere,ARCHIVED,False,Hatanpään valtatie 5-7
+FIN,,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,f7b469e6-8f6c-48ea-83e1-c9d363fedf48,Kaalimato Tampere (old),ACTIVE,False,This is a virtual venue
+FIN,,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2,b3b760cc-c887-4b73-8ee7-3b9ef663807e,Wolt Market Production Test,ARCHIVED,False,Pänninmoisionkatu 1
+FIN,,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,07f6cfc2-170c-462d-9e69-7b94ed446b2c,Huippukiva Turku,ARCHIVED,False,This is a virtual venue
+FIN,,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,6a80bb19-b287-4195-862b-7e666916c9c5,Ihannolla.fi Turku,ARCHIVED,False,Kristiinankatu 9
+FIN,,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,642951f1-e134-4473-a7e1-f6b00d70b3ac,Kaalimato Turku (old),ACTIVE,False,Kristiinankatu 9
+FIN,,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,88976988-d493-4fee-b803-66022630cad6,Lempikauppa.fi Turku (old),ACTIVE,False,This is a virtual venue
+FIN,,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,c4bd66db-6bf5-46ae-a750-c8b34f8641fc,S-Shop Turku (old),ACTIVE,False,Kristiinankatu 9
+FIN,,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e,e3fada78-b042-4d86-9ecf-118b500165c3,Wolt Market Hämeenkatu (CLOSED),ARCHIVED,False,Hämeenkatu 5
+FIN,,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,f709d51f-834e-423d-9b3a-9b94b4de2a73,Huippukiva Vaasa,ARCHIVED,False,This is a virtual venue
+FIN,,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4,d46c141e-c18b-48f0-9d59-89643875d0d3,Kaalimato Vaasa (old),ACTIVE,False,Pitkäkatu 28-30
+FIN,,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,2ecf219c-6372-46f0-a40a-267794f34b8e,Huippukiva Tiksi,ARCHIVED,False,This is a virtual venue
+FIN,,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,5ce697d1-fa53-4ebe-a682-36fd967d43f8,Ihannolla.fi Tikkurila,ARCHIVED,False,Vernissakatu 1
+FIN,,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,fec5d5b4-95ad-4529-87f2-93b3f7bff868,Kaalimato Myrtsi (old),ACTIVE,False,Kuninkaantammenkierto 3
+FIN,,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,7414f827-8909-4a1a-97b9-7efdf6fb3bad,Kaalimato Tikkurila (old),ACTIVE,False,Vernissakatu 1
+FIN,,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,6a66a779-c614-4c74-930e-5d33c8d120cc,Lempikauppa.fi Tiksi (old),ACTIVE,False,Tikkurilantie 41
+FIN,,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7,469bf647-8d80-4916-9190-e8a06c18ec8c,S-Shop Tiksi (old),ACTIVE,False,"Wolt Market Tiksi, Vernissakatu 1"
+GEO,Batumi,Batumi,90867d13-0ae7-4c22-b4e0-39b3ef172922,1df8e1d1-979d-48d2-9bc9-d5194d1ce8ee,Match Day Super Store Batumi,ACTIVE,False,Mamia Komakhidze 99
+GEO,Batumi,Batumi,90867d13-0ae7-4c22-b4e0-39b3ef172922,357d6c45-a25f-4742-a247-cbd672fda8d1,Wolt Alcohol Batumi,ACTIVE,False,მამია კომახიძის 99
+GEO,Batumi,Batumi,90867d13-0ae7-4c22-b4e0-39b3ef172922,f29c7b24-9e5a-4507-ab6c-d698eacbd24c,Wolt Market Batumi,ACTIVE,False,Mamia Komakhidze 99
+GEO,Tbilisi,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf,faa935a9-57f8-4577-af46-5dc892ac2acc,Wolt Alcohol Gldani,ACTIVE,False,Kerchi st. 30
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,dbbea819-36e6-4c33-b393-51198c635742,Match Day Super Store Baratashvili,ACTIVE,False,"რიყის პარკი, მშვიდობის ხიდის ტერიტორია, თბილისი 0144 (MRV5+9H6 Tbilisi) Tbilisi, 0102"
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,0ffa31c6-ca50-4135-ae73-b793612aac4a,Match Day Super Store Dighomi,ACTIVE,False,3 Mirian Mepe St
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,4a6945c8-7485-47e9-9044-c1c7c41facfb,Match Day Super Store Gldani,ACTIVE,False,Kerchi st. 30
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,438c0165-43fb-4c25-9d35-0fe338da35b2,Match Day Super Store Isani,ACTIVE,False,"1 Stepane Chrelashvili St, B Block, Floor 1"
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,f8be9617-4b40-4678-8d82-f4c8e4538c3c,Match Day Super Store Marijani,ACTIVE,False,Marijani str 4 
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,28968a8e-0e15-4198-9cb6-1720caebab1b,Match Day Super Store Tsintsadze,ACTIVE,False,Tsintsadze Str. 53
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,dca80bdc-751b-459c-8300-dbf75a21408b,Wolt Alcohol Baratashvili,ACTIVE,False,"რიყის პარკი, მშვიდობის ხიდის ტერიტორია, თბილისი 0144 (MRV5+9H6 Tbilisi)"
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,938f3415-03e1-4568-a590-a956c4709b5f,Wolt Alcohol Tsintsadze,ACTIVE,False,Tsintsadze Str. 53
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,d5ac182d-9d8f-4bae-923b-07351ad43006,Wolt Market Baratashvili,ACTIVE,False,"რიყის პარკი, მშვიდობის ხიდის ტერიტორია, თბილისი 0144 (MRV5+9H6 Tbilisi)"
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,91961a08-8bfa-4f96-8cb0-d41b0c6aabfe,Wolt Market Dighomi,ACTIVE,False,3 Mirian Mepe St
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,118c22c5-2f82-4e71-baf2-0857580229bd,Wolt Market Gldani,ACTIVE,False,Kerchi st. 30
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,4e54a1bd-09f9-4cd5-8779-8fb1db3af2ba,Wolt Market Isani,ACTIVE,False,"1 Stepane Chrelashvili St, B Block, Floor 1"
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,8615b457-72cf-408f-bf26-a157b1793a85,Wolt Market Marijani,ACTIVE,False,Marijani str 4 
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b,182c1473-d693-4416-b329-9002df5e285c,Wolt Market Tsintsadze,ACTIVE,False,Tsintsadze Str. 53
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,fa224cb6-86c8-4c91-a790-2f99e7c6094f,Ice Cream NOW Αθήνα,ARCHIVED,False,"Despos Sechou 28, Koukaki"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,0eeb4300-a567-45eb-86b1-676da49797f3,Ice Cream NOW Γλυφάδα,ARCHIVED,False,"Epidavrou 5Α, Glifada"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,39aeb6d2-4014-4fe8-be92-9298c8988de8,Ice Cream NOW Μαρούσι,ARCHIVED,False,"Premetis 3, Marousi"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,99538d95-3440-4fdd-8f25-30ebc297c0c2,Ice Cream NOW Νέα Ιωνία,ARCHIVED,False,"Leof. Irakliou 133, Nea Ionia"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,18ee5915-d8fd-438c-9ccc-d2c6dba79978,Ice Cream NOW Πειραιάς,ARCHIVED,False,"Methanon & Kiprion Agoniston, Piraeus"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,fe64fa1e-47b3-4948-b5fa-81f91f29613d,Ice Cream NOW Περιστέρι,ARCHIVED,False,"Filikon 3, Peristeri"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,bb5a1042-2d1c-4b6a-b262-9c0c92a03051,Wolt Market Αθήνα,ACTIVE,False,"Despos Sechou 28, Koukaki"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,d5b050a6-d3d5-4339-b46a-2584119787bc,Wolt Market Αμπελόκηποι,ACTIVE,False,Δήμου Σκαλτσά 3 
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,1b6c0d86-fb89-4fbe-ad84-a45002f17aa8,Wolt Market Γλυφάδα,ACTIVE,False,"Mistra & Epidavrou, Glifada"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,aee897b3-f3ed-4dce-9eec-845b15017132,Wolt Market Κατεχάκη,ARCHIVED,False,"Korgialeniou 6, Athina"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,c140e386-0f6a-45a6-89ab-b615ea12b5da,Wolt Market Μαρούσι,ACTIVE,False,"Premetis 3, Marousi"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,bec45cdc-e121-4268-a4f0-f169cff7d6a5,Wolt Market Νέα Ιωνία,ACTIVE,False,Leof. Irakliou 133
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,f641ff14-db1a-464c-90f7-583586322bec,Wolt Market Πειραιάς,ACTIVE,False,ΜΕΘΑΝΩΝ & ΚΥΠΡΙΩΝ ΑΓΩΝΙΣΤΩΝ
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,04306ca7-7813-41ad-8af6-8567f82e9c72,Wolt Market Περιστέρι,ACTIVE,False,"Filikon 3, Peristeri"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,37db1a54-b677-4980-b93e-7f19709c4c13,Wolt Market Ραφήνα,ACTIVE,False,"Ir. Politechniou 30, Chalandri"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,8931bee5-7f92-4996-a1fe-70f9342604b9,Wolt Market Χαλάνδρι,ACTIVE,False,"Ir. Politechniou 28, Chalandri"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,3659b75c-7600-40e0-af12-c3f02dc83bb3,Μυλωνάς Food Market Αθήνα,ACTIVE,False,"Despos Sechou 28, Koukaki"
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942,9ee9c22e-1fda-4e77-99c4-65fdc5c03747,Μυλωνάς Food Market Χαλάνδρι,ACTIVE,False,"Ir. Politechniou 30, Chalandri"
+GRC,Chania,Chania,abe0ba8a-b794-4fde-80cb-a2d5be66d43e,1c7f1e62-a02a-46bd-86ab-fec336ed4906,Wolt Market Χανιά ,ACTIVE,False,Leof. Karamanli 63
+GRC,Heraklion,Heraklion,458d6410-a4bb-43f0-8f60-f6c79c6a4a73,79a743f8-35a7-4e88-b20f-b4d3596347de,Wolt Market Ηράκλειο,ACTIVE,False,"Λεωφόρος 62 Μαρτύρων 117, Ηράκλειο, 713 04, Κρήτη"
+GRC,Patra,Patra,19fcfe45-06a4-4815-b90c-9760400ba4d2,de212456-acfa-491c-8ea8-9bdb36939604,Ice Cream NOW Πάτρα,ARCHIVED,False,"28is Oktovriou 39, Patra"
+GRC,Patra,Patra,19fcfe45-06a4-4815-b90c-9760400ba4d2,8fe53302-3138-4e65-8f89-87d37eb8e797,Wolt Market Πάτρα,ACTIVE,False,"28ης Οκτωβρίου 39 ,Πάτρα"
+GRC,Thessaloniki,Thessaloniki,fd9ac48b-74cd-422f-b4b0-06d26649c17c,df025509-d0c4-4d65-9044-355c6e861e9d,Ice Cream NOW Κέντρο,ARCHIVED,False,"kalou 6, thessaloniki"
+GRC,Thessaloniki,Thessaloniki,fd9ac48b-74cd-422f-b4b0-06d26649c17c,6dab898f-a9c1-45f6-a5f3-c73d874e8636,Ice Cream NOW Παπάφη,ARCHIVED,False,"Papafi 217-219, Thessaloniki"
+GRC,Thessaloniki,Thessaloniki,fd9ac48b-74cd-422f-b4b0-06d26649c17c,22316fb3-e36c-4f24-9385-deed178bf503,Wolt Market Κέντρο,ACTIVE,False," Kolokotroni 22, Stavroupoli 564 30 - Θεσσαλονίκη"
+GRC,Thessaloniki,Thessaloniki,fd9ac48b-74cd-422f-b4b0-06d26649c17c,d2398753-1aa6-41ad-a815-540e411b3ecf,Wolt Market Παπάφη,ACTIVE,False,Papafi 217-219
+HRV,Rijeka,Rijeka,9dd653b7-b0b8-4898-87a9-76811337ed1d,3a32fa78-07ef-49ab-ab82-b04836bfd7d7,Match Day Super Store Rijeka,ACTIVE,False,Prolaz Marije K. Kozulić 2
+HRV,Rijeka,Rijeka,9dd653b7-b0b8-4898-87a9-76811337ed1d,940823df-02d5-469e-aed5-0907578e08a6,Wolt Market - Rijeka,ACTIVE,False,Prolaz Marije K. Kozulić 2b
+HRV,Split,Split,5c228bc6-5489-4ccd-9cf0-440008f494f6,d6d01628-beb3-4419-8ad0-68a5c8e0ba18,Match Day Super Store Split,ACTIVE,False,Ulica Velimira Terezića 5
+HRV,Split,Split,5c228bc6-5489-4ccd-9cf0-440008f494f6,358d5420-35b7-47ba-aa9d-5118a190bd0c,Techno Trafika,ACTIVE,False,Ulica Velimira Terezića 5
+HRV,Split,Split,5c228bc6-5489-4ccd-9cf0-440008f494f6,f0c56b1a-62ac-4893-86b6-958fcb02b0fe,Wolt Market - Split,ACTIVE,False,Velimira Terzića 5
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,a4aa10eb-9e9d-4c1a-92f9-9b8ff5dff24f,Match Day Super Store Bleiweisova,ACTIVE,False,Šarengradska 4A
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,a59d3772-6554-43f5-8ec9-41b09941924b,Match Day Super Store Radnička,ACTIVE,False,Radnička cesta 20
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,4420cabc-fd08-4f32-8c46-fee9bdd4c47a,Match Day Super Store Rudeš,ACTIVE,False,Kopačevski put 1c
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,b1455cca-2248-4d7e-b2e6-a1bdd762c3c0,Match Day Super Store Siget,ACTIVE,False,Prilaz Vladislava Brajkovića 13
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,68a8faba-a1eb-4c9d-bf13-ef1316d3c7fb,Wolt Electronics,ARCHIVED,False,Radnička cesta 20
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,3e782886-499e-4ae8-9e4b-421b34eec271,Wolt Home,ACTIVE,False,Radnička cesta 20
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,7b29fb61-bc6b-40f9-8270-f544f2337ec1,Wolt Market - Rudeš,ACTIVE,False,Kopačevski put 1c
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,1bca1fe2-1b57-448c-a03d-9b2849460844,Wolt Market - Siget,ACTIVE,False,Prilaz Vladislava Brajkovića 13
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,6cc9c301-7a8c-46cb-ae7c-51ad6a28f1b4,Wolt Market Bleiweisova,ACTIVE,False,Florijana Andrašeca 18
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,df698e43-72da-4ee6-afce-94563f59c642,Wolt Market HRV Test,ARCHIVED,False,This is a virtual venue
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259,97b53b9f-aaf3-46c2-ab92-0339f3dcd408,Wolt Market Radnička,ACTIVE,False,Radnička cesta 20
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,84f52117-4428-4150-aff0-dd2a4e463605,Fagyifutár Dél-Pest,ARCHIVED,False,This is a virtual venue
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,ff23c180-5ab8-42ef-80e9-f62e48863453,WM Buda DC,ACTIVE,False,Daróczi út 1-3
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,e50fcd6b-1357-4db4-bd1b-5a8a0a49ae9d,Wolt Market Angyalföld (CLOSED),ARCHIVED,False,Fáy utca 4.
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,e4244236-4b37-4696-a16b-e80960742745,Wolt Market Buda,ACTIVE,False,Daróczy út 1-3.
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,ae585bb4-2081-45c9-b32c-a7a01235490f,Wolt Market Dél-Pest,ACTIVE,False,Üllői út 241
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,d3ff2701-272a-484e-a9ec-8d8df9568018,Wolt Market Déli,ARCHIVED,False,Márvány utca 20.
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,a5159723-6455-4c9d-a3d1-f3ebcc76c27a,Wolt Market Keleti ,ACTIVE,False,Kenyérmező utca 3a
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,7c4d2fec-8c1d-476e-9392-02450c184488,Wolt Market Lehel,ACTIVE,False,Lehel Út 12.
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,ab397046-25d2-4b5b-b2c8-158c655d71ad,Wolt Market Nyugati (CLOSED),ARCHIVED,False,Váci út 10-12.
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,2f3d893a-529f-4e4f-bc16-b8b32ceb2c15,Wolt Market Zugló,ACTIVE,False,Erzsébet királyné útja 5.
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,a187b015-66fd-4d25-98b6-73ac9ea3aec1,Wolt Market Óbuda,ACTIVE,False,Fényes Adolf utca 19-21
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea,a5e3161c-bcf8-4f1f-b5c2-40b39c13a830,Wolt Market Újbuda,ARCHIVED,False,Eszék utca 1.
+HUN,Debrecen,Debrecen,a2fd0da8-5d0d-49a9-971c-0d12e705e109,863d4bdd-821f-4291-b518-1d72907ddcfa,Wolt Market Debrecen,ACTIVE,False,Füredi út 44.
+HUN,Győr,Győr,d8c83be2-d41e-4412-aa5a-f475ef43f1a2,7bf3fa5b-f67b-4b59-851d-80894047ea97,Wolt Market Győr,ACTIVE,False,Amadé László utca 3
+HUN,Pécs,Pécs,8808c5c4-fe8d-49fc-990e-34677faeda1b,f38978b3-d955-463d-9c06-8f30db605158,Wolt Market Pécs,ACTIVE,False,Siklósi út 3.
+HUN,Szeged,Szeged,30849822-7252-4ee0-98e6-80f4302684f9,fccbfa77-3e30-456d-9e72-8da39351fc0f,Wolt Market Szeged,ACTIVE,False,Kálvária Sugárút 9-11
+ISR,Afula & Emek Yizrael area,Afula & Emek Yizrael area,37ee1736-7c3c-4f65-bc3d-fcbbf5943840,efaa9aaf-7c5c-4cc4-acd2-e67b1057f5bb,Wolt Market DC | Nir Yaffe,ACTIVE,False,מושב ניר יפה 
+ISR,Ashdod and Lachish Area,Ashdod,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,10592610-9354-4694-b899-de59dbd3fcca,Wolt Market | Ashdod,ACTIVE,False,דוד המלך 18 אשדוד
+ISR,Ashkelon,Ashkelon,d907b54e-cdfa-45d2-a345-2873601aef75,25cf52fa-fabc-4623-89b3-b88d812bc288,Wolt Market | Ashkelon ,ACTIVE,False,"צה""ל 29, אשקלון, Israel"
+ISR,Beer Sheva,Beer Sheva,2481a661-719d-4f6c-8ba5-6ad01fe3a16d,28132474-2dd5-49f5-97e9-04ee2ee1bb54,Wolt Market | Be'er Sheva,ACTIVE,False,שדרות שז״ר 31 באר שבע
+ISR,HaSharon,HaSharon,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,153cace7-4ee4-4636-a53d-0486f35a4733,Wolt Market | Kfar Saba,ACTIVE,False,"הסדנא 17, כפר סבא"
+ISR,HaSharon,HaSharon,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,d4fd97f2-5b12-4fe0-a292-7a6116af12f1,Wolt Market | Ra'anana,ACTIVE,False,"התעשיה 8, רעננה"
+ISR,HaSharon,Netanya,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,6ae6a1ff-df3d-42f9-b328-7cfb1f9a8180,Wolt Market | Netanya,ACTIVE,False,"זנגביל 11, נתניה"
+ISR,HaSharon,Netanya,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,f93b4f6f-df1d-4f60-b4fe-ea61a97128b4,Wolt Market | Netanya Poleg,ACTIVE,False,התרופה 4 נתניה 
+ISR,Haifa,Haifa,2c94ed34-b7fb-4d00-8a18-13a60c8c3c63,14b72fb0-622e-430d-9c18-1f1da487a77b,Wolt Market | Haifa,ACTIVE,False,תל אביב 11 חיפה
+ISR,Haifa,Hakrayot,2c94ed34-b7fb-4d00-8a18-13a60c8c3c63,a63e7352-4bea-42b4-8047-adb5372c8c5b,Wolt Market | Kiryon ,ACTIVE,False,דרך עכו 192 קרית ביאליק 
+ISR,Jerusalem,Jerusalem,e2394081-a26c-46bc-9935-5a34690a38a4,a280cdf3-9474-4b68-8548-4158321033b0,Wolt Market | Cinema City - JLM,ACTIVE,False,"שדרות יצחק רבין 10, ירושלים"
+ISR,Jerusalem,Jerusalem,e2394081-a26c-46bc-9935-5a34690a38a4,f2278f38-415d-46aa-acbb-558d262e4d81,Wolt Market | Jerusalem Talpiot,ACTIVE,False,האומן 17 ירושלים
+ISR,Modi'in,Modi'in,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,05cd8462-0290-4af9-ba6c-98f2b6b9aff7,Wolt Market | Modi'in,ACTIVE,False,מתתיהו הכהן 1 מודיעין
+ISR,Ness Ziona - Rehovot,Ness Ziona - Rehovot,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,099cb894-90b0-41d1-91c9-1bca65a1c5d7,Wolt Market Israel Test Venue,ACTIVE,False,שביט 8
+ISR,Pardes Hanna,Pardes Hanna,ae9deadd-fb4d-4532-9dc7-a8ccce6836b8,3e86ee5e-39bc-442c-8f34-06072311eec8,Wolt Market | Hadera,ACTIVE,False,"מנא""י 8, חדרה, Israel"
+ISR,Petah Tikva,HaSharon,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,972be8ea-8b9f-45ad-98ca-b7ebeec4ab7a,Wolt Market | Lev Haaretz,ACTIVE,False,"הזית 10, כפר קסאם"
+ISR,Petah Tikva,Petah Tikva,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,e68fe15b-14c1-4eed-9c09-ba55864e3925,Wolt Market | Kiryat Ono,ACTIVE,False,הדובדבן 9 קריית אונו
+ISR,Petah Tikva,Petah Tikva,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,ab0799e2-37f3-43cb-ad36-e85b212cdb90,Wolt Market | Marlog Atlas (CLOSED) ,ARCHIVED,False,"תאנה 2, כפר קאסם"
+ISR,Petah Tikva,Petah Tikva,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,0ccab2c8-7009-4270-a5a1-f5843b5724d8,Wolt Market | Or Yehuda,ACTIVE,False,"משה אביב 6, אור יהודה, Israel"
+ISR,Petah Tikva,Petah Tikva,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,19dcc85a-d7a9-434a-8054-7c29953e4001,Wolt Market | Petah Tikva,ACTIVE,False,"מוטה גור 5, פתח תקווה"
+ISR,Rishon Lezion & Hashfela area,Ness Ziona - Rehovot,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,f835dcb7-f334-4cf2-86bf-2b61a4b3d935,Wolt Market | Logistics Center,ACTIVE,False,המלאכה 61 חולון
+ISR,Rishon Lezion & Hashfela area,Ness Ziona - Rehovot,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,e041acd1-3e6c-43d9-a550-73ea123aba9a,Wolt Market | Rehovot,ACTIVE,False,"הרצל 201, רחובות"
+ISR,Rishon Lezion & Hashfela area,Rishon LeZion,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,c38bbc0a-bc49-434d-ae8c-a1f0fc7a4237,Wolt Market | HaRova,ACTIVE,False,משה בקר 14
+ISR,Rishon Lezion & Hashfela area,Rishon LeZion,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,c93f6204-0235-4327-be0c-74a74a077503,Wolt Market | Rishon Maarav,ACTIVE,False,"נח מוזס 2, ראשון לציון"
+ISR,Rishon Lezion & Hashfela area,Rishon Lezion & Hashfela area,6a03a458-936b-44b7-b0f6-cff1abd0c445,5b34220a-a5b5-4993-bb35-20533f577ef1,Wolt Market | Neot Shamir,ACTIVE,False,רפאל איתן 17
+ISR,Rishon Lezion & Hashfela area,Rishon Lezion & Hashfela area,6a03a458-936b-44b7-b0f6-cff1abd0c445,c7598aeb-b037-4e28-8ec4-57359acaf660,Wolt Market | Ness Ziona,ACTIVE,False,"החרש 18, נס ציונה, Israel"
+ISR,Rishon Lezion & Hashfela area,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,0714923f-ebc2-41a2-8abe-e8f0e59602be,Wolt Market | Wolfson,ACTIVE,False,הלוחמים 11 תל אביב
+ISR,Tel Aviv,Herzliya - Ramat Hasharon,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,cb850ebc-1fc7-4e13-80eb-d50886fba51a,Wolt Market | Herzliya,ACTIVE,False,"משכית 22, הרצליה"
+ISR,Tel Aviv,Herzliya - Ramat Hasharon,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,862a8019-f92e-49fe-9b0b-eb233fa50fe8,Wolt Market | Ramat Hasharon,ACTIVE,False,החרש 8 
+ISR,Tel Aviv,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,f46e7b52-20fb-492d-94c8-81f69eec8564,Wolt Market | Ben Yehuda,ACTIVE,False,"בן יהודה 19, תל אביב"
+ISR,Tel Aviv,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,2d62af01-fdc6-46a2-9c3f-6e509ad7af04,Wolt Market | Bialik,ACTIVE,False,"ביאליק 79, רמת גן, Israel"
+ISR,Tel Aviv,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,88f1a9d4-071d-44b7-8938-b6d67fca4712,Wolt Market | Bursa,ACTIVE,False,"תובל 40, רמת גן"
+ISR,Tel Aviv,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,723a78a4-3ba3-4e19-bf95-c7db748393d0,Wolt Market | Florentine,ACTIVE,False,קיבוץ גלויות 34 תל אביב
+ISR,Tel Aviv,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,fd7a8249-aeea-4db1-81b0-c8c4fa0acc9f,Wolt Market | Neve Tzedek (CLOSED) ,ARCHIVED,False,דרך אילת 23 א׳
+ISR,Tel Aviv,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,abb4a432-beca-455f-9287-6435d04db415,Wolt Market | Top Dan,ACTIVE,False,"פנחס רוזן ,72 תל אביב"
+ISR,Tel Aviv,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f,c0da0169-ba7a-43fb-9347-ea20e220222e,Wolt Market | Yad Eliyahu,ACTIVE,False,חרוץ 10 תל אביב
+JPN,Asahikawa,Asahikawa ,92463fc3-b5db-4390-a3e1-bb685704ab6e,2900c6f8-3c8a-4c83-8797-149228cd9fb3,Wolt Market Asahikawa Hachijodori,ARCHIVED,False,北海道旭川市８条通７丁目３４−１８
+JPN,Hakodate,Hakodate,643654a1-ec23-468b-8375-af7d82a94388,026057bc-f09c-4a97-ba41-cfe6a8025fc0,Wolt Market Hakodate Honcho,ARCHIVED,False,北海道函館市本町32-3 
+JPN,Hiroshima,Hiroshima,b624b105-ce5f-44da-b18b-6fff8d6f6319,8664bc3c-7e77-4bd8-8185-a287e65b156f,Wolt Market Hiroshima Hakushima,ARCHIVED,False,広島県広島市中区西白島町16-23
+JPN,Kure,Kure,461f14ac-402b-4c6f-847a-fdcacaf4ea38,06c2ae17-3cbe-481a-8d1b-0f4ad9e8848f,Wolt Market Kure Nakadori,ARCHIVED,False,広島県呉市中通り4丁目1-17
+JPN,Sapporo,Sapporo,56ac7648-9b66-49a5-92bf-b1286356360f,4e10cddf-5764-4e72-825c-6d990cf806fe,Wolt Market Norte Plaza,ARCHIVED,False,北区北九条西三丁目19番地1 ノルテプラザ1階
+JPN,Sapporo,Sapporo,56ac7648-9b66-49a5-92bf-b1286356360f,52361ac9-477d-40fe-be7e-9502300ccf3d,Wolt Market Sapporo Asabu,ARCHIVED,False,札幌市北区麻生町3丁目10-1
+JPN,Sapporo,Sapporo,56ac7648-9b66-49a5-92bf-b1286356360f,ffd01ac0-97b7-4599-80fd-d209df6e7501,Wolt Market Sapporo Minami Kujo,ARCHIVED,False,札幌市中央区南九条西10丁目1-40 1階
+JPN,Sapporo,Sapporo,56ac7648-9b66-49a5-92bf-b1286356360f,24eb26f7-8995-4d74-8bba-fe6eed00f698,Wolt Market Shiroishi,ARCHIVED,False,札幌市白石区東札幌三条6丁目1番2号 第一小竹ビル1階
+KAZ,Almaty,Almaty,591a48b7-54d9-480d-9970-17531fdd8597,c1a5ca7e-ac7b-4e26-b64e-9e741e595a9d,Daily Deli Gorniy Gigant,ACTIVE,False,"Георгия Жукова, 120"
+KAZ,Almaty,Almaty,591a48b7-54d9-480d-9970-17531fdd8597,0dd9c22e-3a48-496a-a559-897b6161850b,Wolt Market Almaty,ACTIVE,False,241 Mukanova Street
+KAZ,Almaty,Almaty,591a48b7-54d9-480d-9970-17531fdd8597,fd5e3442-631c-4af1-a3fa-e93167d970de,Wolt Market Gorniy Gigant,ACTIVE,False,"Георгия Жукова, 120"
+KAZ,Almaty,Almaty,591a48b7-54d9-480d-9970-17531fdd8597,55b37f75-b73b-4819-9a0a-63b8c69415ad,Wolt Market Shevchenko (CLOSED),ARCHIVED,False,Mukanova 241
+KAZ,Almaty,Алматы,591a48b7-54d9-480d-9970-17531fdd8597,1b162201-a5da-4888-9b60-1df127308aee,Daily Deli Mega Towers,ACTIVE,False,"улица Абиша Кекилбайулы, 270а"
+KAZ,Almaty,Алматы,591a48b7-54d9-480d-9970-17531fdd8597,cc9de15a-3c82-4f18-8b50-f8e419c9d5e1,Daily Deli Shevchenko,ACTIVE,False,"улица Муканова 241 Алматы, 050008"
+KAZ,Almaty,Алматы,591a48b7-54d9-480d-9970-17531fdd8597,453aec48-c54d-418f-a028-82aad2333626,Wolt Market Mega Towers,ACTIVE,False,"улица Абиша Кекилбайулы, 270а"
+KAZ,Almaty,Алматы,591a48b7-54d9-480d-9970-17531fdd8597,5ab7bd19-70d6-4ee9-beaf-19af1ab5d49b,Wolt Market Shevchenko,ACTIVE,False,улица Муканова 241
+KAZ,Nur-Sultan,Астана,3802ec39-aa47-41e5-bb36-ad0da3fcfe22,1ca23a26-e0b8-4be5-877d-c2766168ba8c,Daily Deli Left Bank,ACTIVE,False,улица Бухар Жырау 34а 
+KAZ,Nur-Sultan,Астана,3802ec39-aa47-41e5-bb36-ad0da3fcfe22,eaba244b-0df2-43f9-8325-c7fc58a2ba6c,Wolt Market Astana,ACTIVE,False,улица Бухар Жырау 34а 
+KAZ,Nur-Sultan,Астана,3802ec39-aa47-41e5-bb36-ad0da3fcfe22,47566856-7b50-4f6a-8447-5dc96e92c77b,Wolt Market Left Bank,ACTIVE,False,улица Бухар Жырау 34а 
+KAZ,Nur-Sultan,Астана,3802ec39-aa47-41e5-bb36-ad0da3fcfe22,014cecd0-56a4-48aa-bb21-f3082b95ac86,Wolt Market Right Bank,ACTIVE,False,улица Жакып Омарова 10
+LTU,Kaunas,Kaunas,302866a5-c8d4-4e8d-9950-b5bda48a8686,234aa299-0b6e-41c2-850c-08ffac182591,Wolt Market Kaunas,ACTIVE,False,"Vytauto pr. 32, Kaunas, 44328"
+LTU,Kaunas,Kaunas,302866a5-c8d4-4e8d-9950-b5bda48a8686,cccdbed2-f03a-4c9f-8ed0-6d17b8d07519,Wolt Market Šilainiai (CLOSED),ARCHIVED,False,Baltų pr. 49f
+LTU,Klaipėda,Klaipėda,beb24724-670e-4fc5-905f-5288440e721f,5e0d1f23-93a6-44f3-9100-0b8144824b01,Wolt Market Klaipėda (CLOSED),ARCHIVED,False,Tilžės g. 51
+LTU,Vilnius,Vilnius,815a4849-dcca-4550-b35a-30d562e6c742,678517dd-f19d-4f6b-8865-9595a863e323,Wolt Market Naujamiestis,ACTIVE,False,"Kauno g,16, 03210 Vilnius, Lietuva, Parduotuvės kontaktinis telefonas: 864102300"
+LTU,Vilnius,Vilnius,815a4849-dcca-4550-b35a-30d562e6c742,3333379f-bba3-490e-bcce-c2caf2b96bc3,Wolt Market Pašilaičiai,ACTIVE,False,"Laisvės pr. 77; LT-06122, Vilnius +37066695729"
+LTU,Vilnius,Vilnius,815a4849-dcca-4550-b35a-30d562e6c742,bc121cbe-a436-4ac2-aea3-4c0ae05a4eea,Wolt Market Žirmūnai,ACTIVE,False,Kalvariju g. 206
+LVA,Riga,Riga,f3882a45-8fbe-44f1-a48c-ef2447df961d,29a5ae5e-f51b-4ae0-bcb5-255fe5052d84,Wolt Alko Centrs,ACTIVE,False,Krišjāņa Barona iela 130 k-7
+LVA,Riga,Riga,f3882a45-8fbe-44f1-a48c-ef2447df961d,910e2937-834f-42a6-878b-18fba2d9cc7d,Wolt Alko Pārdaugava,ACTIVE,False,Kapseļu iela 15
+LVA,Riga,Riga,f3882a45-8fbe-44f1-a48c-ef2447df961d,0c3a3f95-2ee3-46cd-9ef9-454e45437f87,Wolt Market Grīziņkalna,ACTIVE,False,"Krišjāņa Barona iela 130 k-7, store phone number - +37125113681"
+LVA,Riga,Riga,f3882a45-8fbe-44f1-a48c-ef2447df961d,13d01dfe-071e-4457-8e94-97d4afc3d521,Wolt Market Mežciema (CLOSED),ARCHIVED,False,Hipokrāta iela 26
+LVA,Riga,Riga,f3882a45-8fbe-44f1-a48c-ef2447df961d,98700403-bd74-48f5-b346-8cdca3768e81,Wolt Market Āgenskalna,ACTIVE,False,"Kapseļu iela 15 k-3,LV-1046,Riga, store phone number - +37125113711"
+LVA,Riga,Riga,f3882a45-8fbe-44f1-a48c-ef2447df961d,5d4508bd-0b28-4108-9616-22a9e5d0dc78,Wolt Market Ķengaraga (CLOSED) ,ARCHIVED,False,"Ķengaraga 1A, store phone number - +37125117221"
+MLT,Malta,Burmarrad,d80da3e7-2fc2-4f3a-a2a3-60ccc3b3d017,01b6621b-e88c-4e7d-b9ed-675e8dc2860c,Wolt Market Burmarrad,ACTIVE,False,"Wolt Market, Triq Burmarrad, BURMARRAD tel 9966 9006"
+MLT,Malta,Marsa,8513ddf2-4446-48dc-8f08-210069e80dcb,5d664da6-3670-44ec-8ae0-c3e23530dbc2,Match Day Super Store Qormi,ACTIVE,False," Warehouses 1 & 2, N/S Off Triq it-Tigrija"
+MLT,Malta,Marsa,8513ddf2-4446-48dc-8f08-210069e80dcb,006d1151-3d8e-4b1b-9eba-98426ae6b882,Wolt Market Qormi,ACTIVE,False,"Warehouses 1 & 2, N/S Off Triq it-Tigrija"
+MLT,Malta,San Gwann,241569cc-f130-43b2-ab1a-6de54fde5362,a2579d44-c5c7-4c34-9e4e-ffcfeae78613,Match Day Superstore San Gwann,ACTIVE,False,"Level -2, GM Industrial Complex, Triq Ta' L-Ibraġ"
+MLT,Malta,San Gwann,241569cc-f130-43b2-ab1a-6de54fde5362,d4852c9e-4c0a-4459-900e-a5b4674093b9,Wolt Market San Gwann,ACTIVE,False,"Level -2, GM Industrial Complex, Triq Ta' L-Ibraġ, San Ġwann, Malta"
+NOR,Bergen,Bergen,53bd7549-7373-4775-bb2a-2cc04e8765ad,5572adc2-97ac-4681-b367-f4bf517b088a,Match Day Super Store Bergen,ACTIVE,False,Damsgårdsveien 167
+NOR,Bergen,Bergen,53bd7549-7373-4775-bb2a-2cc04e8765ad,06ac36fe-4768-47e6-9f15-6b7977b09fc7,Wolt Market Bergen,ACTIVE,False,Damsgårdsveien 167
+NOR,Oslo,Oslo,9380eb27-1d7f-41ed-9b17-6e08a474b9f5,c642b576-9517-48d6-b0e9-031ae9c1ff18,Match Day Super Store Oslo Øst,ACTIVE,False,Ole Deviks Vei 10
+NOR,Oslo,Oslo,9380eb27-1d7f-41ed-9b17-6e08a474b9f5,acfec427-ed57-4fd8-b430-ff08909c1abf,Match Day Super Store Sentrum,ACTIVE,False,Pilestredet 29 A
+NOR,Oslo,Oslo,9380eb27-1d7f-41ed-9b17-6e08a474b9f5,9a62aa7f-446d-4d9b-a761-bb4f55b3e240,Wolt Market Oslo Øst,ACTIVE,False,Ole Deviks Vei 10
+NOR,Oslo,Oslo,9380eb27-1d7f-41ed-9b17-6e08a474b9f5,5585f6f6-ea7b-4a66-9b56-52165b94d210,Wolt Market Sentrum,ACTIVE,False,This is a virtual venue
+NOR,Stavanger,Stavanger,45610769-ca7c-4425-b9be-1677ba9e1bea,79157ba1-3d73-413f-8849-005eb3b3b16a,Match Day Super Store Stavanger,ACTIVE,False,Tanke Svilands gate 73
+NOR,Stavanger,Stavanger,45610769-ca7c-4425-b9be-1677ba9e1bea,88581b95-c0b1-4e1a-a82b-347c6ed81ac5,Wolt Market Stavanger,ACTIVE,False,Tanke Svilands gate 73
+NOR,Trondheim,Trondheim,b46e1d19-d5db-4a8a-a8f3-5bd2d553c38c,b68b83b4-0fed-41c2-a4cf-d899d807755d,Match Day Super Store Trondheim,ACTIVE,False,Fjordgata 56-58
+NOR,Trondheim,Trondheim,b46e1d19-d5db-4a8a-a8f3-5bd2d553c38c,9d5db833-6165-4924-92cf-e63a009b2234,Wolt Market Trondheim,ACTIVE,False,This is a virtual venue
+ROU,Bucharest,Bucharest,d6df7e0f-3a52-4dd8-ad8f-e3b74e31aa25,37a8457b-9ff4-4209-bfbe-f03e376e1866,Wolt Market Militari,ACTIVE,False,Strada Valea Cascadelor nr. 21-23
+ROU,Bucharest,Bucharest,d6df7e0f-3a52-4dd8-ad8f-e3b74e31aa25,e98cb587-56da-4f49-9128-b3b5ff57b521,Wolt Market Vitan,ACTIVE,False,Splaiul Unirii no. 257-259
+ROU,Timisoara,Timisoara,1f1fc76f-3430-4421-a25a-15b3d037992c,b5876991-27ba-4ece-8b54-232eebe90945,Wolt Market Timisoara,ACTIVE,False,Strada Tibrului 65
+ROU,,Timisoara,1f1fc76f-3430-4421-a25a-15b3d037992c,5d834f47-aa3c-4fd5-8148-d52552b4ba88,Wolt Market Timisoara (wrong),ARCHIVED,False,Strada Tibrului
+SRB,Belgrade,Belgrade,b69a2d64-8b4e-42aa-8cfd-d288030ae0c2,284f4fc5-1597-416c-b6eb-1f48c66d7f76,Wolt Market Banovo brdo,ACTIVE,False,"Svetolika Lazarevića Laze 2, GLN 8607000402890"
+SRB,Belgrade,Belgrade,b69a2d64-8b4e-42aa-8cfd-d288030ae0c2,df45ad2b-92d9-4d68-b56c-8de0f985db12,Wolt Market Centar,ACTIVE,False,Durmitorska 14
+SRB,Belgrade,Belgrade,b69a2d64-8b4e-42aa-8cfd-d288030ae0c2,8209b2bf-a702-41d1-a009-fe016bbbe89c,Wolt Market Dorćol,ACTIVE,False,"Viline Vode 47, Dorcol, GLN 8607000402814"
+SRB,Belgrade,Belgrade,b69a2d64-8b4e-42aa-8cfd-d288030ae0c2,eb132876-c07b-49a8-902c-570435e8b450,Wolt Market Novi Beograd,ACTIVE,False,"Narodnih heroja 41, Genex, GLN 8607000402883"
+SRB,Belgrade,Belgrade,b69a2d64-8b4e-42aa-8cfd-d288030ae0c2,b4d469e2-7449-4ace-a735-19475c340835,Wolt Market Voždovac,ACTIVE,False,"Bulevar Peka Dapčevića 28, GLN 8607000402845"
+SRB,Belgrade,Belgrade,b69a2d64-8b4e-42aa-8cfd-d288030ae0c2,f1ef34e6-006b-410e-b01f-97107d992079,Wolt Market Vracar,ARCHIVED,False,"Velimira Bate Živojinovića 8, Beograd"
+SRB,Belgrade,Belgrade,b69a2d64-8b4e-42aa-8cfd-d288030ae0c2,687f457f-a115-4ed2-93f2-effa5f17f471,Wolt Market Vračar Premium,ACTIVE,False,"Gospodara Vučića 173, GLN 8607000402852"
+SRB,Niš,Niš,bccc1daf-2dd9-4ccb-817d-92aa82309a86,62254bab-6234-4246-9ad1-5e54cbab6a02,Wolt Market Niš,ACTIVE,False,"Zetska 36b, GLN 8607000402869"
+SRB,Novi Sad,Novi Sad,7bcc771b-7296-48d9-b049-1d23b2bbc3da,36fedc08-206b-477d-8238-1354272d5390,Wolt Market Novi Sad (CLOSED),ARCHIVED,False,"Bulevar Evrope 2a, Novi Sad"
+SRB,Novi Sad,Novi Sad,7bcc771b-7296-48d9-b049-1d23b2bbc3da,06f27f62-c0df-4b9c-a630-d3440cf6dccd,Wolt Market Novi Sad Salajka,ACTIVE,False,"Partizanska 42a, GLN 8607000402876"
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,d9ec92ca-3225-4904-a6c5-9fd6ba5c606b,Healthy Choice - Nové Mesto,ACTIVE,False,Pionierska 17
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,a5c85202-3344-4f78-a027-9a398a90abfb,Healthy Choice - Petržalka,ACTIVE,False,Gogoľova 326/18A
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,7f68204e-6a36-4903-b548-ffee5ac948e0,Healthy Choice - Staré Mesto,ACTIVE,False,29. Augusta 26
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,c0c5d938-3770-42aa-9c5a-0f2ecf052241,IZY VAPE Wolt Market Nové Mesto,ACTIVE,False,Wolt Market Pionierska 3276/17
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,336616d0-de57-495c-bce1-78b66b4831f2,IZY VAPE Wolt Market Petržalka,ACTIVE,False,Wolt Market Gogoľova 1909/18A
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,748e3b54-800f-47e5-b105-246ee835afd9,IZY VAPE Wolt Market Staré Mesto,ACTIVE,False,Ul. 29.Augusta 26
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,49866da0-2ccb-4be5-ae64-8f6abc112654,Party Starts Here - Nové Mesto,ACTIVE,False,Pionierska 17
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,4d9cb5ff-2532-4399-982e-4ff060c46720,Party Starts Here - Petržalka,ACTIVE,False,"Gogoľova 326/18A, 851 01 Bratislava Slovakia"
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,a12c0208-703b-4ffb-a71c-06bff140c2e4,Party Starts Here - Staré Mesto,ACTIVE,False,29. Augusta 26
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,f41906ca-32af-42b0-ac7c-5f8c175c6fff,Wolt Market Nové Mesto,ACTIVE,False,Pionierska 17
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,d953b969-e170-4b1b-828a-3fe4fd59fe9a,Wolt Market Petržalka,ACTIVE,False,Gogoľova 326/18A
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,e0d2fccf-470b-4cc8-b76f-2b29a2308635,Wolt Market Staré Mesto,ACTIVE,False,Feriencikova 11
+SVK,Kosice,Kosice,1459a0d4-3a37-45d5-9283-7bf745a488f7,db84e9d9-824f-413e-a315-f3467c5b7e56,IZYVAPE Wolt Market Košice,ACTIVE,False,Wolt Market Moldavská cesta 2273/10
+SVK,Kosice,Kosice,1459a0d4-3a37-45d5-9283-7bf745a488f7,b6420a16-06e0-4d76-aa78-9bd873abf6ac,Wolt Market Košice,ACTIVE,False,Moldavská cesta 10
+SVK,Kosice,Košice,1459a0d4-3a37-45d5-9283-7bf745a488f7,be687212-9385-4457-9af5-f41a807dd040,Healthy Choice - Košice,ACTIVE,False,Moldavská cesta 2273/10
+SVK,Kosice,Košice,1459a0d4-3a37-45d5-9283-7bf745a488f7,bc5d08f7-311d-4c8f-af2d-4b16a6858533,Party Starts Here - Košice,ACTIVE,False,Moldavská cesta 2273/10
+SVK,Trencin,Trencin,63869525-99db-41d3-bf10-07981bf4e4c0,e754eee1-a4da-4ea6-9e6e-ba44fd6badd0,Wolt Market Grape (CLOSED),ACTIVE,False,This is a virtual venue
+SVK,Trnava,Trnava,0c8ccadf-e4ed-4aef-84a4-27acb1f2ec64,a54e189e-de2f-4014-8106-bec67c31fdea,Healthy Choice - Trnava,ACTIVE,False,Trstínska cesta 682/8
+SVK,Trnava,Trnava,0c8ccadf-e4ed-4aef-84a4-27acb1f2ec64,7cf17522-e703-49f9-a871-bac3d8d3344e,Party Starts Here - Trnava,ACTIVE,False,Trstínska cesta 682/8
+SVK,Trnava,Trnava,0c8ccadf-e4ed-4aef-84a4-27acb1f2ec64,45c727ec-385a-4c28-9f66-5dc1e9565365,Wolt Market Trnava ,ACTIVE,False,Trstínska cesta 8
+SVK,,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a,1d28442e-3567-438d-b395-e31d780dd036,Bonny & Bunny,ARCHIVED,False,29. Augusta 26
+SVN,Ljubljana,Ljubljana,514c6913-911d-4ef0-ba22-6879ac397d2c,a554efa3-0304-4a62-8554-f5aa0056a912,Wolt Market Tobačna,ACTIVE,False,Tobačna ulica 5
+SVN,Maribor,Maribor,1e00d6e9-c6d5-4b36-88ad-f8dc452b4553,ce36a7f3-63f0-4831-9334-046d24a9532b,Wolt Market Maribor,ACTIVE,False,Raičeva ulica 8
+SWE,Malmö,Malmö,57394bf2-837a-4816-b301-c743bdb22185,c5bda824-13fb-4acc-bbf0-522a342b91cc,Wolt Market Malmö,ACTIVE,False,This is a virtual venue 
+SWE,Stockholm,Stockholm,1585c72e-2c7b-4e03-95d2-847b9221c269,7735cdf8-657c-4546-89e9-bf6c071f62b5,Wolt Market Solna,ACTIVE,False,This is a virtual venue
+SWE,Stockholm,Stockholm,1585c72e-2c7b-4e03-95d2-847b9221c269,83b4b882-d61e-4d54-a9ba-9bf87f3c5aa3,Wolt Market Stockholm City,ACTIVE,False,This is a virtual venue
+SWE,Stockholm,Stockholm,1585c72e-2c7b-4e03-95d2-847b9221c269,06e729f1-eafc-4cff-a6ca-aa834fc4eeab,Wolt Market Stockholm North,ACTIVE,False,Hemvärnsgatan 14
+SWE,Stockholm,Stockholm,1585c72e-2c7b-4e03-95d2-847b9221c269,e9edc2fe-7f54-43a7-b639-daed201c695d,Wolt Market Södermalm (CLOSED),ARCHIVED,False,This is a virtual venue
+SWE,Stockholm,Stockholm,1585c72e-2c7b-4e03-95d2-847b9221c269,b9853b55-cec5-4389-b38b-95be3537124c,Wolt Market Söderort,ACTIVE,False,Svärdlångsvägen 44
+SWE,Örebro,Örebro,31b5c8d7-aee6-4994-b8bb-7a501401d903,1741326f-9328-4815-847c-348fde03d60d,Wolt Market Örebro,ACTIVE,False,This is a virtual venue

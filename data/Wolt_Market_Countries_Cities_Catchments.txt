@@ -1,0 +1,165 @@
+# WOLT MARKET GEOGRAPHIC COVERAGE
+# Countries, Cities, and Store Catchments
+# Data source: Wolt Market Snowflake (RETAIL_PLATFORMS.D_RETAIL_PLATFORM_VENUES_WM)
+# Last updated: 2026-08-21
+
+## SUMMARY
+- Total Countries: 23
+- Country Code Format: ISO 3166-1 alpha-3 (e.g., FIN = Finland, MLT = Malta)
+
+---
+
+## 1. AZERBAIJAN (AZE)
+   - Baku
+
+## 2. CYPRUS (CYP)
+   - Ammochostos
+   - Larnaca
+   - Limassol
+   - Nicosia
+   - Paphos
+
+## 3. CZECH REPUBLIC (CZE)
+   - Brno
+   - Pilsen
+   - Prague
+
+## 4. GERMANY (DEU)
+   - Berlin
+   - Cologne
+   - Düsseldorf
+   - Frankfurt
+   - Hamburg
+   - Hanover
+   - Munich
+   - Nuremberg
+
+## 5. DENMARK (DNK)
+   - Aalborg
+   - Aarhus
+   - Copenhagen
+   - Odense
+   - Søborg
+
+## 6. ESTONIA (EST)
+   - Tallinn
+   - Tartu
+
+## 7. FINLAND (FIN)
+   - Espoo
+   - Helsinki
+   - Joensuu
+   - Jyväskylä
+   - Lahti
+   - Oulu
+   - Pori
+   - Seinäjoki
+   - Tampere
+   - Turku
+   - Vaasa
+   - Vantaa
+
+## 8. GEORGIA (GEO)
+   - Baku
+   - Batumi
+   - Tbilisi
+
+## 9. GREECE (GRC)
+   - Athens
+   - Chania
+   - Heraklion
+   - Patra
+   - Thessaloniki
+
+## 10. CROATIA (HRV)
+   - Rijeka
+   - Split
+   - Zagreb
+
+## 11. HUNGARY (HUN)
+   - Budapest
+   - Debrecen
+   - Győr
+   - Pécs
+   - Szeged
+
+## 12. ISRAEL (ISR)
+   - Afula & Emek Yizrael area
+   - Ashdod
+   - Ashkelon
+   - Beer Sheva
+   - HaSharon
+   - Haifa
+   - Hakrayot
+   - Herzliya - Ramat Hasharon
+   - Jerusalem
+   - Modi'in
+   - Ness Ziona - Rehovot
+   - Netanya
+   - Pardes Hanna
+   - Petah Tikva
+   - Rishon LeZion
+   - Rishon Lezion & Hashfela area
+   - Tel Aviv
+
+## 13. JAPAN (JPN)
+   - Asahikawa
+   - Hakodate
+   - Hiroshima
+   - Kure
+   - Sapporo
+
+## 14. KAZAKHSTAN (KAZ)
+   - Almaty
+   - Astana
+
+## 15. LITHUANIA (LTU)
+   - Kaunas
+   - Klaipėda
+   - Vilnius
+
+## 16. LATVIA (LVA)
+   - Riga
+
+## 17. MALTA (MLT)
+   - Burmarrad
+   - Marsa
+   - San Gwann
+
+## 18. NORWAY (NOR)
+   - Bergen
+   - Oslo
+   - Stavanger
+   - Trondheim
+
+## 19. ROMANIA (ROU)
+   - Bucharest
+   - Timisoara
+
+## 20. SERBIA (SRB)
+   - Belgrade
+   - Niš
+   - Novi Sad
+
+## 21. SLOVAKIA (SVK)
+   - Bratislava
+   - Košice
+   - Trenčín
+   - Trnava
+
+## 22. SLOVENIA (SVN)
+   - Ljubljana
+   - Maribor
+
+## 23. SWEDEN (SWE)
+   - Malmö
+   - Örebro
+   - Stockholm
+
+---
+
+## NOTES
+- The "cities" listed represent store catchments/neighborhoods in the Wolt Market system
+- Each catchment has a unique VENUE_CITY_ID in Snowflake
+- Some catchments span multiple physical areas (e.g., "Rishon Lezion & Hashfela area" in Israel)
+- Data reflects active store catchments in the system; availability may vary by specific subcategory

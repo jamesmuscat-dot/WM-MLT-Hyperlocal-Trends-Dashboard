@@ -1,0 +1,136 @@
+How to add a Wolt Market country
+================================
+
+You do not rewrite Malta. Copy this folder structure and fill in your own CSVs.
+
+Neighbourhoods should be Wolt Market dark-store catchments from
+data/wm_catchments.csv, plus the in-range towns around each store (the
+suburbs CMs actually range into). Malta already has a rich town list.
+Cyprus should too (Germasogeia, Strovolos, Geroskipou, Paralimni, …),
+not only "Limassol Central". Expansion cities with no store yet still
+get a profile row where Neighbourhood = City.
+
+1. Copy data/_template  ->  data/XXX
+   Use the country code your team already uses (FIN, DEU, GRC, CYP, ...).
+
+2. Fill in the files (same columns as Malta):
+   - producers.csv
+   - neighbourhoods.csv
+   - trends.csv
+   - creators.csv
+   - search.csv  (in-venue app search; see below)
+   - vendors.csv (optional; WM supplier names for "already listed")
+
+   producers.csv columns include Website / IG and Email (public contact
+   if published, otherwise N/A). Do not invent email addresses.
+
+   Google Rating and Google Reviews are filled later, not by the producer
+   prompt. Preferred: enrich_google_places.py with a Places API key.
+   If no key is available, enrich_ratings_from_web.py takes a one-time
+   public-web snapshot (pages that republish Google stars). Generic rows
+   (e.g. "neighbourhood bakeries") stay N/A. Instagram / TikTok follower
+   counts stay N/A unless already public.
+
+   trends.csv should include Search Keywords: semicolon-separated terms
+   customers would type in the Wolt Market app. Use specific terms
+   (vegan, oat milk, halloumi, kefir), not generic staples like bread,
+   milk, water, or tuna.
+
+   search.csv columns: Country, Query, Searches
+   Source: WM Snowflake WOLT_MARKET.INTERMEDIATE.F_IN_VENUE_SEARCH_WM
+   joined to D_RETAIL_PLATFORM_VENUES_WM on venue_id = wolt_venue_id.
+   Last 90 days, venue_country, non-test venues, query length >= 2,
+   HAVING COUNT(*) >= 5.
+
+   vendors.csv columns: Country,Vendor,SKUs
+   Distinct available WM suppliers for that country. Used on Hyperlocal
+   Range to tag "Already listed" vs new leads. Source: WM Snowflake
+   RETAIL_PLATFORM_VENDOR_OFFERINGS_TO_VENUE_PRODUCTS_WM joined to
+   D_RETAIL_PLATFORM_VENUES_WM on retail_platform_venue_id, filtered to
+   venue_country and AVAILABLE. Every live country pack needs this file
+   (Malta and Cyprus are the pattern). Without it, every producer shows
+   as a New lead. The table shows Supplier status (Already listed / New lead)
+   and does not repeat the vendor-file name as a separate column.
+
+   Local Market Trends then stamps each trend:
+   - Validated     = 200+ matching in-venue searches
+   - Weak signal   = 30-199
+   - Not in search = under 30
+   That second chip sits next to Strong / Medium-strong so you can see
+   whether creators and customers agree.
+
+   Trend card photos: drop a square image in assets/trend_images/ and put the
+   filename in the Image column (e.g. halloumi.jpg). If Image is blank, the
+   app matches Search Keywords to a trend photo, then to the Hyperlocal Range
+   category tiles. A https:// URL in Image also works.
+
+   Similar products on Local Market Trends lists real WM SKUs already ranged
+   in that country (GTIN + product name), not app search queries. Source:
+   data/assortment_products.csv from _snowflake_assortment.py (AVAILABLE
+   offerings at woltmarket / woltmarket_extended venues). Re-run after adding
+   a country. Search Keywords on the trend row are what match product name
+   and brand; generic staples (milk, bread, coffee) are skipped so the list
+   stays specific.
+
+   Neighbourhood Price Entry / Core / Premium mix: data/neighbourhood_price_mix.csv
+   from Wolt Market Snowflake only (account doordash-wolt_market / WOLT_MARKET).
+   Never use Wolt production (ig78751). The same spend view applies to every
+   country, city and neighbourhood already in the dashboard and any you add
+   later — there is no per-country mix exception list.
+
+   Live warehouses show that store's PE / Core / Premium mix — Charlottenburg
+   is the Charlottenburg warehouse, not all of Berlin. Named catchments that
+   match a Wolt Market venue (Yasamal, Limassol Central, Ehrenfeld, Glyfada)
+   use that warehouse, including Greek/Latin/Cyrillic name variants and pack
+   rows whose summary says the store sits there (Koukaki <- Athens, Stavroupoli
+   <- Kentro). Distinct in-range or expansion towns never inherit a parent
+   city's mix. They show WM orders delivered into that town plus the nearest
+   live warehouse (within 20 km). If dropoff mix is too thin they show inbound
+   WM orders + AOV vs country, with a line that this is delivery location, not
+   a dark store. Country PE / Core / Premium is never used as a proxy.
+   Wolt Market only, never restaurant. Mix is sold units, last 90 days.
+   cities.csv rows that uniquely match a warehouse are promoted to Live store.
+
+   Optional Latitude, Longitude columns on neighbourhoods.csv make a catchment
+   a dropoff target on the next pull when it is not already in cities.csv.
+
+   cities.csv coordinates must be the real town. If several cities share the
+   country-centroid pin, dropoff and nearest-store are skipped for those
+   rows until real coordinates are filled in. Live-store names that Snowflake
+   labels differently (Paralimni / Ammochostos, Qormi / Marsa) are aliased
+   automatically.
+
+   After adding a country, city, or neighbourhood, rebuild with
+   _snowflake_price_mix.py. The script reads countries from cities.csv,
+   countries.csv and data/<CC>/neighbourhoods.csv — you do not edit a
+   country list inside the script.
+
+3. data/countries.csv lists live Wolt Market countries and map starting
+   views. Only add a row if a new market is missing. Japan (JPN) and
+   Lithuania (LTU) are closed — do not add packs, cities, or Snowflake
+   pulls for them. The app skips those codes even if leftover CSVs exist.
+
+   data/cities.csv is the City dropdown: live dark-store cities, towns
+   already on a ranging list, AND major cities with no store yet
+   (Store status = Expansion). Always add expansion cities you might
+   open into, even if producers.csv is still empty. The dashboard then
+   shows a planning view — city demographics plus country-level trends
+   and in-app search — so CMs can judge demand before a first store.
+
+   neighbourhoods.csv should include a City column. For a live store,
+   City is the catchment city (e.g. Limassol). For an expansion city
+   with no store yet, add one profile row where Neighbourhood = City
+   (e.g. City=Ganja, Neighbourhood=Ganja). Always add the town to
+   cities.csv with real Latitude/Longitude and Store status (Live store,
+   In range, or Expansion) so dropoff + nearest-store can run. Optional
+   Latitude, Longitude on the neighbourhoods.csv row are used when the
+   catchment is not already a cities.csv town.
+
+4. Refresh the Streamlit app. The Country filter only lists countries
+   that have producer rows, so empty markets stay hidden until you fill them.
+
+5. Generate new country CSVs with the Wolt Market prompts in
+   AI Prompts/templates/ (read PLACEHOLDERS.txt first). Do not use any
+   leftover London prompts — they output the wrong columns and grocery chains.
+
+Malta lives in data/MLT/. Edit those files to change the Malta view.

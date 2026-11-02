@@ -21,6 +21,9 @@ st.set_page_config(
     layout="wide",
 )
 
+# Japan and Lithuania — WM closed. Skip packs, mix, assortment, and city lists.
+CLOSED_MARKET_CODES = {"JPN", "LTU"}
+
 # -----------------------
 # WOLT MARKET BRAND
 # Digital palette from Bynder. Type: Omnes Black (headlines),
@@ -1691,6 +1694,8 @@ def load_price_architecture_mix() -> pd.DataFrame:
         return pd.DataFrame()
     df = pd.read_csv(path)
     df.columns = [str(c).replace("\ufeff", "").strip() for c in df.columns]
+    if "Country" in df.columns:
+        df = df[~df["Country"].astype(str).str.strip().str.upper().isin(CLOSED_MARKET_CODES)].copy()
     return df
 
 
@@ -1713,6 +1718,8 @@ def load_assortment_products() -> pd.DataFrame:
         return pd.DataFrame(columns=["Country", "GTIN", "Product Name", "Brand"])
     df = pd.read_csv(path, dtype=str, keep_default_na=False)
     df.columns = [str(c).replace("\ufeff", "").strip() for c in df.columns]
+    if "Country" in df.columns:
+        df = df[~df["Country"].astype(str).str.strip().str.upper().isin(CLOSED_MARKET_CODES)].copy()
     hay = df.get("Product Name", pd.Series("", index=df.index)).map(_norm_assortment_text)
     if "Brand" in df.columns:
         hay = hay + " " + df["Brand"].map(_norm_assortment_text)
@@ -3497,6 +3504,8 @@ def _country_folders():
             name = path.name
             if name.startswith((".", "_")) or name.lower() in SKIP_FOLDER_NAMES:
                 continue
+            if name.strip().upper() in CLOSED_MARKET_CODES:
+                continue
             if not _first_existing(path, PRODUCER_FILES):
                 continue
             # Prefer data/{CODE} over a same-named folder at the repo root.
@@ -3510,6 +3519,7 @@ def load_country_registry() -> pd.DataFrame:
         if path.exists():
             registry = pd.read_csv(path)
             registry["code"] = registry["code"].astype(str).str.strip()
+            registry = registry[~registry["code"].str.upper().isin(CLOSED_MARKET_CODES)].copy()
             return registry
     return pd.DataFrame(columns=["code", "name", "latitude", "longitude", "zoom"])
 
@@ -3520,6 +3530,7 @@ def load_cities_registry() -> pd.DataFrame:
             cities = pd.read_csv(path, keep_default_na=False)
             if "Country" in cities.columns:
                 cities["Country"] = cities["Country"].astype(str).str.strip()
+                cities = cities[~cities["Country"].str.upper().isin(CLOSED_MARKET_CODES)].copy()
             if "City" in cities.columns:
                 cities["City"] = cities["City"].astype(str).str.strip()
             return cities

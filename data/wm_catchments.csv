@@ -1,0 +1,107 @@
+venue_country,city,catchment,venue_city_id
+AZE,Baku,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf
+CYP,Ammochostos,Ammochostos,85e4fe0b-b858-444a-9254-7d5ede6c4ded
+CYP,Larnaca,Larnaca,1d096e52-8945-463b-b8b7-6cb8a3f2dc72
+CYP,Limassol,Limassol,890aca5d-d252-4233-90ba-9782954dad89
+CYP,Nicosia,Nicosia,09a832f7-ebf5-4c2d-8c18-c0946ddd7d97
+CYP,Paphos,Paphos,9c0ba44c-302d-4505-9293-4aa69d7bee68
+CZE,Brno,Brno,a911f164-90e5-4225-9996-2281040d668a
+CZE,Pilsen,Pilsen,e2960992-ca32-4a23-9612-cd362039571c
+CZE,Prague,Prague,82dd653a-9bb5-4e80-bd78-b774575f1eb1
+DEU,Berlin,Berlin,047e8c68-c245-4857-b6ef-40040d41ae96
+DEU,Cologne,Cologne,f44d1252-c946-4597-806b-5143210d56bf
+DEU,Düsseldorf,Düsseldorf,931f5222-4595-4fd3-aaa3-1d07b6bc0d68
+DEU,Frankfurt,Frankfurt,9fef9a9e-3664-4e71-9e56-83a41a1496be
+DEU,Hamburg,Hamburg,289e6a43-4036-4d51-9e1f-684392e1f2a3
+DEU,Hanover,Hanover,0a34b989-c3e4-4ea5-abf6-d45af1ed22a6
+DEU,Munich,Munich,bd5888f3-5340-4410-8480-50914271a7d1
+DEU,Nuremberg,Nuremberg,809753d6-a9ce-4e04-b0f5-1d251113f95e
+DNK,Aalborg,Aalborg,4ff1c370-8ba7-4700-927f-00bf72420b37
+DNK,Aarhus,Aarhus,28799f6c-c0c8-497c-8f98-9c889779070a
+DNK,Copenhagen,Copenhagen,15db9ba1-4006-4830-8db7-5ed60495654d
+DNK,Lyngby-Gentofte,Søborg,a48bc0bb-222a-4ea4-9aed-127be19b2a1c
+DNK,Odense,Odense,8cdff371-de92-4299-9f63-7f443ca2da1f
+EST,Tallinn,Tallinn,0d391e7c-4eea-4fe1-8bd1-b6a1dc1948b8
+EST,Tartu,Tartu,b2fa09c0-6e7f-4a34-8023-b1ad714a1ea3
+FIN,Espoo,Espoo,56bc5b0f-ca7d-440d-ac82-95050db008c7
+FIN,Helsinki,Helsinki,56bc5b0f-ca7d-440d-ac82-95050db008c7
+FIN,Joensuu,Joensuu,9509f3ba-9c0a-4ab1-860a-635693abefbc
+FIN,Jyväskylä,Jyväskylä,55caa4fe-cd72-4164-802d-ee4dad222ca3
+FIN,Lahti,Lahti,e84b5f68-3094-4833-8041-27ea009f1d0b
+FIN,Oulu,Oulu,4fe44d64-ae76-4505-af24-aaf332bfb2a4
+FIN,Pori,Pori,d5414f22-192f-47a2-842d-d32584ba4b82
+FIN,Seinäjoki,Seinäjoki,85c58516-6394-46fc-9eaf-aa5eb50c2958
+FIN,Tampere,Tampere,713850a0-637a-4f35-aff3-185e63cab2a2
+FIN,Turku,Turku,c09b23d5-d600-4a4b-a1ca-2a3c5d2c7c9e
+FIN,Vaasa,Vaasa,af4bf68b-e7f5-45e7-8c82-2ca128a558e4
+FIN,Vantaa,Vantaa,56bc5b0f-ca7d-440d-ac82-95050db008c7
+GEO,Batumi,Batumi,90867d13-0ae7-4c22-b4e0-39b3ef172922
+GEO,Tbilisi,Baku,2a66e31e-b3e0-41ca-a8cd-404c6ea065bf
+GEO,Tbilisi,Tbilisi,1bc79c85-a22b-44fd-b098-ee30a37d220b
+GRC,Athens,Athens,b4a4665a-24dc-422e-8d3e-54a83b733942
+GRC,Chania,Chania,abe0ba8a-b794-4fde-80cb-a2d5be66d43e
+GRC,Heraklion,Heraklion,458d6410-a4bb-43f0-8f60-f6c79c6a4a73
+GRC,Patra,Patra,19fcfe45-06a4-4815-b90c-9760400ba4d2
+GRC,Thessaloniki,Thessaloniki,fd9ac48b-74cd-422f-b4b0-06d26649c17c
+HRV,Rijeka,Rijeka,9dd653b7-b0b8-4898-87a9-76811337ed1d
+HRV,Split,Split,5c228bc6-5489-4ccd-9cf0-440008f494f6
+HRV,Zagreb,Zagreb,90367e75-6c92-40aa-b659-caaec6465259
+HUN,Budapest,Budapest,8a9841c3-8ce5-4355-bfe9-a185b60292ea
+HUN,Debrecen,Debrecen,a2fd0da8-5d0d-49a9-971c-0d12e705e109
+HUN,Győr,Győr,d8c83be2-d41e-4412-aa5a-f475ef43f1a2
+HUN,Pécs,Pécs,8808c5c4-fe8d-49fc-990e-34677faeda1b
+HUN,Szeged,Szeged,30849822-7252-4ee0-98e6-80f4302684f9
+ISR,Afula & Emek Yizrael area,Afula & Emek Yizrael area,37ee1736-7c3c-4f65-bc3d-fcbbf5943840
+ISR,Ashdod and Lachish Area,Ashdod,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Ashkelon,Ashkelon,d907b54e-cdfa-45d2-a345-2873601aef75
+ISR,Beer Sheva,Beer Sheva,2481a661-719d-4f6c-8ba5-6ad01fe3a16d
+ISR,HaSharon,HaSharon,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,HaSharon,Netanya,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Haifa,Haifa,2c94ed34-b7fb-4d00-8a18-13a60c8c3c63
+ISR,Haifa,Hakrayot,2c94ed34-b7fb-4d00-8a18-13a60c8c3c63
+ISR,Jerusalem,Jerusalem,e2394081-a26c-46bc-9935-5a34690a38a4
+ISR,Modi'in,Modi'in,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Ness Ziona - Rehovot,Ness Ziona - Rehovot,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Pardes Hanna,Pardes Hanna,ae9deadd-fb4d-4532-9dc7-a8ccce6836b8
+ISR,Petah Tikva,HaSharon,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Petah Tikva,Petah Tikva,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Rishon Lezion & Hashfela area,Ness Ziona - Rehovot,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Rishon Lezion & Hashfela area,Rishon LeZion,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Rishon Lezion & Hashfela area,Rishon Lezion & Hashfela area,6a03a458-936b-44b7-b0f6-cff1abd0c445
+ISR,Rishon Lezion & Hashfela area,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Tel Aviv,Herzliya - Ramat Hasharon,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+ISR,Tel Aviv,Tel Aviv,58d03f67-c2a6-43d7-a457-ddaffcc80a7f
+JPN,Asahikawa,Asahikawa ,92463fc3-b5db-4390-a3e1-bb685704ab6e
+JPN,Hakodate,Hakodate,643654a1-ec23-468b-8375-af7d82a94388
+JPN,Hiroshima,Hiroshima,b624b105-ce5f-44da-b18b-6fff8d6f6319
+JPN,Kure,Kure,461f14ac-402b-4c6f-847a-fdcacaf4ea38
+JPN,Sapporo,Sapporo,56ac7648-9b66-49a5-92bf-b1286356360f
+KAZ,Almaty,Almaty,591a48b7-54d9-480d-9970-17531fdd8597
+KAZ,Almaty,Алматы,591a48b7-54d9-480d-9970-17531fdd8597
+KAZ,Nur-Sultan,Астана,3802ec39-aa47-41e5-bb36-ad0da3fcfe22
+LTU,Kaunas,Kaunas,302866a5-c8d4-4e8d-9950-b5bda48a8686
+LTU,Klaipėda,Klaipėda,beb24724-670e-4fc5-905f-5288440e721f
+LTU,Vilnius,Vilnius,815a4849-dcca-4550-b35a-30d562e6c742
+LVA,Riga,Riga,f3882a45-8fbe-44f1-a48c-ef2447df961d
+MLT,Malta,Burmarrad,d80da3e7-2fc2-4f3a-a2a3-60ccc3b3d017
+MLT,Malta,Marsa,8513ddf2-4446-48dc-8f08-210069e80dcb
+MLT,Malta,San Gwann,241569cc-f130-43b2-ab1a-6de54fde5362
+NOR,Bergen,Bergen,53bd7549-7373-4775-bb2a-2cc04e8765ad
+NOR,Oslo,Oslo,9380eb27-1d7f-41ed-9b17-6e08a474b9f5
+NOR,Stavanger,Stavanger,45610769-ca7c-4425-b9be-1677ba9e1bea
+NOR,Trondheim,Trondheim,b46e1d19-d5db-4a8a-a8f3-5bd2d553c38c
+ROU,Bucharest,Bucharest,d6df7e0f-3a52-4dd8-ad8f-e3b74e31aa25
+ROU,Timisoara,Timisoara,1f1fc76f-3430-4421-a25a-15b3d037992c
+SRB,Belgrade,Belgrade,b69a2d64-8b4e-42aa-8cfd-d288030ae0c2
+SRB,Niš,Niš,bccc1daf-2dd9-4ccb-817d-92aa82309a86
+SRB,Novi Sad,Novi Sad,7bcc771b-7296-48d9-b049-1d23b2bbc3da
+SVK,Bratislava,Bratislava,bfb4f1f2-6993-4181-b9f3-278813cdc37a
+SVK,Kosice,Kosice,1459a0d4-3a37-45d5-9283-7bf745a488f7
+SVK,Kosice,Košice,1459a0d4-3a37-45d5-9283-7bf745a488f7
+SVK,Trencin,Trencin,63869525-99db-41d3-bf10-07981bf4e4c0
+SVK,Trnava,Trnava,0c8ccadf-e4ed-4aef-84a4-27acb1f2ec64
+SVN,Ljubljana,Ljubljana,514c6913-911d-4ef0-ba22-6879ac397d2c
+SVN,Maribor,Maribor,1e00d6e9-c6d5-4b36-88ad-f8dc452b4553
+SWE,Malmö,Malmö,57394bf2-837a-4816-b301-c743bdb22185
+SWE,Stockholm,Stockholm,1585c72e-2c7b-4e03-95d2-847b9221c269
+SWE,Örebro,Örebro,31b5c8d7-aee6-4994-b8bb-7a501401d903
