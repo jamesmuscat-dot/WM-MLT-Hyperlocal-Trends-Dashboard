@@ -92,7 +92,7 @@ ROU,1,Specialty coffee bags versus supermarket coffee,Validated,Customers are se
 ROU,2,Pâine cu maia versus industrial bread,Weak signal,"Some app search, but not a habit yet — 137 matching searches in the last 90 days. Top queries: “paine maia” (76), “maia” (46), “paine cu maia” (15).",137
 ROU,3,Craft beer versus Ursus,Weak signal,"Some app search, but not a habit yet — 78 matching searches in the last 90 days. Top queries: “ipa” (57), “bere ipa” (12), “bere artizanala” (9).",78
 ROU,4,Zacusca and magiun as grocery,Validated,"Customers are searching this in the Wolt Market app — 245 matching searches in the last 90 days. Top queries: “zacusca” (217), “magiun” (28).",245
-ROU,5,Banat and Transylvania wine versus supermarket bottles,Validated,"Customers are searching this in the Wolt Market app — 202 matching searches in the last 90 days. Top queries: “napolact” (121), “napolact bio” (31), “lapte napolact” (23).",202
+ROU,5,Banat and Transylvania wine versus supermarket bottles,Not in search,Not a current search habit — only 15 matching searches in the last 90 days. Top queries: “palinca” (15).,15
 SRB,1,Craft beer versus Jelen and Lav,Validated,"Customers are searching this in the Wolt Market app — 2,743 matching searches in the last 90 days. Top queries: “dogma” (997), “kabinet” (980), “ipa” (613).",2743
 SRB,2,Specialty coffee bags versus supermarket coffee,Validated,"Customers are searching this in the Wolt Market app — 574 matching searches in the last 90 days. Top queries: “kafa u zrnu” (475), “filter kafa” (99).",574
 SRB,3,Rakija as a grocery SKU,Validated,"Customers are searching this in the Wolt Market app — 3,548 matching searches in the last 90 days. Top queries: “rakija” (3,301), “rakija sljiva” (44), “rakija dunja” (26).",3548

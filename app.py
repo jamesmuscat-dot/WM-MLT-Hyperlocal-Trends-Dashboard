@@ -391,6 +391,9 @@ CATEGORY_TILES = {
     "Breweries": str(CATEGORY_TILE_DIR / "breweries.jpg"),
     "Brewery": str(CATEGORY_TILE_DIR / "breweries.jpg"),
     "Distilleries": str(CATEGORY_TILE_DIR / "distilleries.jpg"),
+    "Distillery": str(CATEGORY_TILE_DIR / "distilleries.jpg"),
+    "Winery": str(CATEGORY_TILE_DIR / "distilleries.jpg"),
+    "Wineries": str(CATEGORY_TILE_DIR / "distilleries.jpg"),
     "Delicatessen": str(CATEGORY_TILE_DIR / "delicatessen.jpg"),
     "Butcher Shops": str(CATEGORY_TILE_DIR / "butcher_shops.jpg"),
     "Butcher Shop": str(CATEGORY_TILE_DIR / "butcher_shops.jpg"),
@@ -421,7 +424,7 @@ TREND_CATEGORY_FALLBACKS = [
     (["coffee"], "Coffee Roastery"),
     (["sourdough", "bread", "bakery"], "Bakery"),
     (["pivo", "craft beer", "brewery"], "Brewery"),
-    (["wine", "brandy"], "Distilleries"),
+    (["wine", "brandy", "winery"], "Winery"),
     (["sardine", "anchovy", "caviar", "sturgeon", "seafood", "fish"], "Seafood Producers"),
     (["laiki", "produce", "vegetable", "fruit"], "Fruits & Vegetables"),
     (["loukoumi", "snack"], "Local Snacks"),
@@ -752,15 +755,15 @@ def producer_table_column_config(df: pd.DataFrame) -> dict:
 
 def safe_followers_text(value):
     text = str(value).strip()
-    if text in {"", "N/A", "nan", "None"}:
-        return "-"
+    if text in {"", "N/A", "nan", "None", "-"}:
+        return "N/A"
     try:
         num = pd.to_numeric(text.replace(",", ""), errors="coerce")
-        if pd.isna(num):
-            return "-"
+        if pd.isna(num) or int(num) == 0:
+            return "N/A"
         return f"{int(num):,}"
     except Exception:
-        return "-"
+        return "N/A"
 
 
 def resolve_image_source(source):
@@ -2871,6 +2874,17 @@ _ALCOHOL_NEEDLES = (
     "beer", "lager", "ale", "ipa", "cider", "wine", "vodka", "whisky",
     "ლუდი", "пиво", "olut", "pivo",
 )
+_WINE_THEME_NEEDLES = (
+    "wine", "vin recas", "recas", "recaș", "crama", "cramele", "palinca", "pálinka",
+)
+_DAIRY_PRODUCT_NEEDLES = (
+    "napolact", "lapte", "iaurt", "sana", "chefir", "telemea",
+    "smantana", "smântână", "kefir", "yogurt", "yoghurt",
+)
+_THEME_OFFCATEGORY = (
+    (_COFFEE_THEME_NEEDLES, _ALCOHOL_NEEDLES),
+    (_WINE_THEME_NEEDLES, _DAIRY_PRODUCT_NEEDLES),
+)
 
 
 def _text_has_needle(text: str, needles) -> bool:
@@ -2957,7 +2971,7 @@ def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int 
     from the list and from coverage counts.
     """
     empty = pd.DataFrame(columns=["GTIN", "Product Name"])
-    meta = {"excluded": 0, "excluded_brands": []}
+    meta = {"excluded": 0, "excluded_brands": [], "keywords": []}
     if assortment_df is None or assortment_df.empty:
         return empty, 0, meta
     keys = assortment_match_keywords(trend_row)
@@ -2994,14 +3008,16 @@ def matching_listed_products(trend_row, assortment_df: pd.DataFrame, limit: int 
     picked = work.loc[match_mask]
     staple = staple_mask(picked, country).reindex(picked.index).fillna(False)
     keep = ~staple
-    if _text_has_needle(
-        f"{trend_row.get('Trend', '')} {trend_row.get('Search Keywords', '')}",
-        _COFFEE_THEME_NEEDLES,
-    ) and "_hay" in picked.columns:
-        alcohol = picked["_hay"].astype(str).str.contains(
-            _needle_regex(_ALCOHOL_NEEDLES), regex=True, na=False
-        )
-        keep = keep & ~alcohol
+    theme_blob = f"{trend_row.get('Trend', '')} {trend_row.get('Search Keywords', '')}"
+    if "_hay" in picked.columns:
+        hay_picked = picked["_hay"].astype(str)
+        for theme_needles, skip_needles in _THEME_OFFCATEGORY:
+            if _text_has_needle(theme_blob, theme_needles):
+                off_theme = hay_picked.str.contains(
+                    _needle_regex(skip_needles), regex=True, na=False
+                )
+                keep = keep & ~off_theme
+    meta["keywords"] = keys
     meta["excluded"] = int(staple.sum())
     if "Brand" in picked.columns and bool(staple.any()):
         brands = picked.loc[staple, "Brand"].astype(str).str.strip()
@@ -3049,6 +3065,9 @@ def render_listed_products(
             "Hyperlocal and niche listed SKUs only. Lavazza, Nescafé and other "
             "international or national factory brands are not counted."
         )
+        matched_keys = sku_meta.get("keywords") or []
+        if matched_keys:
+            st.caption("Matched from these trend keywords: " + ", ".join(matched_keys[:8]) + ".")
         excluded_n = int(sku_meta.get("excluded") or 0)
         brands = sku_meta.get("excluded_brands") or []
         if excluded_n:
@@ -3347,6 +3366,25 @@ NATIONAL_PRODUCER_KEYS = {
         "sole mizo",
         "alfoldi",
         "herz",
+    },
+    "ROU": {
+        "napolact",
+        "ursus",
+        "dorna",
+        "bergenbier",
+        "timisoreana",
+        "vel pitar",
+        "boromir",
+        "albalact",
+        "covalact",
+        "agricola",
+        "transavia",
+        "cris tim",
+        "caroli",
+        "scandia",
+        "pegas",
+        "ciuc",
+        "silva",
     },
 }
 
@@ -4306,6 +4344,16 @@ tab_range, tab_trends, tab_demo = st.tabs(["🏪 Hyperlocal Range", "📈 Local 
 with tab_range:
     st.title("Hyperlocal Range")
     st.caption(f"Interactive sourcing dashboard for local producers across {MARKET_NAME}.")
+    if selected_neighbourhood != "All":
+        st.caption(
+            f"**Store/catchment:** {selected_neighbourhood}. National factory brands are excluded. "
+            "Trends and search chips on Local Market Trends stay country-wide."
+        )
+    elif selected_city != "All":
+        st.caption(
+            f"**City/catchment:** {selected_city}. National factory brands are excluded. "
+            "Trends and search chips on Local Market Trends stay country-wide."
+        )
 
     if selected_city != "All" and selected_city_status in {"Expansion", "In range"}:
         st.markdown(
@@ -4788,6 +4836,17 @@ with tab_trends:
         f"Creator signals across {MARKET_NAME}, checked against what customers "
         "actually type in the Wolt Market app (last 90 days)."
     )
+    catchment = (
+        selected_neighbourhood if selected_neighbourhood != "All"
+        else selected_city if selected_city != "All"
+        else None
+    )
+    if catchment:
+        st.caption(
+            f"**Country-wide view.** Trends, search chips and creator lists are for all of {MARKET_NAME}. "
+            f"They do not change when you pick {catchment}. "
+            "Producer shortlists on Hyperlocal Range follow the store/catchment filter."
+        )
     if selected_city != "All" and selected_city_status == "Expansion":
         st.caption(
             f"No live store in {selected_city} yet — these are {MARKET_NAME}-wide trends and search signals "
@@ -4803,12 +4862,14 @@ with tab_trends:
         creators_work = creators_df.copy()
 
         if "Followers" in creators_work.columns:
-            creators_work["Followers_num"] = _clean_numeric(creators_work["Followers"]).fillna(0)
-            creators_work = creators_work.sort_values("Followers_num", ascending=False)
+            creators_work["Followers_num"] = _clean_numeric(creators_work["Followers"])
+            creators_work = creators_work.sort_values("Followers_num", ascending=False, na_position="last")
         else:
-            creators_work["Followers_num"] = 0
+            creators_work["Followers_num"] = pd.NA
 
-        total_followers = int(creators_work["Followers_num"].fillna(0).sum())
+        known_followers = pd.to_numeric(creators_work.get("Followers_num"), errors="coerce")
+        known_n = int(known_followers.notna().sum())
+        total_followers = int(known_followers.fillna(0).sum()) if known_n else None
         platform_split_df = build_platform_split(creators_work)
         content_focus_df = build_content_focus(creators_work)
 
@@ -4918,7 +4979,16 @@ with tab_trends:
         with creator_col1:
             st.markdown(clean_html(top_metric_card("Total Creators", creator_count, f"Tracked {MARKET_NAME} food creators", icon=ICON_USERS, icon_bg="#d1f694", icon_color="#0f3310", card_bg="#ffffff")), unsafe_allow_html=True)
         with creator_col2:
-            st.markdown(clean_html(top_metric_card("Total Followers", f"{total_followers:,}", "Combined audience", icon=ICON_USER_GROUP, icon_bg="#d1f694", icon_color="#0f3310", card_bg="#d1f694")), unsafe_allow_html=True)
+            if total_followers is None:
+                followers_value, followers_sub = "N/A", "No follower counts in this pack yet"
+            else:
+                missing_n = creator_count - known_n
+                followers_value = f"{total_followers:,}"
+                followers_sub = (
+                    f"From {known_n} creators with a published count"
+                    + (f" · {missing_n} shown as N/A" if missing_n else "")
+                )
+            st.markdown(clean_html(top_metric_card("Total Followers", followers_value, followers_sub, icon=ICON_USER_GROUP, icon_bg="#d1f694", icon_color="#0f3310", card_bg="#d1f694")), unsafe_allow_html=True)
 
         st.markdown(f"<div style='height:{SECTION_GAP}px;'></div>", unsafe_allow_html=True)
 
@@ -4931,7 +5001,7 @@ with tab_trends:
                 "Profile Pic",
                 "Name / Handle",
                 "Platform",
-                "Followers_num",
+                "Followers",
                 "Content Focus",
                 "Key Trend Signals",
                 "Example Link",
@@ -4939,11 +5009,8 @@ with tab_trends:
             if c in creators_table_df.columns
         ]
         creators_table_df = creators_table_df[cols].copy()
-        if "Followers_num" in creators_table_df.columns:
-            creators_table_df = creators_table_df.rename(columns={"Followers_num": "Followers"})
-            creators_table_df["Followers"] = creators_table_df["Followers"].map(
-                lambda x: f"{int(x):,}" if pd.notna(x) else "-"
-            )
+        if "Followers" in creators_table_df.columns:
+            creators_table_df["Followers"] = creators_table_df["Followers"].map(safe_followers_text)
 
         creator_html = clean_html(render_creator_table_html(creators_table_df))
         components.html(creator_html, height=min(520, 92 * max(len(creators_table_df), 1) + 80), scrolling=True)
@@ -5050,6 +5117,11 @@ with tab_trends:
 with tab_demo:
     st.title("Neighbourhood Insights")
     st.caption("Who lives where — turning local demographics into range and stocking decisions.")
+    if selected_neighbourhood != "All":
+        st.caption(
+            f"**Store/catchment:** {selected_neighbourhood}. This tab is local. "
+            "Trends, search chips and creator lists on Local Market Trends stay country-wide."
+        )
     if selected_city != "All" and selected_city_status == "Expansion":
         st.caption(
             f"Planning a first store in {selected_city}: this tab is the demographic snapshot. "
