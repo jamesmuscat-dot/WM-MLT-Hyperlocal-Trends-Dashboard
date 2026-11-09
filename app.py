@@ -4994,6 +4994,11 @@ with tab_trends:
 
         # ---- 4) Top Creators table (full width) ----
         st.markdown(f"### Top Creators – {selected_market}  \n**{creator_count} creators**")
+        st.caption(
+            "Follower counts are public snapshots on the listed platform "
+            "(YouTube subscribers or Instagram/Facebook followers). "
+            "N/A means no public count was found — we do not estimate."
+        )
 
         creators_table_df = creators_work.copy()
         cols = [
